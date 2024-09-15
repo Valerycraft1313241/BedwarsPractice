@@ -14,8 +14,8 @@ public class ChatHandler implements Listener {
    }
 
    @EventHandler
-   private void onPlayerChat(AsyncPlayerChatEvent var1) {
-      Player var2 = var1.getPlayer();
-      var1.setFormat(PlaceholderManager.getInstance().setPlaceholders(var2, Settings.SettingsEnum.CHAT_FORMAT.getString().replace("[playerName]", var2.getName())) + var1.getMessage().replace("%", "%%"));
+   private void onPlayerChat(AsyncPlayerChatEvent e) {
+      Player var2 = e.getPlayer();
+      e.setFormat(PlaceholderManager.getInstance().setPlaceholders(var2, Settings.SettingsEnum.CHAT_FORMAT.getString().replace("[playerName]", var2.getName())) + e.getMessage().replace("%", "%%"));
    }
 }
