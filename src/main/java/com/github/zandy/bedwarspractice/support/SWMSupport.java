@@ -7,42 +7,44 @@ import com.grinderwolf.swm.api.world.properties.SlimePropertyMap;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
+import java.util.logging.Logger;
+
 public class SWMSupport {
-   private static SWMSupport instance = null;
-   private final SlimePlugin slimePlugin = (SlimePlugin)Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
+   private static final Logger LOGGER = Logger.getLogger(SWMSupport.class.getName());
+   private static final String WORLD_NAME = "bedwars_practice";
+   private static final SWMSupport INSTANCE = new SWMSupport();
+   private final SlimePlugin slimePlugin;
    private final SlimeLoader loader;
 
-   public SWMSupport() {
+   private SWMSupport() {
+      this.slimePlugin = (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
       this.loader = this.slimePlugin.getLoader("file");
    }
 
+   public static SWMSupport getInstance() {
+      return INSTANCE;
+   }
+
    public World generateWorld() {
-      SlimePropertyMap var1 = new SlimePropertyMap();
-      var1.setInt(SlimeProperties.SPAWN_X, 0);
-      var1.setInt(SlimeProperties.SPAWN_Y, 100);
-      var1.setInt(SlimeProperties.SPAWN_Z, 0);
+      SlimePropertyMap properties = new SlimePropertyMap();
+      properties.setInt(SlimeProperties.SPAWN_X, 0);
+      properties.setInt(SlimeProperties.SPAWN_Y, 100);
+      properties.setInt(SlimeProperties.SPAWN_Z, 0);
 
       try {
-         this.slimePlugin.generateWorld(this.slimePlugin.createEmptyWorld(this.loader, "bedwars_practice", true, var1));
-      } catch (Exception ignored) {
+         this.slimePlugin.generateWorld(this.slimePlugin.createEmptyWorld(this.loader, WORLD_NAME, true, properties));
+      } catch (Exception e) {
+         LOGGER.severe("Failed to generate world: " + e.getMessage());
       }
 
-      return Bukkit.getWorld("bedwars_practice");
+      return Bukkit.getWorld(WORLD_NAME);
    }
 
    public void removeWorld() {
       try {
-         this.loader.deleteWorld("bedwars_practice");
-      } catch (Exception ignored) {
+         this.loader.deleteWorld(WORLD_NAME);
+      } catch (Exception e) {
+         LOGGER.severe("Failed to delete world: " + e.getMessage());
       }
-
-   }
-
-   public static SWMSupport getInstance() {
-      if (instance == null) {
-         instance = new SWMSupport();
-      }
-
-      return instance;
    }
 }

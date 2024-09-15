@@ -1,103 +1,96 @@
 package com.github.zandy.bedwarspractice.support;
 
 import com.github.zandy.bamboolib.utils.BambooUtils;
-import java.io.File;
-import java.util.List;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
+
 public class BWPPatcher {
-   static File paperSpigotFile = new File("paper.yml");
+   private static final Logger LOGGER = Logger.getLogger(BWPPatcher.class.getName());
+   private static final File PAPER_SPIGOT_FILE = new File("paper.yml");
+   private static final ConcurrentHashMap<PatchType, Boolean> patchStatus = new ConcurrentHashMap<>();
 
-   public static void patch(@NotNull BWPPatcher.PatchType var0) {
+   public static void patch(@NotNull PatchType patchType) {
+      try {
+         if (patchType.isPatchable()) {
+            boolean patchApplied = false;
+            File configFile;
+            YamlConfiguration config;
 
-       try {
-         if (var0.isPatchable()) {
-            boolean var1 = true;
-            File var2;
-            YamlConfiguration var3;
-            switch(var0) {
-            case REAL_SCOREBOARD:
-               var2 = new File("plugins/RealScoreboard/", "config.yml");
-               var3 = YamlConfiguration.loadConfiguration(var2);
-               List<String> var4 = var3.getStringList("Config.Bypass-Worlds");
-               if (!var4.contains("bedwars_practice")) {
-                  var1 = false;
-                  BambooUtils.consolePrint("&cRealScoreboard found! Applying patch...");
-                  var4.add("bedwars_practice");
-                  var3.set("Config.Bypass-Worlds", var4);
-                  var3.save(var2);
-               }
-               break;
-            case PAPER:
-               YamlConfiguration var9 = YamlConfiguration.loadConfiguration(paperSpigotFile);
-               if (var9.getBoolean("warnWhenSettingExcessiveVelocity")) {
-                  var1 = false;
-                  BambooUtils.consolePrint("&cPaperMc found! Applying patch...");
-                  var9.set("warnWhenSettingExcessiveVelocity", false);
-
-                  try {
-                     var9.save(paperSpigotFile);
-                  } catch (Exception ignored) {
+            switch (patchType) {
+               case REAL_SCOREBOARD:
+                  configFile = new File("plugins/RealScoreboard/", "config.yml");
+                  config = YamlConfiguration.loadConfiguration(configFile);
+                  List<String> bypassWorlds = config.getStringList("Config.Bypass-Worlds");
+                  if (!bypassWorlds.contains("bedwars_practice")) {
+                     patchApplied = true;
+                     LOGGER.info("RealScoreboard found! Applying patch...");
+                     bypassWorlds.add("bedwars_practice");
+                     config.set("Config.Bypass-Worlds", bypassWorlds);
+                     config.save(configFile);
                   }
-               }
-               break;
-            case FAWE:
-               var2 = new File("plugins/FastAsyncWorldEdit/", "config.yml");
-               var3 = YamlConfiguration.loadConfiguration(var2);
-               if (var3.getBoolean("paths.per-player-schematics")) {
-                  var1 = false;
-                  BambooUtils.consolePrint("&cFastAsyncWorldEdit found! Applying patch...");
-                  var3.set("paths.per-player-schematics", false);
-
-                  try {
-                     var3.save(var2);
-                  } catch (Exception ignored) {
+                  break;
+               case PAPER:
+                  config = YamlConfiguration.loadConfiguration(PAPER_SPIGOT_FILE);
+                  if (config.getBoolean("warnWhenSettingExcessiveVelocity")) {
+                     patchApplied = true;
+                     LOGGER.info("PaperMc found! Applying patch...");
+                     config.set("warnWhenSettingExcessiveVelocity", false);
+                     config.save(PAPER_SPIGOT_FILE);
                   }
-               }
-               break;
-            case VIA_VERSION:
-               var2 = new File("plugins/ViaVersion/", "config.yml");
-               var3 = YamlConfiguration.loadConfiguration(var2);
-               if (!var3.getBoolean("suppress-conversion-warnings") || !var3.getBoolean("suppress-metadata-errors")) {
-                  var1 = false;
-                  BambooUtils.consolePrint("&cViaVersion found! Applying patch...");
-                  var3.set("suppress-conversion-warnings", true);
-                  var3.set("suppress-metadata-errors", true);
-
-                  try {
-                     var3.save(var2);
-                  } catch (Exception ignored) {
+                  break;
+               case FAWE:
+                  configFile = new File("plugins/FastAsyncWorldEdit/", "config.yml");
+                  config = YamlConfiguration.loadConfiguration(configFile);
+                  if (config.getBoolean("paths.per-player-schematics")) {
+                     patchApplied = true;
+                     LOGGER.info("FastAsyncWorldEdit found! Applying patch...");
+                     config.set("paths.per-player-schematics", false);
+                     config.save(configFile);
                   }
-               }
+                  break;
+               case VIA_VERSION:
+                  configFile = new File("plugins/ViaVersion/", "config.yml");
+                  config = YamlConfiguration.loadConfiguration(configFile);
+                  if (!config.getBoolean("suppress-conversion-warnings") || !config.getBoolean("suppress-metadata-errors")) {
+                     patchApplied = true;
+                     LOGGER.info("ViaVersion found! Applying patch...");
+                     config.set("suppress-conversion-warnings", true);
+                     config.set("suppress-metadata-errors", true);
+                     config.save(configFile);
+                  }
+                  break;
             }
 
-            if (!var1) {
-               BambooUtils.consolePrint("&c&lThe patch was applied, please restart!");
+            if (patchApplied) {
+               LOGGER.info("The patch was applied, please restart!");
+               patchStatus.put(patchType, true);
             }
-
          }
-      } catch (Throwable var8) {
-         var8.printStackTrace();
+      } catch (Exception e) {
+         LOGGER.severe("Error applying patch: " + e.getMessage());
+         e.printStackTrace();
       }
    }
 
-
    public enum PatchType {
-      REAL_SCOREBOARD((new File("plugins/RealScoreboard/", "config.yml")).exists() && !YamlConfiguration.loadConfiguration(new File("plugins/RealScoreboard/", "config.yml")).getStringList("Config.Bypass-Worlds").contains("bedwars_practice")),
-      PAPER(BWPPatcher.paperSpigotFile.exists()),
+      REAL_SCOREBOARD(new File("plugins/RealScoreboard/", "config.yml").exists() && !YamlConfiguration.loadConfiguration(new File("plugins/RealScoreboard/", "config.yml")).getStringList("Config.Bypass-Worlds").contains("bedwars_practice")),
+      PAPER(PAPER_SPIGOT_FILE.exists()),
       FAWE(BambooUtils.isPluginEnabled("FastAsyncWorldEdit")),
       VIA_VERSION(BambooUtils.isPluginEnabled("ViaVersion") && BambooUtils.isVersion(8));
 
       final boolean patchable;
 
-      PatchType(boolean var3) {
-         this.patchable = var3;
+      PatchType(boolean patchable) {
+         this.patchable = patchable;
       }
 
       public boolean isPatchable() {
          return this.patchable;
       }
-
    }
 }

@@ -2,17 +2,17 @@ package com.github.zandy.bedwarspractice.files;
 
 import com.github.zandy.bamboolib.utils.BambooFile;
 import com.github.zandy.bamboolib.versionsupport.material.Materials;
-import java.util.ArrayList;
+
 import java.util.Arrays;
-import java.util.List;
-import org.bukkit.Material;
 
 public class Settings extends BambooFile {
    private static Settings instance = null;
 
    private Settings() {
       super("Settings");
-      Arrays.stream(Settings.SettingsEnum.values()).forEach((var1) -> this.addDefault(var1.getPath(), var1.getDefaultValue()));
+      Arrays.stream(
+              Settings.SettingsEnum.values())
+              .forEach((var1) -> this.addDefault(var1.getPath(), var1.getDefaultValue()));
       this.copyDefaults();
       this.save();
    }
@@ -38,7 +38,6 @@ public class Settings extends BambooFile {
       LOBBY_ALLOW_BLOCK_INTERACT("Lobby.Allow-Block-Interact", false),
       LOBBY_INTERACT_RESTRICTED_BLOCKS("Lobby.Interact-Restricted-Blocks", Arrays.asList(Materials.ENDER_CHEST.name(), Materials.CHEST.name(), Materials.NOTE_BLOCK.name(), Materials.ANVIL.name(), Materials.BEACON.name())),
       INVENTORY_CACHE("Inventory-Cache", true),
-      TABLIST_ENABLED("Tablist.Enabled", true),
       CHAT_ENABLED("Chat.Enabled", true),
       CHAT_FORMAT("Chat.Format", "&7[playerName]: "),
       NPC_REFRESH_TICK("NPC.Refresh.Tick", 5),
@@ -48,9 +47,9 @@ public class Settings extends BambooFile {
       final String path;
       final Object defaultValue;
 
-      SettingsEnum(String var3, Object var4) {
-         this.path = var3;
-         this.defaultValue = var4;
+      SettingsEnum(String path, Object defaultValue) {
+         this.path = path;
+         this.defaultValue = defaultValue;
       }
 
       public boolean getBoolean() {
@@ -63,12 +62,6 @@ public class Settings extends BambooFile {
 
       public String getString() {
          return Settings.getInstance().getString(this.path);
-      }
-
-      public List<Material> getMaterials() {
-         ArrayList<Material> var1 = new ArrayList<>();
-         Settings.getInstance().getStringList(this.path).forEach((var1x) -> var1.add(Material.valueOf(var1x)));
-         return var1;
       }
 
       public String getPath() {

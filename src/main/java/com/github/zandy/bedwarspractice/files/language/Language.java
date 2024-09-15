@@ -2,68 +2,68 @@ package com.github.zandy.bedwarspractice.files.language;
 
 import com.github.zandy.bamboolib.utils.BambooFile;
 import com.github.zandy.bedwarspractice.Main;
-import com.github.zandy.bedwarspractice.files.language.iso.English;
+import com.github.zandy.bedwarspractice.files.language.iso.*;
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Language {
-   private static Language instance = null;
-   private final HashMap<String, BambooFile> localeFiles = new HashMap<>();
+    private static final Language INSTANCE = new Language();
+   private final ConcurrentHashMap<String, BambooFile> localeFiles = new ConcurrentHashMap<>();
    private final List<String> languageAbbreviations = new ArrayList<>();
-   private final HashMap<UUID, String> playerLocale = new HashMap<>();
+   private final ConcurrentHashMap<UUID, String> playerLocale = new ConcurrentHashMap<>();
 
    private Language() {
+      // Private constructor to prevent instantiation
+   }
+
+   public static Language getInstance() {
+      return INSTANCE;
    }
 
    public void init() {
       new English();
-      ArrayList<String> var1 = new ArrayList<>();
-      File var2 = new File("plugins/BedWarsPractice/Languages");
-      var2.mkdir();
-      Arrays.stream(var2.listFiles()).forEach((var1x) -> {
-         if (var1x.isFile() && !var1x.getName().contains("DS_Store")) {
-            var1.add(var1x.getName().replace("Language_", "").replace(".yml", ""));
+      new Chinese();
+      new Deutsch();
+      new Italian();
+      new Polish();
+      new Romanian();
+      new Vietnamese();
+      // todo add new languages here
+
+      List<String> availableLanguages = new ArrayList<>();
+      File languagesDir = new File("plugins/BedWarsPractice/Languages");
+      languagesDir.mkdir();
+      Arrays.stream(languagesDir.listFiles()).forEach(file -> {
+         if (file.isFile() && !file.getName().contains("DS_Store")) {
+            availableLanguages.add(file.getName().replace("Language_", "").replace(".yml", ""));
          }
-
       });
+
       if (Main.getBedWarsAPI() != null) {
-         com.andrei1058.bedwars.api.language.Language.getLanguages().forEach((var1x) -> {
-            if (!var1.contains(var1x.getIso().toUpperCase())) {
-               var1.add(var1x.getIso().toUpperCase());
+         com.andrei1058.bedwars.api.language.Language.getLanguages().forEach(language -> {
+            if (!availableLanguages.contains(language.getIso().toUpperCase())) {
+               availableLanguages.add(language.getIso().toUpperCase());
             }
-
          });
       }
 
-      var1.forEach((var1x) -> {
-         BambooFile var2s = new BambooFile("Language_" + var1x, "Languages");
-         Arrays.stream(Language.MessagesEnum.values()).forEach((var1s) -> {
-            if (!var1s.hasNoLanguageSupport()) {
-               var2s.addDefault(var1s.getPath(), var1s.getDefaultValue());
+      availableLanguages.forEach(language -> {
+         BambooFile bambooFile = new BambooFile("Language_" + language, "Languages");
+         Arrays.stream(Language.MessagesEnum.values()).forEach(messageEnum -> {
+            if (!messageEnum.hasNoLanguageSupport()) {
+               bambooFile.addDefault(messageEnum.getPath(), messageEnum.getDefaultValue());
             }
-
          });
-         var2s.copyDefaults();
-         var2s.save();
-         this.localeFiles.put(var1x, var2s);
-         this.languageAbbreviations.add(var1x);
+         bambooFile.copyDefaults();
+         bambooFile.save();
+         this.localeFiles.put(language, bambooFile);
+         this.languageAbbreviations.add(language);
       });
    }
 
-   public static Language getInstance() {
-      if (instance == null) {
-         instance = new Language();
-      }
-
-      return instance;
-   }
-
-   public HashMap<String, BambooFile> getLocaleFiles() {
+   public ConcurrentHashMap<String, BambooFile> getLocaleFiles() {
       return this.localeFiles;
    }
 
@@ -71,7 +71,7 @@ public class Language {
       return this.languageAbbreviations;
    }
 
-   public HashMap<UUID, String> getPlayerLocale() {
+   public ConcurrentHashMap<UUID, String> getPlayerLocale() {
       return this.playerLocale;
    }
 
@@ -337,9 +337,9 @@ public class Language {
       final Object defaultValue;
       boolean noLanguageSupport = false;
 
-      MessagesEnum(String var3, Object var4) {
-         this.path = var3;
-         this.defaultValue = var4;
+      MessagesEnum(String path, Object defaultValue) {
+         this.path = path;
+         this.defaultValue = defaultValue;
       }
 
       MessagesEnum(String var3, Object var4, boolean var5) {

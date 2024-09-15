@@ -2,82 +2,69 @@ package com.github.zandy.bedwarspractice.files;
 
 import com.github.zandy.bamboolib.utils.BambooFile;
 import com.github.zandy.bedwarspractice.files.language.Language;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 public class NPCStorage extends BambooFile {
-   private static NPCStorage instance = null;
-   private final HashMap<NPCStorage.NPCType, List<Integer>> npcTypeIdList = new HashMap<>();
+    private static final NPCStorage INSTANCE = new NPCStorage();
+   private final ConcurrentHashMap<NPCType, List<Integer>> npcTypeIdList = new ConcurrentHashMap<>();
 
    private NPCStorage() {
       super("NPCs");
-      Arrays.stream(NPCStorage.NPCType.values()).forEach((var1) -> this.npcTypeIdList.put(var1, null));
-   }
-
-   public List<Integer> getIDList(NPCStorage.NPCType var1) {
-      List<Integer> var2 = this.npcTypeIdList.get(var1);
-      if (var2 != null) {
-         return var2;
-      } else {
-         ArrayList<Integer> var5 = new ArrayList<>();
-
-          for (String var4 : this.getStringList(var1.getPath())) {
-              var5.add(Integer.parseInt(var4));
-          }
-
-         this.npcTypeIdList.put(var1, var5);
-         return var5;
-      }
-   }
-
-   public void add(NPCStorage.NPCType var1, Integer var2) {
-      List<Integer> var3 = this.getIDList(var1);
-      var3.add(var2);
-      this.npcTypeIdList.put(var1, var3);
-      this.saveToFile(var1, var3);
-   }
-
-   public boolean contains(NPCStorage.NPCType var1, Integer var2) {
-      return this.getIDList(var1).contains(var2);
-   }
-
-   public boolean isEmpty(NPCStorage.NPCType var1) {
-      return this.getIDList(var1).isEmpty();
-   }
-
-   public NPCStorage.NPCType getNPCType(Integer var1) {
-      NPCStorage.NPCType[] var2 = NPCStorage.NPCType.values();
-
-       for (NPCType var5 : var2) {
-           if (this.contains(var5, var1)) {
-               return var5;
-           }
-       }
-
-      return null;
-   }
-
-   public void remove(NPCStorage.NPCType var1, Integer var2) {
-      List<Integer> var3 = this.getIDList(var1);
-      var3.remove(var2);
-      this.npcTypeIdList.put(var1, var3);
-      this.saveToFile(var1, var3);
-   }
-
-   private void saveToFile(NPCStorage.NPCType var1, List<Integer> var2) {
-      ArrayList<String> var3 = new ArrayList<>();
-      var2.forEach((var1x) -> var3.add(String.valueOf(var1x)));
-      this.set(var1.getPath(), var3);
+      Arrays.stream(NPCType.values()).forEach(type -> this.npcTypeIdList.put(type, null));
    }
 
    public static NPCStorage getInstance() {
-      if (instance == null) {
-         instance = new NPCStorage();
-      }
+      return INSTANCE;
+   }
 
-      return instance;
+   public List<Integer> getIDList(NPCType type) {
+      return npcTypeIdList.computeIfAbsent(type, t -> {
+         List<Integer> ids = new ArrayList<>();
+         for (String id : this.getStringList(t.getPath())) {
+            ids.add(Integer.parseInt(id));
+         }
+         return ids;
+      });
+   }
+
+   public void add(NPCType type, Integer id) {
+      List<Integer> ids = this.getIDList(type);
+      ids.add(id);
+      this.npcTypeIdList.put(type, ids);
+      this.saveToFile(type, ids);
+   }
+
+   public boolean contains(NPCType type, Integer id) {
+      return this.getIDList(type).contains(id);
+   }
+
+   public boolean isEmpty(NPCType type) {
+      return this.getIDList(type).isEmpty();
+   }
+
+   public NPCType getNPCType(Integer id) {
+      return Arrays.stream(NPCType.values())
+              .filter(type -> this.contains(type, id))
+              .findFirst()
+              .orElse(null);
+   }
+
+   public void remove(NPCType type, Integer id) {
+      List<Integer> ids = this.getIDList(type);
+      ids.remove(id);
+      this.npcTypeIdList.put(type, ids);
+      this.saveToFile(type, ids);
+   }
+
+   private void saveToFile(NPCType type, List<Integer> ids) {
+      List<String> idStrings = new ArrayList<>();
+      ids.forEach(id -> idStrings.add(String.valueOf(id)));
+      this.set(type.getPath(), idStrings);
    }
 
    public enum NPCType {
@@ -86,16 +73,16 @@ public class NPCStorage extends BambooFile {
       MLG("MLG.IDs", Language.MessagesEnum.NPC_HOLOGRAM_MLG, "[mlg_player]", Language.MessagesEnum.NPC_TYPE_MLG),
       FIREBALL_TNT_JUMPING("Fireball-TNT-Jumping.IDs", Language.MessagesEnum.NPC_HOLOGRAM_FIREBALL_TNT_JUMPING, "[fireball_tnt_jumping_player]", Language.MessagesEnum.NPC_TYPE_FIREBALL_TNT_JUMPING);
 
-      final String path;
-      final String placeholder;
-      final Language.MessagesEnum messagesEnum;
-      final Language.MessagesEnum type;
+      private final String path;
+      private final String placeholder;
+      private final Language.MessagesEnum messagesEnum;
+      private final Language.MessagesEnum type;
 
-      NPCType(String var3, Language.MessagesEnum var4, String var5, Language.MessagesEnum var6) {
-         this.path = var3;
-         this.messagesEnum = var4;
-         this.placeholder = var5;
-         this.type = var6;
+      NPCType(String path, Language.MessagesEnum messagesEnum, String placeholder, Language.MessagesEnum type) {
+         this.path = path;
+         this.messagesEnum = messagesEnum;
+         this.placeholder = placeholder;
+         this.type = type;
       }
 
       public String getPath() {
@@ -113,6 +100,5 @@ public class NPCStorage extends BambooFile {
       public Language.MessagesEnum getType() {
          return this.type;
       }
-
    }
 }

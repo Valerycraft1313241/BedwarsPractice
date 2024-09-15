@@ -6,55 +6,62 @@ import com.github.zandy.bamboolib.utils.BambooUtils;
 import com.github.zandy.bedwarspractice.files.language.Language;
 import com.github.zandy.bedwarspractice.utils.BWPUtils;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
-import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
+
 public class WESupport {
-   private static WESupport instance = null;
-   private static final HashMap<World, com.sk89q.worldedit.world.World> worldMap = new HashMap<>();
+   private static final long SAVE_DELAY_TICKS = 30L;
+   private static final long COPY_DELAY_TICKS = 50L;
+   private static final long DELETE_DELAY_TICKS = 40L;
+   private static final ConcurrentHashMap<World, com.sk89q.worldedit.world.World> worldMap = new ConcurrentHashMap<>();
+   private static final WESupport INSTANCE = new WESupport();
    private final String pluginName = BambooUtils.isPluginEnabled("FastAsyncWorldEdit") ? "FastAsyncWorldEdit" : "WorldEdit";
 
-   public static com.sk89q.worldedit.world.World getWEWorld(World var0) {
-      com.sk89q.worldedit.world.World var1 = worldMap.getOrDefault(var0, new BukkitWorld(var0));
-      if (!worldMap.containsKey(var0)) {
-         worldMap.put(var0, var1);
-      }
-
-      return var1;
-   }
-
-   public void saveSchematic(Player var1, String var2) {
-      var1.sendMessage(" ");
-      var1.sendMessage(" ");
-      var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var1.getUniqueId()));
-      var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_SAVE_STARTED.getString(var1.getUniqueId()));
-      var1.performCommand("/copy");
-      JavaPlugin var3 = BambooLib.getPluginInstance();
-      Bukkit.getScheduler().runTaskLater(var3, () -> {
-         var1.performCommand("/schem save " + var2);
-         Bukkit.getScheduler().runTaskLater(var3, () -> {
-            try {
-               File var3x = new File("plugins/" + BWPUtils.getDirectory() + "/schematics/", var2 + BWPUtils.getExtension());
-               FileUtils.copyFile(var3x, new File("plugins/BedWarsPractice/Schematics/", var2 + BWPUtils.getExtension()));
-               Bukkit.getScheduler().runTaskLater(var3, () -> FileUtils.deleteQuietly(var3x), 40L);
-            } catch (Exception var4) {
-               throw new BambooException(Arrays.asList("The plugin couldn't copy the schematic '" + var2 + "' from " + this.pluginName + "'s folder.", "Please, copy it manually from:", "plugins/" + this.pluginName + "/schematics", "to:", "plugins/BedWarsPractice/Schematics/"));
-            }
-         }, 50L);
-      }, 30L);
+   private WESupport() {
+      // Private constructor to prevent instantiation
    }
 
    public static WESupport getInstance() {
-      if (instance == null) {
-         instance = new WESupport();
-      }
+      return INSTANCE;
+   }
 
-      return instance;
+   public static com.sk89q.worldedit.world.World getWEWorld(World world) {
+      return worldMap.computeIfAbsent(world, BukkitWorld::new);
+   }
+
+   public void saveSchematic(Player player, String schematicName) {
+      player.sendMessage(" ");
+      player.sendMessage(" ");
+      player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+      player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_SAVE_STARTED.getString(player.getUniqueId()));
+      player.performCommand("/copy");
+      JavaPlugin plugin = BambooLib.getPluginInstance();
+      Bukkit.getScheduler().runTaskLater(plugin, () -> {
+         player.performCommand("/schem save " + schematicName);
+         Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            try {
+               File sourceFile = new File("plugins/" + BWPUtils.getDirectory() + "/schematics/", schematicName + BWPUtils.getExtension());
+               File destinationFile = new File("plugins/BedWarsPractice/Schematics/", schematicName + BWPUtils.getExtension());
+               FileUtils.copyFile(sourceFile, destinationFile);
+               Bukkit.getScheduler().runTaskLater(plugin, () -> FileUtils.deleteQuietly(sourceFile), DELETE_DELAY_TICKS);
+            } catch (Exception e) {
+               throw new BambooException(Arrays.asList(
+                       "The plugin couldn't copy the schematic '" + schematicName + "' from " + pluginName + "'s folder.",
+                       "Please, copy it manually from:",
+                       "plugins/" + pluginName + "/schematics",
+                       "to:",
+                       "plugins/BedWarsPractice/Schematics/"
+               ));
+            }
+         }, COPY_DELAY_TICKS);
+      }, SAVE_DELAY_TICKS);
    }
 }
