@@ -32,6 +32,11 @@
       <option name="url" value="https://hub.spigotmc.org/nexus/content/repositories/snapshots/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="andrei1058-repo" />
+      <option name="name" value="andrei1058-repo" />
+      <option name="url" value="https://repo.andrei1058.dev/releases/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="placeholderapi" />
       <option name="name" value="placeholderapi" />
       <option name="url" value="https://repo.extendedclip.com/content/repositories/placeholderapi/" />
