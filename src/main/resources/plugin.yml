@@ -1,0 +1,20 @@
+# Auto-generated plugin.yml, generated at 2023/02/19 20:19:57 by org.bukkit.plugin.java.annotation.PluginAnnotationProcessor
+
+main: com.github.zandy.bedwarspractice.Main
+name: BedWarsPractice
+version: '1.7'
+description: A BedWars Practice plugin to train your players.
+author: Zandy
+depend:
+- WorldEdit
+softdepend:
+- FastAsyncWorldEdit
+- AsyncWorldEdit
+- BedWars1058
+- ViaVersion
+- SlimeWorldManager
+- PlaceholderAPI
+- Citizens
+commands: {}
+permissions: {}
+api-version: '1.18'
