@@ -9,6 +9,7 @@ import com.github.zandy.bamboolib.versionsupport.sound.Sounds;
 import com.github.zandy.bedwarspractice.api.events.practice.PracticeQuitEvent;
 import com.github.zandy.bedwarspractice.api.events.practice.PracticeSwitchEvent;
 import com.github.zandy.bedwarspractice.engine.GameEngine;
+import com.github.zandy.bedwarspractice.engine.WorldEngine;
 import com.github.zandy.bedwarspractice.engine.practice.bridging.BridgingMode;
 import com.github.zandy.bedwarspractice.engine.practice.fireballtntjumping.FireballTNTJumpingMode;
 import com.github.zandy.bedwarspractice.engine.practice.mlg.MLGMode;
@@ -149,7 +150,7 @@ public class ModeSelectorGUI implements Listener {
 
     @EventHandler
     private void onPlayerInteract(PlayerInteractEvent e) {
-        if (!e.getPlayer().getWorld().getName().equalsIgnoreCase("bedwars_practice")) return;
+        if(!WorldEngine.getInstance().getPracticeWorld().equals(e.getPlayer().getWorld())) return;
         if (e.getAction().name().contains("RIGHT")) {
             Player player = e.getPlayer();
             if (player.getItemInHand().getType().equals(this.modeSelectorMaterial)) {

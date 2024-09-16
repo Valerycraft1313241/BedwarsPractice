@@ -257,6 +257,13 @@ public class FireballTNTJumpingMode implements Listener {
         }
     }
 
+    void pushAway(Player player, Location l, double hf, double rf) {
+        Location loc = player.getLocation();
+        double hf1 = Math.max(-4.0, Math.min(4.0, hf));
+        double rf1 = Math.max(-4.0, Math.min(4.0, -1.0 * rf));
+        player.setVelocity(l.toVector().subtract(loc.toVector()).normalize().multiply(rf1).setY(hf1));
+    }
+
     @EventHandler
     private void onFireballExplosion(EntityExplodeEvent var1) {
         Entity var2 = var1.getEntity();
@@ -270,17 +277,9 @@ public class FireballTNTJumpingMode implements Listener {
                         .filter((var0) -> var0.getType().equals(EntityType.PLAYER))
                         .forEach(
                                 (var1x) -> {
-                                    // Get the vector from the knocked entity to the source entity
-                                    Vector knockbackDirection = var3.toVector().subtract(var1x.getLocation().toVector()).normalize();
-
-                                    // Get the player's current velocity
-                                    Vector playerMomentum = var1x.getVelocity();
-
-                                    // Modify the knockback to incorporate player's momentum
-                                    Vector finalKnockback = knockbackDirection.multiply(-1.1D).setY(1.4D).add(playerMomentum.multiply(0.5D)); // Adjust multiplier as needed
-
-                                    // Apply the knockback to the player
-                                    var1x.setVelocity(finalKnockback);
+                                    double heightForce = 1.25;
+                                    double radiusForce = 1.6;
+                                    this.pushAway((Player) var1x, var3, heightForce, radiusForce);
                                 }
                         );
 
