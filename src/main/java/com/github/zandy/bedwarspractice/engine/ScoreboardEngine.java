@@ -14,91 +14,91 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class ScoreboardEngine implements Listener {
-   private static ScoreboardEngine instance = null;
+   private static volatile ScoreboardEngine instance = null;
    private final HashMap<UUID, Scoreboard> sidebarMap = new HashMap<>();
 
    private ScoreboardEngine() {
    }
 
-   public void init() {
-      BambooUtils.registerEvent(this);
-      Bukkit.getScheduler().runTaskTimerAsynchronously(BambooLib.getPluginInstance(), () -> (new HashMap<>(this.sidebarMap)).forEach((var0, var1) -> {
-         if (GameEngine.getInstance().getPracticeTypeMap().containsKey(var0)) {
-            var1.refresh();
+   public static ScoreboardEngine getInstance() {
+      if (instance == null) {
+         synchronized (ScoreboardEngine.class) {
+            if (instance == null) {
+               instance = new ScoreboardEngine();
+            }
          }
-
-      }), 0L, Settings.SettingsEnum.SCOREBOARD_REFRESH_TICK.getInt());
+      }
+      return instance;
    }
 
-   public void sendSidebar(Player var1, GameEngine.PracticeType var2) {
+   public void init() {
+      BambooUtils.registerEvent(this);
+      Bukkit.getScheduler().runTaskTimerAsynchronously(BambooLib.getPluginInstance(), () -> {
+         new HashMap<>(this.sidebarMap).forEach((uuid, scoreboard) -> {
+            if (GameEngine.getInstance().getPracticeTypeMap().containsKey(uuid)) {
+               scoreboard.refresh();
+            }
+         });
+      }, 0L, Settings.SettingsEnum.SCOREBOARD_REFRESH_TICK.getInt());
+   }
+
+   public void sendSidebar(Player player, GameEngine.PracticeType practiceType) {
       if (Main.getBedWarsAPI() != null) {
-         Main.getBedWarsAPI().getScoreboardUtil().removePlayerScoreboard(var1);
+         Main.getBedWarsAPI().getScoreboardUtil().removePlayerScoreboard(player);
       }
 
-      UUID var3 = var1.getUniqueId();
-      if (this.sidebarMap.containsKey(var3)) {
-         this.sidebarMap.get(var3).destroy();
+      UUID uuid = player.getUniqueId();
+      if (this.sidebarMap.containsKey(uuid)) {
+         this.sidebarMap.get(uuid).destroy();
       }
 
-      List<String> var4;
-      HashMap<String, Callable<String>> var5;
-      switch(var2) {
-      case BRIDGING:
-         BridgingMode var8 = BridgingMode.getInstance();
-         var4 = var8.getScoreboardLines(var3);
-         var5 = var8.getPlaceholders(var3);
-         break;
-      case MLG:
-         MLGMode var7 = MLGMode.getInstance();
-         var4 = var7.getScoreboardLines(var3);
-         var5 = var7.getPlaceholders(var3);
-         break;
-      case FIREBALL_TNT_JUMPING:
-         FireballTNTJumpingMode var6 = FireballTNTJumpingMode.getInstance();
-         var4 = var6.getScoreboardLines(var3);
-         var5 = var6.getPlaceholders(var3);
-         break;
-      default:
-         return;
+      List<String> lines;
+      HashMap<String, Callable<String>> placeholders;
+      switch (practiceType) {
+         case BRIDGING:
+            BridgingMode bridgingMode = BridgingMode.getInstance();
+            lines = bridgingMode.getScoreboardLines(uuid);
+            placeholders = bridgingMode.getPlaceholders(uuid);
+            break;
+         case MLG:
+            MLGMode mlgMode = MLGMode.getInstance();
+            lines = mlgMode.getScoreboardLines(uuid);
+            placeholders = mlgMode.getPlaceholders(uuid);
+            break;
+         case FIREBALL_TNT_JUMPING:
+            FireballTNTJumpingMode fireballTNTJumpingMode = FireballTNTJumpingMode.getInstance();
+            lines = fireballTNTJumpingMode.getScoreboardLines(uuid);
+            placeholders = fireballTNTJumpingMode.getPlaceholders(uuid);
+            break;
+         default:
+            return;
       }
 
-      this.sidebarMap.put(var3, new Scoreboard(var1, Language.MessagesEnum.GAME_SCOREBOARD_TITLE.getString(var3), var4, var5));
+      this.sidebarMap.put(uuid, new Scoreboard(player, Language.MessagesEnum.GAME_SCOREBOARD_TITLE.getString(uuid), lines, placeholders));
    }
 
    @EventHandler
-   private void onPracticeQuit(PracticeQuitEvent var1) {
-      UUID var2 = var1.getPlayer().getUniqueId();
-      if (this.sidebarMap.containsKey(var2)) {
-         Scoreboard var3 = this.sidebarMap.get(var2);
-         var3.destroy();
-         this.sidebarMap.remove(var2);
+   private void onPracticeQuit(PracticeQuitEvent event) {
+      UUID uuid = event.getPlayer().getUniqueId();
+      if (this.sidebarMap.containsKey(uuid)) {
+         Scoreboard scoreboard = this.sidebarMap.get(uuid);
+         scoreboard.destroy();
+         this.sidebarMap.remove(uuid);
          if (Main.getBedWarsAPI() != null) {
-            Main.getBedWarsAPI().getScoreboardUtil().givePlayerScoreboard(var1.getPlayer(), true);
+            Main.getBedWarsAPI().getScoreboardUtil().givePlayerScoreboard(event.getPlayer(), true);
          }
-
-
       }
    }
 
-   public void unload(UUID var1) {
-      if (this.sidebarMap.containsKey(var1)) {
-         this.sidebarMap.get(var1).destroy();
+   public void unload(UUID uuid) {
+      if (this.sidebarMap.containsKey(uuid)) {
+         this.sidebarMap.get(uuid).destroy();
       }
-
-   }
-
-   public static ScoreboardEngine getInstance() {
-      if (instance == null) {
-         instance = new ScoreboardEngine();
-      }
-
-      return instance;
    }
 }
