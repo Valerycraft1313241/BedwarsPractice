@@ -13,45 +13,45 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 public class SchematicCreateModule implements Listener {
-   private static SchematicCreateModule instance = null;
+    private static SchematicCreateModule instance = null;
 
-   private SchematicCreateModule() {
-      BambooUtils.registerEvent(this);
-   }
+    private SchematicCreateModule() {
+        BambooUtils.registerEvent(this);
+    }
 
-   public void execute(Player var1) {
-      World var2 = (new SchematicWorldCreator()).getWorld();
-      Location var3 = var2.getSpawnLocation();
-      int var4 = var3.getBlockX();
-      int var5 = var3.getBlockY();
-      int var6 = var3.getBlockZ();
+    public static SchematicCreateModule getInstance() {
+        if (instance == null) {
+            instance = new SchematicCreateModule();
+        }
 
-      for(int var7 = var4 - 1; var7 <= var4 + 1; ++var7) {
-         for(int var8 = var6 - 1; var8 <= var6 + 1; ++var8) {
-            var2.getBlockAt(var7, var5, var8).setType(Material.BEDROCK);
-         }
-      }
+        return instance;
+    }
 
-      var1.teleport(var3.clone().add(0.5D, 1.0D, 0.5D));
-      Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> {
-         var1.sendMessage(" ");
-         var1.sendMessage(" ");
-         var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var1.getUniqueId()));
-         var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_CREATE_INFO_TELEPORTED.getString(var1.getUniqueId()));
+    public void execute(Player var1) {
+        World var2 = (new SchematicWorldCreator()).getWorld();
+        Location var3 = var2.getSpawnLocation();
+        int var4 = var3.getBlockX();
+        int var5 = var3.getBlockY();
+        int var6 = var3.getBlockZ();
 
-          for (String var2x : Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_CREATE_INFO_TUTORIAL.getStringList(var1.getUniqueId())) {
-              var1.sendMessage(var2x.replace("[spigotLink]", "https://bit.ly/3f4lyvF").replace("[youtubeLink]", "https://bit.ly/3BSNJXn"));
-          }
+        for (int var7 = var4 - 1; var7 <= var4 + 1; ++var7) {
+            for (int var8 = var6 - 1; var8 <= var6 + 1; ++var8) {
+                var2.getBlockAt(var7, var5, var8).setType(Material.BEDROCK);
+            }
+        }
 
-         Sounds.PLAYER_LEVELUP.getSound().play(var1, 3.0F, 3.0F);
-      }, 10L);
-   }
+        var1.teleport(var3.clone().add(0.5D, 1.0D, 0.5D));
+        Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> {
+            var1.sendMessage(" ");
+            var1.sendMessage(" ");
+            var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var1.getUniqueId()));
+            var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_CREATE_INFO_TELEPORTED.getString(var1.getUniqueId()));
 
-   public static SchematicCreateModule getInstance() {
-      if (instance == null) {
-         instance = new SchematicCreateModule();
-      }
+            for (String var2x : Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_CREATE_INFO_TUTORIAL.getStringList(var1.getUniqueId())) {
+                var1.sendMessage(var2x.replace("[spigotLink]", "https://bit.ly/3f4lyvF").replace("[youtubeLink]", "https://bit.ly/3BSNJXn"));
+            }
 
-      return instance;
-   }
+            Sounds.PLAYER_LEVELUP.getSound().play(var1, 3.0F, 3.0F);
+        }, 10L);
+    }
 }

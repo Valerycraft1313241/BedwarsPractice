@@ -2,66 +2,66 @@ package com.github.zandy.bedwarspractice.files;
 
 import com.github.zandy.bedwarspractice.utils.BWPUtils;
 import com.github.zandy.bedwarspractice.utils.SchematicChecker;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class SetupData {
-   private static SetupData instance = null;
-   private boolean setupDoneSchematics = false;
-   private boolean setupDoneConfigurations = false;
-   private final List<String> requiredSchematics = new ArrayList<>(SchematicChecker.getRequiredSchematics(true));
-   private final List<String> requiredConfigurations = new ArrayList<>(SchematicChecker.getRequiredSchematics(false));
+    private static SetupData instance = null;
+    private final List<String> requiredSchematics = new ArrayList<>(SchematicChecker.getRequiredSchematics(true));
+    private final List<String> requiredConfigurations = new ArrayList<>(SchematicChecker.getRequiredSchematics(false));
+    private boolean setupDoneSchematics = false;
+    private boolean setupDoneConfigurations = false;
 
-   private SetupData() {
-   }
+    private SetupData() {
+    }
 
-   public void init() {
-      ArrayList<String> var1 = new ArrayList<>(this.requiredSchematics);
-      File var2 = new File("plugins/BedWarsPractice/Schematics/");
-      if (var2.exists()) {
-         Arrays.stream(var2.listFiles()).forEach((var1x) -> var1.remove(var1x.getName().replace(BWPUtils.getExtension(), "")));
-      }
+    public static SetupData getInstance() {
+        if (instance == null) {
+            instance = new SetupData();
+        }
 
-      if (var1.isEmpty()) {
-         this.setupDoneSchematics = true;
-      }
+        return instance;
+    }
 
-      ArrayList<String> var3 = new ArrayList<>(this.requiredConfigurations);
-      var3.remove("FIREBALL-TNT-JUMPING");
-      File var4 = new File("plugins/BedWarsPractice/Data/");
-      if (var4.exists()) {
-         Arrays.stream(var4.listFiles()).forEach((var1x) -> var3.remove(var1x.getName().replace(".yml", "")));
-      }
+    public void init() {
+        ArrayList<String> missingSchematics = new ArrayList<>(this.requiredSchematics);
+        File schematicsDirectory = new File("plugins/BedWarsPractice/Schematics/");
+        if (schematicsDirectory.exists()) {
+            Arrays.stream(schematicsDirectory.listFiles()).forEach((file) -> missingSchematics.remove(file.getName().replace(BWPUtils.getExtension(), "")));
+        }
 
-      if (var3.isEmpty()) {
-         this.setupDoneConfigurations = true;
-      }
+        if (missingSchematics.isEmpty()) {
+            this.setupDoneSchematics = true;
+        }
 
-   }
+        ArrayList<String> missingConfigurations = new ArrayList<>(this.requiredConfigurations);
+        missingConfigurations.remove("FIREBALL-TNT-JUMPING");
+        File configurationsDirectory = new File("plugins/BedWarsPractice/Data/");
+        if (configurationsDirectory.exists()) {
+            Arrays.stream(configurationsDirectory.listFiles()).forEach((file) -> missingConfigurations.remove(file.getName().replace(".yml", "")));
+        }
 
-   public static SetupData getInstance() {
-      if (instance == null) {
-         instance = new SetupData();
-      }
+        if (missingConfigurations.isEmpty()) {
+            this.setupDoneConfigurations = true;
+        }
+    }
 
-      return instance;
-   }
+    public boolean isSetupDoneSchematics() {
+        return this.setupDoneSchematics;
+    }
 
-   public boolean isSetupDoneSchematics() {
-      return this.setupDoneSchematics;
-   }
+    public void setSetupDoneSchematics(boolean setupDoneSchematics) {
+        this.setupDoneSchematics = setupDoneSchematics;
+    }
 
-   public boolean isSetupDoneConfigurations() {
-      return this.setupDoneConfigurations;
-   }
+    public boolean isSetupDoneConfigurations() {
+        return this.setupDoneConfigurations;
+    }
 
-   public void setSetupDoneSchematics(boolean var1) {
-      this.setupDoneSchematics = var1;
-   }
-
-   public void setSetupDoneConfigurations(boolean var1) {
-      this.setupDoneConfigurations = var1;
-   }
+    public void setSetupDoneConfigurations(boolean setupDoneConfigurations) {
+        this.setupDoneConfigurations = setupDoneConfigurations;
+    }
 }

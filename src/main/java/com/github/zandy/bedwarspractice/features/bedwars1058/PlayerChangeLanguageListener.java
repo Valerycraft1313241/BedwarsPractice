@@ -9,15 +9,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class PlayerChangeLanguageListener implements Listener {
-   public PlayerChangeLanguageListener() {
-      BambooUtils.registerEvent(this);
-   }
+    public PlayerChangeLanguageListener() {
+        BambooUtils.registerEvent(this);
+    }
 
-   @EventHandler
-   private void onPlayerChangeLanguage(PlayerLangChangeEvent var1) {
-      String var2 = var1.getOldLang().toUpperCase();
-      String var3 = var1.getNewLang().toUpperCase();
-      Language.getInstance().getPlayerLocale().put(var1.getPlayer().getUniqueId(), var3);
-      Bukkit.getPluginManager().callEvent(new PlayerLanguageChangeEvent(var1.getPlayer(), var2, var3));
-   }
+    @EventHandler
+    private void onPlayerChangeLanguage(PlayerLangChangeEvent var1) {
+        String var2 = var1.getOldLang().toUpperCase();
+        String var3 = var1.getNewLang().toUpperCase();
+        Language.getInstance().getPlayerLocale().put(var1.getPlayer().getUniqueId(), var3);
+        Bukkit.getPluginManager().callEvent(new PlayerLanguageChangeEvent(var1.getPlayer(), var2, var3));
+    }
 }

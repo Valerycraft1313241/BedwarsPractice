@@ -8,41 +8,40 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 public class SWMSupport {
-   private static SWMSupport instance = null;
-   private final SlimePlugin slimePlugin = (SlimePlugin)Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
-   private final SlimeLoader loader;
+    private static SWMSupport instance = null;
+    private final SlimePlugin slimePlugin = (SlimePlugin) Bukkit.getPluginManager().getPlugin("SlimeWorldManager");
+    private final SlimeLoader slimeLoader;
 
-   public SWMSupport() {
-      this.loader = this.slimePlugin.getLoader("file");
-   }
+    public SWMSupport() {
+        this.slimeLoader = this.slimePlugin.getLoader("file");
+    }
 
-   public World generateWorld() {
-      SlimePropertyMap var1 = new SlimePropertyMap();
-      var1.setInt(SlimeProperties.SPAWN_X, 0);
-      var1.setInt(SlimeProperties.SPAWN_Y, 100);
-      var1.setInt(SlimeProperties.SPAWN_Z, 0);
+    public static SWMSupport getInstance() {
+        if (instance == null) {
+            instance = new SWMSupport();
+        }
 
-      try {
-         this.slimePlugin.generateWorld(this.slimePlugin.createEmptyWorld(this.loader, "bedwars_practice", true, var1));
-      } catch (Exception ignored) {
-      }
+        return instance;
+    }
 
-      return Bukkit.getWorld("bedwars_practice");
-   }
+    public World generateWorld() {
+        SlimePropertyMap slimePropertyMap = new SlimePropertyMap();
+        slimePropertyMap.setInt(SlimeProperties.SPAWN_X, 0);
+        slimePropertyMap.setInt(SlimeProperties.SPAWN_Y, 100);
+        slimePropertyMap.setInt(SlimeProperties.SPAWN_Z, 0);
 
-   public void removeWorld() {
-      try {
-         this.loader.deleteWorld("bedwars_practice");
-      } catch (Exception ignored) {
-      }
+        try {
+            this.slimePlugin.generateWorld(this.slimePlugin.createEmptyWorld(this.slimeLoader, "bedwars_practice", true, slimePropertyMap));
+        } catch (Exception ignored) {
+        }
 
-   }
+        return Bukkit.getWorld("bedwars_practice");
+    }
 
-   public static SWMSupport getInstance() {
-      if (instance == null) {
-         instance = new SWMSupport();
-      }
-
-      return instance;
-   }
+    public void removeWorld() {
+        try {
+            this.slimeLoader.deleteWorld("bedwars_practice");
+        } catch (Exception ignored) {
+        }
+    }
 }

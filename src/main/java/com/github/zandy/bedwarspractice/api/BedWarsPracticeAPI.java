@@ -8,48 +8,49 @@ import com.github.zandy.bedwarspractice.engine.practice.mlg.MLGMode;
 import com.github.zandy.bedwarspractice.features.stats.PlayerStats;
 import com.github.zandy.bedwarspractice.features.stats.Stats;
 import com.github.zandy.bedwarspractice.files.language.Language;
-import java.util.UUID;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
 public class BedWarsPracticeAPI {
-   private static BedWarsPracticeAPI instance = null;
+    private static BedWarsPracticeAPI instance = null;
 
-   private BedWarsPracticeAPI() {
-   }
+    private BedWarsPracticeAPI() {
+    }
 
-   public double getStatistic(UUID var1, Stats.StatsType var2) {
-      return PlayerStats.get(var1).get(var2);
-   }
+    public static BedWarsPracticeAPI getInstance() {
+        if (instance == null) {
+            instance = new BedWarsPracticeAPI();
+        }
 
-   public String getISO(UUID var1) {
-      return Language.getInstance().getPlayerLocale().get(var1);
-   }
+        return instance;
+    }
 
-   public double getAPIVersion() {
-      return 1.3D;
-   }
+    public double getStatistic(UUID var1, Stats.StatsType var2) {
+        return PlayerStats.get(var1).get(var2);
+    }
 
-   public PracticeCreator joinPractice(@NotNull Player var1, @NotNull GameEngine.PracticeType var2) {
+    public String getISO(UUID var1) {
+        return Language.getInstance().getPlayerLocale().get(var1);
+    }
 
-       switch(var2) {
-      case BRIDGING:
-         return BridgingMode.getInstance().create(var1);
-      case MLG:
-         return MLGMode.getInstance().create(var1);
-      case FIREBALL_TNT_JUMPING:
-         return FireballTNTJumpingMode.getInstance().create(var1);
-      default:
-         return null;
-      }
-   }
+    public double getAPIVersion() {
+        return 1.3D;
+    }
 
-   public static BedWarsPracticeAPI getInstance() {
-      if (instance == null) {
-         instance = new BedWarsPracticeAPI();
-      }
+    public PracticeCreator joinPractice(@NotNull Player var1, @NotNull GameEngine.PracticeType var2) {
 
-      return instance;
-   }
+        switch (var2) {
+            case BRIDGING:
+                return BridgingMode.getInstance().create(var1);
+            case MLG:
+                return MLGMode.getInstance().create(var1);
+            case FIREBALL_TNT_JUMPING:
+                return FireballTNTJumpingMode.getInstance().create(var1);
+            default:
+                return null;
+        }
+    }
 
 }

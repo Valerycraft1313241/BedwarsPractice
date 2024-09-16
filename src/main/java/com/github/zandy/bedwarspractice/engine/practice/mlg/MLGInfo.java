@@ -4,8 +4,6 @@ import com.github.zandy.bedwarspractice.api.utils.data.MLGData;
 import com.github.zandy.bedwarspractice.engine.practice.utils.PlatformGenerator;
 import com.github.zandy.bedwarspractice.utils.FinishPositions;
 import com.sk89q.worldedit.regions.CuboidRegion;
-import java.util.HashMap;
-import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,159 +12,162 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 public class MLGInfo {
-   private static final HashMap<UUID, MLGInfo> mlgInfoMap = new HashMap<>();
-   private final UUID uuid;
-   private CuboidRegion cuboidRegion;
-   private MLGEnums.MLGSizeType sizeType;
-   private MLGEnums.MLGHeightType heightType;
-   private MLGEnums.MLGPositionType positionType;
-   private MLGEnums.MLGTallnessType tallnessType;
-   private MLGEnums.MLGItemType itemType;
-   private MLGEnums.MLGShuffleType shuffleType;
-   private PlatformGenerator platformGenerator;
-   private BukkitTask jumpTask = null;
-   private Block waterPlaced = null;
-   private boolean shuffleItem = false;
+    private static final HashMap<UUID, MLGInfo> mlgInfoMap = new HashMap<>();
+    private final UUID uuid;
+    private CuboidRegion cuboidRegion;
+    private MLGEnums.MLGSizeType sizeType;
+    private MLGEnums.MLGHeightType heightType;
+    private MLGEnums.MLGPositionType positionType;
+    private MLGEnums.MLGTallnessType tallnessType;
+    private MLGEnums.MLGItemType itemType;
+    private MLGEnums.MLGShuffleType shuffleType;
+    private PlatformGenerator platformGenerator;
+    private BukkitTask jumpTask = null;
+    private Block waterPlaced = null;
+    private boolean shuffleItem = false;
 
-   public MLGInfo(UUID var1) {
-      this.uuid = var1;
-      this.sizeType = MLGEnums.MLGSizeType.LARGE;
-      this.heightType = MLGEnums.MLGHeightType.HIGH;
-      this.positionType = MLGEnums.MLGPositionType.CENTER;
-      this.tallnessType = MLGEnums.MLGTallnessType.BLOCKS_1;
-      this.itemType = MLGEnums.MLGItemType.WATER;
-      this.shuffleType = MLGEnums.MLGShuffleType.NONE;
-      mlgInfoMap.put(var1, this);
-   }
+    public MLGInfo(UUID var1) {
+        this.uuid = var1;
+        this.sizeType = MLGEnums.MLGSizeType.LARGE;
+        this.heightType = MLGEnums.MLGHeightType.HIGH;
+        this.positionType = MLGEnums.MLGPositionType.CENTER;
+        this.tallnessType = MLGEnums.MLGTallnessType.BLOCKS_1;
+        this.itemType = MLGEnums.MLGItemType.WATER;
+        this.shuffleType = MLGEnums.MLGShuffleType.NONE;
+        mlgInfoMap.put(var1, this);
+    }
 
-   public void setCuboidRegion(Location var1) {
-      this.cuboidRegion = (new FinishPositions("MLG", var1)).getRegion();
-   }
+    public static MLGInfo get(@NotNull UUID var0) {
 
-   public void removeJumpTask() {
-      if (this.jumpTask != null) {
-         this.jumpTask.cancel();
-         this.jumpTask = null;
-      }
-   }
+        return mlgInfoMap.get(var0);
+    }
 
-   public void removeWaterPlaced() {
-      if (this.waterPlaced != null) {
-         this.waterPlaced.setType(Material.AIR);
-         this.waterPlaced = null;
-      }
-   }
+    public static boolean contains(@NotNull UUID var0) {
 
-   public void removeShuffle() {
-      this.shuffleItem = false;
-   }
+        return mlgInfoMap.containsKey(var0);
+    }
 
-   public Player getPlayer() {
-      return Bukkit.getPlayer(this.uuid);
-   }
+    public static void remove(@NotNull UUID var0) {
 
-   public MLGData toData() {
-      return new MLGData(this);
-   }
+        mlgInfoMap.remove(var0);
+    }
 
-   public static MLGInfo get(@NotNull UUID var0) {
+    public static HashMap<UUID, MLGInfo> getMlgInfoMap() {
+        return mlgInfoMap;
+    }
 
-       return mlgInfoMap.get(var0);
-   }
+    public void removeJumpTask() {
+        if (this.jumpTask != null) {
+            this.jumpTask.cancel();
+            this.jumpTask = null;
+        }
+    }
 
-   public static boolean contains(@NotNull UUID var0) {
+    public void removeWaterPlaced() {
+        if (this.waterPlaced != null) {
+            this.waterPlaced.setType(Material.AIR);
+            this.waterPlaced = null;
+        }
+    }
 
-       return mlgInfoMap.containsKey(var0);
-   }
+    public void removeShuffle() {
+        this.shuffleItem = false;
+    }
 
-   public static void remove(@NotNull UUID var0) {
+    public Player getPlayer() {
+        return Bukkit.getPlayer(this.uuid);
+    }
 
-       mlgInfoMap.remove(var0);
-   }
+    public MLGData toData() {
+        return new MLGData(this);
+    }
 
-   public static HashMap<UUID, MLGInfo> getMlgInfoMap() {
-      return mlgInfoMap;
-   }
+    public CuboidRegion getCuboidRegion() {
+        return this.cuboidRegion;
+    }
 
-   public CuboidRegion getCuboidRegion() {
-      return this.cuboidRegion;
-   }
+    public void setCuboidRegion(Location var1) {
+        this.cuboidRegion = (new FinishPositions("MLG", var1)).getRegion();
+    }
 
-   public void setSizeType(MLGEnums.MLGSizeType var1) {
-      this.sizeType = var1;
-   }
+    public MLGEnums.MLGSizeType getSizeType() {
+        return this.sizeType;
+    }
 
-   public MLGEnums.MLGSizeType getSizeType() {
-      return this.sizeType;
-   }
+    public void setSizeType(MLGEnums.MLGSizeType var1) {
+        this.sizeType = var1;
+    }
 
-   public void setHeightType(MLGEnums.MLGHeightType var1) {
-      this.heightType = var1;
-   }
+    public MLGEnums.MLGHeightType getHeightType() {
+        return this.heightType;
+    }
 
-   public MLGEnums.MLGHeightType getHeightType() {
-      return this.heightType;
-   }
+    public void setHeightType(MLGEnums.MLGHeightType var1) {
+        this.heightType = var1;
+    }
 
-   public void setPositionType(MLGEnums.MLGPositionType var1) {
-      this.positionType = var1;
-   }
+    public MLGEnums.MLGPositionType getPositionType() {
+        return this.positionType;
+    }
 
-   public MLGEnums.MLGPositionType getPositionType() {
-      return this.positionType;
-   }
+    public void setPositionType(MLGEnums.MLGPositionType var1) {
+        this.positionType = var1;
+    }
 
-   public void setTallnessType(MLGEnums.MLGTallnessType var1) {
-      this.tallnessType = var1;
-   }
+    public MLGEnums.MLGTallnessType getTallnessType() {
+        return this.tallnessType;
+    }
 
-   public MLGEnums.MLGTallnessType getTallnessType() {
-      return this.tallnessType;
-   }
+    public void setTallnessType(MLGEnums.MLGTallnessType var1) {
+        this.tallnessType = var1;
+    }
 
-   public void setItemType(MLGEnums.MLGItemType var1) {
-      this.itemType = var1;
-   }
+    public MLGEnums.MLGItemType getItemType() {
+        return this.itemType;
+    }
 
-   public MLGEnums.MLGItemType getItemType() {
-      return this.itemType;
-   }
+    public void setItemType(MLGEnums.MLGItemType var1) {
+        this.itemType = var1;
+    }
 
-   public void setShuffleType(MLGEnums.MLGShuffleType var1) {
-      this.shuffleType = var1;
-   }
+    public MLGEnums.MLGShuffleType getShuffleType() {
+        return this.shuffleType;
+    }
 
-   public MLGEnums.MLGShuffleType getShuffleType() {
-      return this.shuffleType;
-   }
+    public void setShuffleType(MLGEnums.MLGShuffleType var1) {
+        this.shuffleType = var1;
+    }
 
-   public void setPlatformGenerator(PlatformGenerator var1) {
-      this.platformGenerator = var1;
-   }
+    public PlatformGenerator getPlatformGenerator() {
+        return this.platformGenerator;
+    }
 
-   public PlatformGenerator getPlatformGenerator() {
-      return this.platformGenerator;
-   }
+    public void setPlatformGenerator(PlatformGenerator var1) {
+        this.platformGenerator = var1;
+    }
 
-   public void setJumpTask(BukkitTask var1) {
-      this.jumpTask = var1;
-   }
+    public BukkitTask getJumpTask() {
+        return this.jumpTask;
+    }
 
-   public BukkitTask getJumpTask() {
-      return this.jumpTask;
-   }
+    public void setJumpTask(BukkitTask var1) {
+        this.jumpTask = var1;
+    }
 
-   public void setWaterPlaced(Block var1) {
-      this.waterPlaced = var1;
-   }
+    public void setWaterPlaced(Block var1) {
+        this.waterPlaced = var1;
+    }
 
-   public void setShuffleItem(boolean var1) {
-      this.shuffleItem = var1;
-   }
+    public boolean isShuffleItem() {
+        return this.shuffleItem;
+    }
 
-   public boolean isShuffleItem() {
-      return this.shuffleItem;
-   }
+    public void setShuffleItem(boolean var1) {
+        this.shuffleItem = var1;
+    }
 
 }
