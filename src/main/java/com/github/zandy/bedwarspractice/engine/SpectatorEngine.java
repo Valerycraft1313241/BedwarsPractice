@@ -11,39 +11,32 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 public class SpectatorEngine implements Listener {
-   private static SpectatorEngine instance;
+   private static SpectatorEngine instance = null;
 
    public void init() {
       BambooUtils.registerEvent(this);
    }
 
    @EventHandler
-   public void onPlayerMove(PlayerMoveEvent event) {
-      Player player = event.getPlayer();
-      UUID playerId = player.getUniqueId();
-
-      if (PracticeSpectator.getPracticeSpectators().containsKey(playerId)) {
-         Location targetLocation = GameEngine.getInstance()
-                 .getPracticeLocationMap()
-                 .get(PracticeSpectator.get(playerId).getTarget().getUniqueId());
-         Location newLocation = event.getTo();
-
-         if (isOutOfBounds(newLocation, targetLocation)) {
-            player.teleport(targetLocation.clone());
-            player.sendMessage(Language.MessagesEnum.PRACTICE_NAME_FIREBALL_TNT_JUMPING.getString(playerId));
+   private void onPlayerMove(PlayerMoveEvent var1) {
+      UUID var2 = var1.getPlayer().getUniqueId();
+      if (PracticeSpectator.getPracticeSpectators().containsKey(var2)) {
+         Player var3 = var1.getPlayer();
+         Location var4 = GameEngine.getInstance().getPracticeLocationMap().get(PracticeSpectator.get(var2).getTarget().getUniqueId());
+         Location var5 = var1.getTo();
+         if (var5.getBlockX() < var4.getBlockX() - 100 || var5.getBlockX() > var4.getBlockX() + 100) {
+            var3.teleport(var4.clone());
+            var3.sendMessage(Language.MessagesEnum.PRACTICE_NAME_FIREBALL_TNT_JUMPING.getString(var2));
          }
-      }
-   }
 
-   private boolean isOutOfBounds(Location newLocation, Location targetLocation) {
-      return newLocation.getBlockX() < targetLocation.getBlockX() - 100 ||
-              newLocation.getBlockX() > targetLocation.getBlockX() + 100;
+      }
    }
 
    public static SpectatorEngine getInstance() {
       if (instance == null) {
          instance = new SpectatorEngine();
       }
+
       return instance;
    }
 }

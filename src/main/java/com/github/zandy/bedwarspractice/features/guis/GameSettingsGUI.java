@@ -162,10 +162,10 @@ public class GameSettingsGUI implements Listener {
       BambooUtils.registerEvent(this);
    }
 
-   public void open(Player player) {
-      UUID playerUniqueId = player.getUniqueId();
-      GameEngine gameEngine = GameEngine.getInstance();
-      if (gameEngine.getPracticeTypeMap().containsKey(playerUniqueId)) {
+   public void open(Player var1) {
+      UUID var2 = var1.getUniqueId();
+      GameEngine var3 = GameEngine.getInstance();
+      if (var3.getPracticeTypeMap().containsKey(var2)) {
          boolean var4 = false;
 
          for(int var5 = 1; var5 <= 6; ++var5) {
@@ -177,8 +177,8 @@ public class GameSettingsGUI implements Listener {
 
          if (!var4) {
 
-             for (String var26 : Language.MessagesEnum.GAME_SETTINGS_WRONG_SLOTS_NUMBER.getStringList(playerUniqueId)) {
-                 player.sendMessage(var26);
+             for (String var26 : Language.MessagesEnum.GAME_SETTINGS_WRONG_SLOTS_NUMBER.getStringList(var2)) {
+                 var1.sendMessage(var26);
              }
 
          } else {
@@ -192,7 +192,7 @@ public class GameSettingsGUI implements Listener {
              }
 
             if (var22) {
-               Language.MessagesEnum.GAME_SETTINGS_WRONG_SLOTS_ITEM.getStringList(playerUniqueId).forEach((var2x) -> player.sendMessage(var2x.replace("[inventorySlots]", String.valueOf(this.inventorySlots))));
+               Language.MessagesEnum.GAME_SETTINGS_WRONG_SLOTS_ITEM.getStringList(var2).forEach((var2x) -> var1.sendMessage(var2x.replace("[inventorySlots]", String.valueOf(this.inventorySlots))));
             } else {
                ItemBuilder var8;
                ItemBuilder var9;
@@ -204,9 +204,9 @@ public class GameSettingsGUI implements Listener {
                GUI var23;
                ItemBuilder var25;
                ItemBuilder var28;
-               switch(gameEngine.getPracticeTypeMap().get(playerUniqueId)) {
+               switch(var3.getPracticeTypeMap().get(var2)) {
                case BRIDGING:
-                  var23 = new GUI(player, this.inventorySlots, Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_TITLE.getString(playerUniqueId));
+                  var23 = new GUI(var1, this.inventorySlots, Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_TITLE.getString(var2));
                   var25 = this.bridging30Material.getItem();
                   var8 = this.bridging50Material.getItem();
                   var9 = this.bridging100Material.getItem();
@@ -216,7 +216,7 @@ public class GameSettingsGUI implements Listener {
                   var13 = this.bridgingStaircaseMaterial.getItem();
                   var28 = this.bridgingStraightMaterial.getItem();
                   var15 = this.bridgingDiagonalMaterial.getItem();
-                  final BridgingInfo var29 = BridgingInfo.get(playerUniqueId);
+                  final BridgingInfo var29 = BridgingInfo.get(var2);
                   switch(var29.getBlocksType()) {
                   case BLOCKS_30:
                      var25 = this.createEnchantAura(var25);
@@ -250,61 +250,61 @@ public class GameSettingsGUI implements Listener {
                      var15 = this.createEnchantAura(var15);
                   }
 
-                  var23.addItem((new GUIItem(var25.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_30_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_30_LORE.getStringList(playerUniqueId)).setAmount(30).build(), this.bridging30Slot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var25.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_30_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_30_LORE.getStringList(var2)).setAmount(30).build(), this.bridging30Slot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var29.setBlocksType(BridgingEnums.BridgingBlocksType.BLOCKS_30);
                      }
                   }));
-                  var23.addItem((new GUIItem(var8.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_50_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_50_LORE.getStringList(playerUniqueId)).setAmount(50).build(), this.bridging50Slot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var8.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_50_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_50_LORE.getStringList(var2)).setAmount(50).build(), this.bridging50Slot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var29.setBlocksType(BridgingEnums.BridgingBlocksType.BLOCKS_50);
                      }
                   }));
-                  var23.addItem((new GUIItem(var9.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_100_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_100_LORE.getStringList(playerUniqueId)).setAmount(64).build(), this.bridging100Slot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var9.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_100_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_100_LORE.getStringList(var2)).setAmount(64).build(), this.bridging100Slot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var29.setBlocksType(BridgingEnums.BridgingBlocksType.BLOCKS_100);
                      }
                   }));
-                  var23.addItem((new GUIItem(var10.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_INFINITE_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_INFINITE_LORE.getStringList(playerUniqueId)).build(), this.bridgingInfiniteSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var10.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_INFINITE_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_BLOCKS_INFINITE_LORE.getStringList(var2)).build(), this.bridgingInfiniteSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var29.setBlocksType(BridgingEnums.BridgingBlocksType.BLOCKS_INFINITE);
                      }
                   }));
-                  var23.addItem((new GUIItem(var11.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_LEVEL_NONE_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_LEVEL_NONE_LORE.getStringList(playerUniqueId)).build(), this.bridgingNoneSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var11.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_LEVEL_NONE_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_LEVEL_NONE_LORE.getStringList(var2)).build(), this.bridgingNoneSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var29.setLevelType(BridgingEnums.BridgingLevelType.NONE);
                      }
                   }));
-                  var23.addItem((new GUIItem(var12.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_LEVEL_SLIGHT_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_LEVEL_SLIGHT_LORE.getStringList(playerUniqueId)).build(), this.bridgingSlightSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var12.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_LEVEL_SLIGHT_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_LEVEL_SLIGHT_LORE.getStringList(var2)).build(), this.bridgingSlightSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var29.setLevelType(BridgingEnums.BridgingLevelType.SLIGHT);
                      }
                   }));
-                  var23.addItem((new GUIItem(var13.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_LEVEL_STAIRCASE_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_LEVEL_STAIRCASE_LORE.getStringList(playerUniqueId)).build(), this.bridgingStaircaseSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var13.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_LEVEL_STAIRCASE_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_LEVEL_STAIRCASE_LORE.getStringList(var2)).build(), this.bridgingStaircaseSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var29.setLevelType(BridgingEnums.BridgingLevelType.STAIRCASE);
                      }
                   }));
-                  var23.addItem((new GUIItem(var28.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_ANGLE_STRAIGHT_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_ANGLE_STRAIGHT_LORE.getStringList(playerUniqueId)).build(), this.bridgingStraightSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var28.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_ANGLE_STRAIGHT_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_ANGLE_STRAIGHT_LORE.getStringList(var2)).build(), this.bridgingStraightSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var29.setAngleType(BridgingEnums.BridgingAngleType.STRAIGHT);
                      }
                   }));
-                  var23.addItem((new GUIItem(var15.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_ANGLE_DIAGONAL_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_ANGLE_DIAGONAL_LORE.getStringList(playerUniqueId)).build(), this.bridgingDiagonalSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var15.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_ANGLE_DIAGONAL_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_BRIDGING_ANGLE_DIAGONAL_LORE.getStringList(var2)).build(), this.bridgingDiagonalSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var29.setAngleType(BridgingEnums.BridgingAngleType.DIAGONAL);
                      }
                   }));
                   var23.getGUIItems().forEach((var3x) -> var3x.addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1x, GUI var2x) {
-                        player.closeInventory();
-                        BridgingMode.getInstance().refresh(player, var29.toData());
+                        var1.closeInventory();
+                        BridgingMode.getInstance().refresh(var1, var29.toData());
                      }
                   }));
                   break;
                case MLG:
-                  final MLGInfo var27 = MLGInfo.get(playerUniqueId);
-                  var23 = new GUI(player, this.inventorySlots, Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TITLE.getString(playerUniqueId));
+                  final MLGInfo var27 = MLGInfo.get(var2);
+                  var23 = new GUI(var1, this.inventorySlots, Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TITLE.getString(var2));
                   var9 = this.mlgSizeLargeMaterial.getItem();
                   var10 = this.mlgSizeMediumMaterial.getItem();
                   var11 = this.mlgSizeSmallMaterial.getItem();
@@ -367,91 +367,91 @@ public class GameSettingsGUI implements Listener {
                      var21 = this.createEnchantAura(var21);
                   }
 
-                  var23.addItem((new GUIItem(var9.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SIZE_LARGE_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SIZE_LARGE_LORE.getStringList(playerUniqueId)).build(), this.mlgSizeLargeSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var9.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SIZE_LARGE_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SIZE_LARGE_LORE.getStringList(var2)).build(), this.mlgSizeLargeSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setSizeType(MLGEnums.MLGSizeType.LARGE);
                      }
                   }));
-                  var23.addItem((new GUIItem(var10.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SIZE_MEDIUM_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SIZE_MEDIUM_LORE.getStringList(playerUniqueId)).build(), this.mlgSizeMediumSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var10.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SIZE_MEDIUM_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SIZE_MEDIUM_LORE.getStringList(var2)).build(), this.mlgSizeMediumSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setSizeType(MLGEnums.MLGSizeType.MEDIUM);
                      }
                   }));
-                  var23.addItem((new GUIItem(var11.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SIZE_SMALL_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SIZE_SMALL_LORE.getStringList(playerUniqueId)).build(), this.mlgSizeSmallSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var11.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SIZE_SMALL_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SIZE_SMALL_LORE.getStringList(var2)).build(), this.mlgSizeSmallSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setSizeType(MLGEnums.MLGSizeType.SMALL);
                      }
                   }));
-                  var23.addItem((new GUIItem(var12.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_HEIGHT_HIGH_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_HEIGHT_HIGH_LORE.getStringList(playerUniqueId)).build(), this.mlgHeightHighSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var12.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_HEIGHT_HIGH_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_HEIGHT_HIGH_LORE.getStringList(var2)).build(), this.mlgHeightHighSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setHeightType(MLGEnums.MLGHeightType.HIGH);
                      }
                   }));
-                  var23.addItem((new GUIItem(var13.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_HEIGHT_MEDIUM_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_HEIGHT_MEDIUM_LORE.getStringList(playerUniqueId)).build(), this.mlgHeightMediumSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var13.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_HEIGHT_MEDIUM_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_HEIGHT_MEDIUM_LORE.getStringList(var2)).build(), this.mlgHeightMediumSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setHeightType(MLGEnums.MLGHeightType.MEDIUM);
                      }
                   }));
-                  var23.addItem((new GUIItem(var28.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_HEIGHT_LOW_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_HEIGHT_LOW_LORE.getStringList(playerUniqueId)).build(), this.mlgHeightLowSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var28.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_HEIGHT_LOW_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_HEIGHT_LOW_LORE.getStringList(var2)).build(), this.mlgHeightLowSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setHeightType(MLGEnums.MLGHeightType.LOW);
                      }
                   }));
-                  var23.addItem((new GUIItem(var15.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_POSITION_CENTERED_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_POSITION_CENTERED_LORE.getStringList(playerUniqueId)).build(), this.mlgPositionCenteredSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var15.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_POSITION_CENTERED_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_POSITION_CENTERED_LORE.getStringList(var2)).build(), this.mlgPositionCenteredSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setPositionType(MLGEnums.MLGPositionType.CENTER);
                      }
                   }));
-                  var23.addItem((new GUIItem(var16.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_POSITION_RANDOM_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_POSITION_RANDOM_LORE.getStringList(playerUniqueId)).build(), this.mlgPositionRandomSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var16.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_POSITION_RANDOM_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_POSITION_RANDOM_LORE.getStringList(var2)).build(), this.mlgPositionRandomSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setPositionType(MLGEnums.MLGPositionType.RANDOM);
                      }
                   }));
-                  var23.addItem((new GUIItem(var17.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TALLNESS_1_BLOCKS_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TALLNESS_1_BLOCKS_LORE.getStringList(playerUniqueId)).build(), this.mlgTallness1Slot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var17.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TALLNESS_1_BLOCKS_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TALLNESS_1_BLOCKS_LORE.getStringList(var2)).build(), this.mlgTallness1Slot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setTallnessType(MLGEnums.MLGTallnessType.BLOCKS_1);
                      }
                   }));
-                  var23.addItem((new GUIItem(var18.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TALLNESS_2_BLOCKS_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TALLNESS_2_BLOCKS_LORE.getStringList(playerUniqueId)).build(), this.mlgTallness2Slot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var18.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TALLNESS_2_BLOCKS_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TALLNESS_2_BLOCKS_LORE.getStringList(var2)).build(), this.mlgTallness2Slot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setTallnessType(MLGEnums.MLGTallnessType.BLOCKS_2);
                      }
                   }));
-                  var23.addItem((new GUIItem(var19.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TALLNESS_3_BLOCKS_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TALLNESS_3_BLOCKS_LORE.getStringList(playerUniqueId)).build(), this.mlgTallness3Slot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var19.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TALLNESS_3_BLOCKS_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_TALLNESS_3_BLOCKS_LORE.getStringList(var2)).build(), this.mlgTallness3Slot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setTallnessType(MLGEnums.MLGTallnessType.BLOCKS_3);
                      }
                   }));
-                  var23.addItem((new GUIItem(var20.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SHUFFLE_NONE_NAME.getString(playerUniqueId)).build(), this.mlgShuffleNoneSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var20.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SHUFFLE_NONE_NAME.getString(var2)).build(), this.mlgShuffleNoneSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setShuffleType(MLGEnums.MLGShuffleType.NONE);
                      }
                   }));
-                  var23.addItem((new GUIItem(var21.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SHUFFLE_SHUFFLED_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SHUFFLE_SHUFFLED_LORE.getStringList(playerUniqueId)).build(), this.mlgShuffleShuffledSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var21.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SHUFFLE_SHUFFLED_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_SHUFFLE_SHUFFLED_LORE.getStringList(var2)).build(), this.mlgShuffleShuffledSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setShuffleType(MLGEnums.MLGShuffleType.SHUFFLED);
                      }
                   }));
-                  var23.addItem((new GUIItem(Materials.WATER_BUCKET.getItem().setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_ITEM_WATER_BUCKET_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_ITEM_WATER_BUCKET_LORE.getStringList(playerUniqueId)).build(), this.mlgItemWaterBucketSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(Materials.WATER_BUCKET.getItem().setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_ITEM_WATER_BUCKET_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_ITEM_WATER_BUCKET_LORE.getStringList(var2)).build(), this.mlgItemWaterBucketSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setItemType(MLGEnums.MLGItemType.WATER);
                      }
                   }));
-                  var23.addItem((new GUIItem(Materials.LADDER.getItem().setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_ITEM_LADDER_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_ITEM_LADDER_LORE.getStringList(playerUniqueId)).build(), this.mlgItemLadderSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(Materials.LADDER.getItem().setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_ITEM_LADDER_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_MLG_ITEM_LADDER_LORE.getStringList(var2)).build(), this.mlgItemLadderSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var27.setItemType(MLGEnums.MLGItemType.LADDER);
                      }
                   }));
                   var23.getGUIItems().forEach((var3x) -> var3x.addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1x, GUI var2x) {
-                        player.closeInventory();
-                        player.sendMessage(Language.MessagesEnum.GAME_UPDATED_YOUR_SETTINGS.getString(player.getUniqueId()));
-                        MLGMode.getInstance().refresh(player, var27.toData());
+                        var1.closeInventory();
+                        var1.sendMessage(Language.MessagesEnum.GAME_UPDATED_YOUR_SETTINGS.getString(var1.getUniqueId()));
+                        MLGMode.getInstance().refresh(var1, var27.toData());
                      }
                   }));
                   break;
                case FIREBALL_TNT_JUMPING:
-                  var23 = new GUI(player, this.inventorySlots, Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_TITLE.getString(playerUniqueId));
+                  var23 = new GUI(var1, this.inventorySlots, Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_TITLE.getString(var2));
                   var25 = this.jumpItems1Material.getItem();
                   var8 = this.jumpItems2Material.getItem();
                   var9 = this.jumpItems5Material.getItem();
@@ -459,7 +459,7 @@ public class GameSettingsGUI implements Listener {
                   var11 = Materials.TNT.getItem();
                   var12 = this.jumpWoolDisableMaterial.getItem();
                   var13 = this.jumpWoolEnableMaterial.getItem();
-                  final FireballTNTJumpingInfo var14 = FireballTNTJumpingInfo.get(playerUniqueId);
+                  final FireballTNTJumpingInfo var14 = FireballTNTJumpingInfo.get(var2);
                   switch(var14.getAmountType()) {
                   case AMOUNT_1:
                      var25 = this.createEnchantAura(var25);
@@ -487,46 +487,46 @@ public class GameSettingsGUI implements Listener {
                      var13 = this.createEnchantAura(var13);
                   }
 
-                  var23.addItem((new GUIItem(var25.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEMS_1_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEMS_1_LORE.getStringList(playerUniqueId)).build(), this.jumpItems1Slot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var25.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEMS_1_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEMS_1_LORE.getStringList(var2)).build(), this.jumpItems1Slot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var14.setAmountType(FireballTNTJumpingEnums.FireballTNTJumpingAmountType.AMOUNT_1);
                      }
                   }));
-                  var23.addItem((new GUIItem(var8.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEMS_2_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEMS_2_LORE.getStringList(playerUniqueId)).setAmount(2).build(), this.jumpItems2Slot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var8.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEMS_2_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEMS_2_LORE.getStringList(var2)).setAmount(2).build(), this.jumpItems2Slot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var14.setAmountType(FireballTNTJumpingEnums.FireballTNTJumpingAmountType.AMOUNT_2);
                      }
                   }));
-                  var23.addItem((new GUIItem(var9.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEMS_5_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEMS_5_LORE.getStringList(playerUniqueId)).setAmount(5).build(), this.jumpItems5Slot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var9.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEMS_5_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEMS_5_LORE.getStringList(var2)).setAmount(5).build(), this.jumpItems5Slot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var14.setAmountType(FireballTNTJumpingEnums.FireballTNTJumpingAmountType.AMOUNT_5);
                      }
                   }));
-                  var23.addItem((new GUIItem(var10.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEM_FIREBALL_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEM_FIREBALL_LORE.getStringList(playerUniqueId)).build(), this.jumpItemFireballSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var10.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEM_FIREBALL_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEM_FIREBALL_LORE.getStringList(var2)).build(), this.jumpItemFireballSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var14.setItemType(FireballTNTJumpingEnums.FireballTNTJumpingItemType.FIREBALL);
                      }
                   }));
-                  var23.addItem((new GUIItem(var11.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEM_TNT_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEM_TNT_LORE.getStringList(playerUniqueId)).build(), this.jumpItemTNTSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var11.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEM_TNT_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_ITEM_TNT_LORE.getStringList(var2)).build(), this.jumpItemTNTSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var14.setItemType(FireballTNTJumpingEnums.FireballTNTJumpingItemType.TNT);
                      }
                   }));
-                  var23.addItem((new GUIItem(var12.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_WOOL_DISABLE_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_WOOL_DISABLE_LORE.getStringList(playerUniqueId)).build(), this.jumpWoolDisableSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var12.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_WOOL_DISABLE_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_WOOL_DISABLE_LORE.getStringList(var2)).build(), this.jumpWoolDisableSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var14.setWoolType(FireballTNTJumpingEnums.FireballTNTJumpingWoolType.DISABLE);
                      }
                   }));
-                  var23.addItem((new GUIItem(var13.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_WOOL_ENABLE_NAME.getString(playerUniqueId)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_WOOL_ENABLE_LORE.getStringList(playerUniqueId)).build(), this.jumpWoolEnableSlot)).addClickAction(new ClickAction() {
+                  var23.addItem((new GUIItem(var13.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_WOOL_ENABLE_NAME.getString(var2)).setLore(Language.MessagesEnum.GAME_SETTINGS_GUI_FIREBALL_TNT_JUMPING_WOOL_ENABLE_LORE.getStringList(var2)).build(), this.jumpWoolEnableSlot)).addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1, GUI var2) {
                         var14.setWoolType(FireballTNTJumpingEnums.FireballTNTJumpingWoolType.ENABLE);
                      }
                   }));
                   var23.getGUIItems().forEach((var3x) -> var3x.addClickAction(new ClickAction() {
                      public void onClick(GUIItem var1x, GUI var2x) {
-                        player.closeInventory();
-                        player.sendMessage(Language.MessagesEnum.GAME_UPDATED_YOUR_SETTINGS.getString(player.getUniqueId()));
-                        FireballTNTJumpingMode.getInstance().refresh(player, var14.toData());
+                        var1.closeInventory();
+                        var1.sendMessage(Language.MessagesEnum.GAME_UPDATED_YOUR_SETTINGS.getString(var1.getUniqueId()));
+                        FireballTNTJumpingMode.getInstance().refresh(var1, var14.toData());
                      }
                   }));
                   break;

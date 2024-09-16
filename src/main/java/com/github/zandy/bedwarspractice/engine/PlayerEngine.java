@@ -19,20 +19,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerEngine implements Listener {
-   private static volatile PlayerEngine instance = null;
+   private static PlayerEngine instance = null;
 
    private PlayerEngine() {
-   }
-
-   public static PlayerEngine getInstance() {
-      if (instance == null) {
-         synchronized (PlayerEngine.class) {
-            if (instance == null) {
-               instance = new PlayerEngine();
-            }
-         }
-      }
-      return instance;
    }
 
    public void init() {
@@ -41,57 +30,64 @@ public class PlayerEngine implements Listener {
          new PlayerChangeLanguageListener();
       }
 
-      Bukkit.getOnlinePlayers().forEach(player -> this.join(player.getUniqueId(), player.getName()));
+      Bukkit.getOnlinePlayers().forEach((var1) -> this.join(var1.getUniqueId(), var1.getName()));
    }
 
    @EventHandler
-   private void onPlayerJoin(PlayerJoinEvent event) {
-      this.join(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+   private void onPlayerJoin(PlayerJoinEvent var1) {
+      this.join(var1.getPlayer().getUniqueId(), var1.getPlayer().getName());
    }
 
-   private void join(UUID uuid, String playerName) {
-      Database database = Database.getInstance();
-      if (!database.hasAccount(uuid, "Profile")) {
-         switch (database.getDatabaseType()) {
-            case MYSQL:
-               database.createPlayer(uuid, "Profile", Arrays.asList(new ColumnInfo("Player", playerName), new ColumnInfo("UUID", uuid)));
-               break;
-            case FLAT_FILE:
-               database.setString(uuid, Settings.SettingsEnum.DEFAULT_LANGUAGE.getString().replace("English", "EN"), "Language", "Profile");
+   private void join(UUID var1, String var2) {
+      if (!Database.getInstance().hasAccount(var1, "Profile")) {
+         switch(Database.getInstance().getDatabaseType()) {
+         case MYSQL:
+            Database.getInstance().createPlayer(var1, "Profile", Arrays.asList(new ColumnInfo("Player", var2), new ColumnInfo("UUID", var1)));
+            break;
+         case FLAT_FILE:
+            Database.getInstance().setString(var1, Settings.SettingsEnum.DEFAULT_LANGUAGE.getString().replace("English", "EN"), "Language", "Profile");
          }
       }
 
-      if (!database.hasAccount(uuid, Stats.getTableName())) {
-         switch (database.getDatabaseType()) {
-            case MYSQL:
-               database.createPlayer(uuid, Stats.getTableName(), Arrays.asList(new ColumnInfo("Player", playerName), new ColumnInfo("UUID", uuid)));
-               break;
-            case FLAT_FILE:
-               Arrays.stream(Stats.StatsType.values()).forEach(stat -> database.setDouble(uuid, 0.0D, stat.name(), Stats.getTableName()));
+      if (!Database.getInstance().hasAccount(var1, Stats.getTableName())) {
+         switch(Database.getInstance().getDatabaseType()) {
+         case MYSQL:
+            Database.getInstance().createPlayer(var1, Stats.getTableName(), Arrays.asList(new ColumnInfo("Player", var2), new ColumnInfo("UUID", var1)));
+            break;
+         case FLAT_FILE:
+            Arrays.stream(Stats.StatsType.values()).forEach((var1x) -> Database.getInstance().setDouble(var1, 0.0D, var1x.name(), Stats.getTableName()));
          }
       }
 
-      if (database.hasAccount(uuid, Stats.getTableName())) {
-         Stats.getInstance().addPlayer(uuid);
+      if (Database.getInstance().hasAccount(var1, Stats.getTableName())) {
+         Stats.getInstance().addPlayer(var1);
       }
 
-      Language language = Language.getInstance();
-      if (!language.getPlayerLocale().containsKey(uuid)) {
+      if (!Language.getInstance().getPlayerLocale().containsKey(var1)) {
          if (Main.getBedWarsAPI() != null) {
-            language.getPlayerLocale().put(uuid, Main.getBedWarsAPI().getPlayerLanguage(Bukkit.getPlayer(uuid)).getIso().toUpperCase());
+            Language.getInstance().getPlayerLocale().put(var1, Main.getBedWarsAPI().getPlayerLanguage(Bukkit.getPlayer(var1)).getIso().toUpperCase());
          } else {
-            language.getPlayerLocale().put(uuid, database.getString(uuid, "Language", "Profile"));
+            Language.getInstance().getPlayerLocale().put(var1, Database.getInstance().getString(var1, "Language", "Profile"));
          }
       }
 
-      if (!PlayerDataNPC.contains(uuid)) {
-         new PlayerDataNPC(uuid);
+      if (!PlayerDataNPC.contains(var1)) {
+         new PlayerDataNPC(var1);
       } else {
-         PlayerDataNPC.get(uuid).flush();
+         PlayerDataNPC.get(var1).flush();
       }
 
       if (BambooUtils.isPluginEnabled("Citizens")) {
-         Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> PracticeNPC.getInstance().respawnNPCs(Bukkit.getPlayer(uuid)), 1L);
+         Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> PracticeNPC.getInstance().respawnNPCs(Bukkit.getPlayer(var1)), 1L);
       }
+
+   }
+
+   public static PlayerEngine getInstance() {
+      if (instance == null) {
+         instance = new PlayerEngine();
+      }
+
+      return instance;
    }
 }
