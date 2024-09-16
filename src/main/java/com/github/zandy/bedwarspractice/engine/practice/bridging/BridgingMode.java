@@ -312,7 +312,7 @@ public class BridgingMode implements Listener {
         var2.put("[month]", () -> String.valueOf(var3.getCalendar().get(Calendar.MONTH) + 1));
         var2.put("[day]", () -> String.valueOf(var3.getCalendar().get(Calendar.DATE)));
         var2.put("[year]", () -> String.valueOf(var3.getCalendar().get(Calendar.YEAR)));
-        var2.put("[game_mode]", () -> Language.MessagesEnum.GAME_SCOREBOARD_GAMEMODE_MLG.getString(var1));
+        var2.put("[game_mode]", () -> Language.MessagesEnum.GAME_SCOREBOARD_GAMEMODE_BRIDGING.getString(var1));
         var2.put("[average_speed]", var4::getAverageSpeed);
         var2.put("[personal_best]", var4::getPersonalBest);
         if (BridgingInfo.get(var1).isInfinite()) {

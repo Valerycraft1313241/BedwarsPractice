@@ -332,7 +332,7 @@ public class FireballTNTJumpingMode implements Listener {
         var2.put("[month]", () -> String.valueOf(var3.getCalendar().get(Calendar.MONTH) + 1));
         var2.put("[day]", () -> String.valueOf(var3.getCalendar().get(Calendar.DATE)));
         var2.put("[year]", () -> String.valueOf(var3.getCalendar().get(Calendar.YEAR)));
-        var2.put("[game_mode]", () -> Language.MessagesEnum.GAME_SCOREBOARD_GAMEMODE_MLG.getString(var1));
+        var2.put("[game_mode]", () -> Language.MessagesEnum.GAME_SCOREBOARD_GAMEMODE_FIREBALL_TNT_JUMPING.getString(var1));
         var2.put("[longest_jump]", () -> String.valueOf(FireballTNTJumpingInfo.get(var1).getStatistic()));
         return var2;
     }
