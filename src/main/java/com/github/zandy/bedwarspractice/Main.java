@@ -23,89 +23,104 @@ import com.github.zandy.bedwarspractice.files.language.Language;
 import com.github.zandy.bedwarspractice.proxy.PracticeIncomingOutgoingProxy;
 import com.github.zandy.bedwarspractice.storage.Database;
 import com.github.zandy.bedwarspractice.support.BWPPatcher;
+import java.io.File;
+import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class Main extends JavaPlugin {
    private static BedWars bedWarsAPI = null;
-   private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
-   @Override
    public void onEnable() {
       BambooLib.setPluginInstance(this);
-      logInfo("--------------------------");
-      logInfo("Initializing BedWars Practice " + getDescription().getVersion());
-
+      BambooUtils.consolePrint("&m--------------------------");
+      BambooUtils.consolePrint("Initializing BedWars Practice " + this.getDescription().getVersion());
       if (!BambooUtils.isVersion(8, 12, 18, 19)) {
-         logError("Can't run on: " + VersionSupport.getInstance().getVersion());
-         logInfo("--------------------------");
-         setEnabled(false);
-         return;
+         BambooUtils.consolePrint("&c&lCan't run on: " + VersionSupport.getInstance().getVersion());
+         BambooUtils.consolePrint("&f&m--------------------------");
+         this.setEnabled(false);
+      } else {
+         BambooUtils.consolePrint("Running on: " + VersionSupport.getInstance().getVersion());
+         BambooUtils.consolePrint("Loading Settings...");
+         Settings.init();
+         BambooUtils.consolePrint("Initializing Database & Profiles...");
+         new Database();
+         BambooUtils.consolePrint("Database type: " + BambooUtils.capitalizeFirstLetter(com.github.zandy.bamboolib.database.Database.getInstance().getDatabaseType().name().toLowerCase()).replace("_", " "));
+         PlayerEngine.getInstance().init();
+         BambooUtils.consolePrint("Loading Languages...");
+         org.bukkit.plugin.Plugin var1 = Bukkit.getPluginManager().getPlugin("BedWars1058");
+         if (var1 != null) {
+            String var2 = var1.getDescription().getVersion().replace("-SNAPSHOT", "");
+            if (var2.contains("${gitVer}")) {
+               var2 = var2.replace("${gitVer}", "");
+            }
+
+            String[] var3 = var2.split("\\.");
+            var2 = var3[0] + "." + var3[1];
+            if (Double.parseDouble(var2) >= 22.01D) {
+               BambooUtils.consolePrint("BedWars1058 hook found! Hooking languages...");
+               bedWarsAPI = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
+            } else {
+               BambooUtils.consolePrint("BedWars1058 hook found! &cYou're using an unsupported BedWars1058 version!");
+               BambooUtils.consolePrint("Required BedWars1058 version: 22.01 or greater");
+            }
+         }
+
+         Language.getInstance().init();
+         BambooUtils.consolePrint("Loading Engines...");
+         ScoreboardEngine.getInstance().init();
+         WorldEngine.getInstance().init();
+         GameEngine.getInstance().init();
+         SpectatorEngine.getInstance().init();
+         BambooUtils.consolePrint("Loading Commands & Setup Data...");
+         VersionSupport.getInstance().registerCommand(new BedWarsPracticeCommand());
+         VersionSupport.getInstance().registerCommand(new BedWarsPracticeAdminCommand());
+         if (bedWarsAPI == null) {
+            VersionSupport.getInstance().registerCommand(new BedWarsPracticeLanguageCommand());
+         }
+
+         SetupData.getInstance().init();
+         BambooUtils.consolePrint("Loading GUIs...");
+         ModeSelectorGUI.getInstance().init();
+         GameSettingsGUI.getInstance().init();
+         BambooUtils.consolePrint("Loading Functions & Placeholders...");
+         if (Settings.SettingsEnum.PRACTICE_PROXY_ENABLED.getBoolean()) {
+            BambooUtils.consolePrint("Hooking to the proxy...");
+            PracticeIncomingOutgoingProxy.getInstance().init();
+         }
+
+         if (BambooUtils.isPluginEnabled("Citizens")) {
+            PracticeNPC.getInstance().init();
+         }
+
+         File var6 = new File("spigot.yml");
+         YamlConfiguration var7 = YamlConfiguration.loadConfiguration(var6);
+         var7.set("world-settings.default.verbose", Settings.SettingsEnum.ENABLE_VERBOSE.getBoolean());
+         var7.set("world-settings.default.anti-xray.enabled", false);
+
+         try {
+            var7.save(var6);
+         } catch (Exception ignored) {
+         }
+
+         Arrays.stream(BWPPatcher.PatchType.values()).forEach(BWPPatcher::patch);
+         new Placeholders();
+
+         BambooUtils.consolePrint("&aBedWars Practice loaded successfully!");
+         BambooUtils.consolePrint("&m--------------------------");
       }
-
-      logInfo("Running on: " + VersionSupport.getInstance().getVersion());
-      logInfo("Loading Settings...");
-      Settings.init();
-
-      logInfo("Initializing Database & Profiles...");
-      new Database();
-      logInfo("Database type: " + BambooUtils.capitalizeFirstLetter(com.github.zandy.bamboolib.database.Database.getInstance().getDatabaseType().name().toLowerCase()).replace("_", " "));
-      PlayerEngine.getInstance().init();
-
-      logInfo("Loading Languages...");
-      hookBedWarsAPI();
-
-      Language.getInstance().init();
-      logInfo("Loading Engines...");
-      ScoreboardEngine.getInstance().init();
-      WorldEngine.getInstance().init();
-      GameEngine.getInstance().init();
-      SpectatorEngine.getInstance().init();
-
-      logInfo("Loading Commands & Setup Data...");
-      registerCommands();
-
-      SetupData.getInstance().init();
-      logInfo("Loading GUIs...");
-      ModeSelectorGUI.getInstance().init();
-      GameSettingsGUI.getInstance().init();
-
-      logInfo("Loading Functions & Placeholders...");
-      if (Settings.SettingsEnum.PRACTICE_PROXY_ENABLED.getBoolean()) {
-         logInfo("Hooking to the proxy...");
-         PracticeIncomingOutgoingProxy.getInstance().init();
-      }
-
-      if (BambooUtils.isPluginEnabled("Citizens")) {
-         PracticeNPC.getInstance().init();
-      }
-
-      configureSpigot();
-
-      Arrays.stream(BWPPatcher.PatchType.values()).forEach(BWPPatcher::patch);
-      new Placeholders();
-
-      logInfo("BedWars Practice loaded successfully!");
-      logInfo("--------------------------");
    }
 
-   @Override
    public void onDisable() {
-      logInfo("--------------------------");
-      logInfo("Disabling BedWars Practice " + getDescription().getVersion());
-
-      if (PracticeNPC.getInstance().isInitialized()) {
+      BambooUtils.consolePrint("&m--------------------------");
+      BambooUtils.consolePrint("&cDisabling BedWars Practice " + this.getDescription().getVersion());
+      if (PracticeNPC.getInstance().isInit()) {
          PracticeNPC.getInstance().despawnNPCs();
       }
 
       if (com.github.zandy.bamboolib.database.Database.getInstance().getDatabaseType().equals(com.github.zandy.bamboolib.database.Database.DatabaseType.MYSQL)) {
-         logInfo("Disabling Database...");
+         BambooUtils.consolePrint("Disabling Database...");
          com.github.zandy.bamboolib.database.Database.getInstance().close();
       }
 
@@ -118,67 +133,13 @@ public class Main extends JavaPlugin {
       }
 
       SchematicWorldCreator.unload();
-
       if (Settings.SettingsEnum.PRACTICE_PROXY_ENABLED.getBoolean()) {
-         logInfo("Unhooking from the proxy...");
+         BambooUtils.consolePrint("Unhooking from the proxy...");
          PracticeIncomingOutgoingProxy.getInstance().unregister();
       }
 
-      logInfo("BedWars Practice unloaded successfully!");
-      logInfo("--------------------------");
-   }
-
-   private void hookBedWarsAPI() {
-      org.bukkit.plugin.Plugin plugin = Bukkit.getPluginManager().getPlugin("BedWars1058");
-      if (plugin != null) {
-         String version = plugin.getDescription().getVersion().replace("-SNAPSHOT", "");
-         if (version.contains("${gitVer}")) {
-            version = version.replace("${gitVer}", "");
-         }
-
-         String[] versionParts = version.split("\\.");
-         version = versionParts[0] + "." + versionParts[1];
-         if (Double.parseDouble(version) >= 22.01D) {
-            logInfo("BedWars1058 hook found! Hooking languages...");
-            bedWarsAPI = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
-         } else {
-            logError("BedWars1058 hook found! You're using an unsupported BedWars1058 version!");
-            logError("Required BedWars1058 version: 22.01 or greater");
-         }
-      }
-   }
-
-   private void registerCommands() {
-      VersionSupport.getInstance().registerCommand(new BedWarsPracticeCommand());
-      VersionSupport.getInstance().registerCommand(new BedWarsPracticeAdminCommand());
-      if (bedWarsAPI == null) {
-         VersionSupport.getInstance().registerCommand(new BedWarsPracticeLanguageCommand());
-      }
-   }
-
-   private void configureSpigot() {
-      File spigotConfig = new File("spigot.yml");
-      YamlConfiguration config = YamlConfiguration.loadConfiguration(spigotConfig);
-      config.set("world-settings.default.verbose", Settings.SettingsEnum.ENABLE_VERBOSE.getBoolean());
-      config.set("world-settings.default.anti-xray.enabled", false);
-
-      try {
-         config.save(spigotConfig);
-      } catch (Exception e) {
-         logError("Failed to save spigot.yml configuration", e);
-      }
-   }
-
-   private void logInfo(String message) {
-      LOGGER.info(message);
-   }
-
-   private void logError(String message) {
-      LOGGER.severe(message);
-   }
-
-   private void logError(String message, Throwable throwable) {
-      LOGGER.log(Level.SEVERE, message, throwable);
+      BambooUtils.consolePrint("&aBedWars Practice unloaded successfully!");
+      BambooUtils.consolePrint("&m--------------------------");
    }
 
    public static BedWars getBedWarsAPI() {

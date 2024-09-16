@@ -541,10 +541,10 @@ public class GameSettingsGUI implements Listener {
    }
 
    @EventHandler
-   private void onPlayerInteract(PlayerInteractEvent e) {
-      Player player = e.getPlayer();
-      if (e.getAction().name().contains("RIGHT") && player.getItemInHand().getType().equals(this.gameSettingsMaterial)) {
-         this.open(player);
+   private void onPlayerInteract(PlayerInteractEvent var1) {
+      Player var2 = var1.getPlayer();
+      if (var1.getAction().name().contains("RIGHT") && var2.getItemInHand().getType().equals(this.gameSettingsMaterial)) {
+         this.open(var2);
       }
 
    }

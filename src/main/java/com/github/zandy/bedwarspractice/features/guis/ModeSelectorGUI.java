@@ -59,78 +59,78 @@ public class ModeSelectorGUI implements Listener {
       BambooUtils.registerEvent(this);
    }
 
-   public void open(final Player player, final boolean isNew) {
-      UUID playerUUID = player.getUniqueId();
-      GUI gui = new GUI(player, PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_SLOTS.getInt(), Language.MessagesEnum.MODE_SELECTOR_TITLE.getString(playerUUID));
-      gui.addItem((new GUIItem(PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_BRIDGING_MATERIAL.getMaterial().getItem().setDisplayName(Language.MessagesEnum.MODE_SELECTOR_BRIDGING_NAME.getString(playerUUID)).setLore(Language.MessagesEnum.MODE_SELECTOR_BRIDGING_LORE.getStringList(playerUUID)).build(), this.bridgingSlot)).addClickAction(new ClickAction() {
+   public void open(final Player var1, final boolean var2) {
+      UUID var3 = var1.getUniqueId();
+      GUI var4 = new GUI(var1, PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_SLOTS.getInt(), Language.MessagesEnum.MODE_SELECTOR_TITLE.getString(var3));
+      var4.addItem((new GUIItem(PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_BRIDGING_MATERIAL.getMaterial().getItem().setDisplayName(Language.MessagesEnum.MODE_SELECTOR_BRIDGING_NAME.getString(var3)).setLore(Language.MessagesEnum.MODE_SELECTOR_BRIDGING_LORE.getStringList(var3)).build(), this.bridgingSlot)).addClickAction(new ClickAction() {
          public void onClick(GUIItem var1x, GUI var2x) {
-            ModeSelectorGUI.this.clickFunctionality(player, GameEngine.PracticeType.BRIDGING, isNew);
+            ModeSelectorGUI.this.clickFunctionality(var1, GameEngine.PracticeType.BRIDGING, var2);
          }
       }));
-      gui.addItem((new GUIItem(PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_MLG_MATERIAL.getMaterial().getItem().setDisplayName(Language.MessagesEnum.MODE_SELECTOR_MLG_NAME.getString(playerUUID)).setLore(Language.MessagesEnum.MODE_SELECTOR_MLG_LORE.getStringList(playerUUID)).build(), this.mlgSlot)).addClickAction(new ClickAction() {
+      var4.addItem((new GUIItem(PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_MLG_MATERIAL.getMaterial().getItem().setDisplayName(Language.MessagesEnum.MODE_SELECTOR_MLG_NAME.getString(var3)).setLore(Language.MessagesEnum.MODE_SELECTOR_MLG_LORE.getStringList(var3)).build(), this.mlgSlot)).addClickAction(new ClickAction() {
          public void onClick(GUIItem var1x, GUI var2x) {
-            ModeSelectorGUI.this.clickFunctionality(player, GameEngine.PracticeType.MLG, isNew);
+            ModeSelectorGUI.this.clickFunctionality(var1, GameEngine.PracticeType.MLG, var2);
          }
       }));
-      gui.addItem((new GUIItem(PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_FIREBALL_TNT_JUMPING_MATERIAL.getMaterial().getItem().setDisplayName(Language.MessagesEnum.MODE_SELECTOR_FIREBALL_TNT_JUMPING_NAME.getString(playerUUID)).setLore(Language.MessagesEnum.MODE_SELECTOR_FIREBALL_TNT_JUMPING_LORE.getStringList(playerUUID)).build(), this.fireballTntJumpingSlot)).addClickAction(new ClickAction() {
+      var4.addItem((new GUIItem(PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_FIREBALL_TNT_JUMPING_MATERIAL.getMaterial().getItem().setDisplayName(Language.MessagesEnum.MODE_SELECTOR_FIREBALL_TNT_JUMPING_NAME.getString(var3)).setLore(Language.MessagesEnum.MODE_SELECTOR_FIREBALL_TNT_JUMPING_LORE.getStringList(var3)).build(), this.fireballTntJumpingSlot)).addClickAction(new ClickAction() {
          public void onClick(GUIItem var1x, GUI var2x) {
-            ModeSelectorGUI.this.clickFunctionality(player, GameEngine.PracticeType.FIREBALL_TNT_JUMPING, isNew);
+            ModeSelectorGUI.this.clickFunctionality(var1, GameEngine.PracticeType.FIREBALL_TNT_JUMPING, var2);
          }
       }));
-      if (!isNew) {
-         gui.addItem((new GUIItem(PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_CLOSE_MATERIAL.getMaterial().getItem().setDisplayName(Language.MessagesEnum.MODE_SELECTOR_CLOSE_NAME.getString(playerUUID)).build(), this.closeSlot)).addClickAction(new ClickAction() {
+      if (!var2) {
+         var4.addItem((new GUIItem(PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_CLOSE_MATERIAL.getMaterial().getItem().setDisplayName(Language.MessagesEnum.MODE_SELECTOR_CLOSE_NAME.getString(var3)).build(), this.closeSlot)).addClickAction(new ClickAction() {
             public void onClick(GUIItem var1x, GUI var2) {
-               player.closeInventory();
+               var1.closeInventory();
             }
          }));
-         gui.addItem((new GUIItem(PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_RETURN_TO_LOBBY_MATERIAL.getMaterial().getItem().setDisplayName(Language.MessagesEnum.MODE_SELECTOR_RETURN_TO_LOBBY_NAME.getString(playerUUID)).build(), this.returnToLobbySlot)).addClickAction(new ClickAction() {
+         var4.addItem((new GUIItem(PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_RETURN_TO_LOBBY_MATERIAL.getMaterial().getItem().setDisplayName(Language.MessagesEnum.MODE_SELECTOR_RETURN_TO_LOBBY_NAME.getString(var3)).build(), this.returnToLobbySlot)).addClickAction(new ClickAction() {
             public void onClick(GUIItem var1x, GUI var2) {
                if (Settings.SettingsEnum.PRACTICE_PROXY_ENABLED.getBoolean()) {
-                  PracticeIncomingOutgoingProxy.getInstance().connect(player, Settings.SettingsEnum.PRACTICE_PROXY_LOBBY_SERVER_ID.getString());
+                  PracticeIncomingOutgoingProxy.getInstance().connect(var1, Settings.SettingsEnum.PRACTICE_PROXY_LOBBY_SERVER_ID.getString());
                } else {
-                  Bukkit.getPluginManager().callEvent(new PracticeQuitEvent(player));
+                  Bukkit.getPluginManager().callEvent(new PracticeQuitEvent(var1));
                }
 
             }
          }));
       } else if (PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_GO_BACK_ENABLED.getBoolean()) {
-         gui.addItem((new GUIItem(PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_GO_BACK_MATERIAL.getMaterial().getItem().setDisplayName(Language.MessagesEnum.MODE_SELECTOR_GO_BACK_NAME.getString(playerUUID)).setLore(Language.MessagesEnum.MODE_SELECTOR_GO_BACK_LORE.getStringList(playerUUID)).build(), this.goBackSlot)).addClickAction(new ClickAction() {
+         var4.addItem((new GUIItem(PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_GO_BACK_MATERIAL.getMaterial().getItem().setDisplayName(Language.MessagesEnum.MODE_SELECTOR_GO_BACK_NAME.getString(var3)).setLore(Language.MessagesEnum.MODE_SELECTOR_GO_BACK_LORE.getStringList(var3)).build(), this.goBackSlot)).addClickAction(new ClickAction() {
             public void onClick(GUIItem var1x, GUI var2) {
-               player.closeInventory();
-               PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_GO_BACK_COMMANDS.getStringList().stream().filter((var0) -> !var0.toLowerCase().contains("dummy_command_")).forEach((var1xx) -> player.performCommand(var1xx.substring(1)));
+               var1.closeInventory();
+               PracticeSettings.GameSettingsEnum.MODE_SELECTOR_GUI_GO_BACK_COMMANDS.getStringList().stream().filter((var0) -> !var0.toLowerCase().contains("dummy_command_")).forEach((var1xx) -> var1.performCommand(var1xx.substring(1)));
             }
          }));
       }
 
-      gui.open();
+      var4.open();
    }
 
-   public void clickFunctionality(Player player, GameEngine.PracticeType practiceType, boolean isNew) {
-      final UUID playerUniqueId = player.getUniqueId();
-      player.closeInventory();
-      if (BWPUtils.isSetupFinished(player)) {
-         if (isNew) {
+   public void clickFunctionality(Player var1, GameEngine.PracticeType var2, boolean var3) {
+      final UUID var4 = var1.getUniqueId();
+      var1.closeInventory();
+      if (BWPUtils.isSetupFinished(var1)) {
+         if (var3) {
             if (!Settings.SettingsEnum.PRACTICE_PROXY_ENABLED.getBoolean() && Settings.SettingsEnum.INVENTORY_CACHE.getBoolean()) {
-               InventoryCache.getInstance().add(player);
+               InventoryCache.getInstance().add(var1);
             }
 
-            this.create(player, practiceType);
+            this.create(var1, var2);
          } else {
-            HashMap<UUID, GameEngine.PracticeType> practiceTypeMap = GameEngine.getInstance().getPracticeTypeMap();
-            if (practiceTypeMap.containsKey(playerUniqueId) && practiceTypeMap.get(playerUniqueId).equals(practiceType)) {
-               player.sendMessage(Language.MessagesEnum.MODE_SELECTOR_ALREADY_SELECTED.getString(playerUniqueId));
+            HashMap<UUID, GameEngine.PracticeType> var5 = GameEngine.getInstance().getPracticeTypeMap();
+            if (var5.containsKey(var4) && var5.get(var4).equals(var2)) {
+               var1.sendMessage(Language.MessagesEnum.MODE_SELECTOR_ALREADY_SELECTED.getString(var4));
             } else {
-               if (this.selectorCooldown.contains(playerUniqueId)) {
-                  player.sendMessage(Language.MessagesEnum.MODE_SELECTOR_COOLDOWN.getString(playerUniqueId).replace("[seconds]", String.valueOf(this.cooldownSeconds)));
+               if (this.selectorCooldown.contains(var4)) {
+                  var1.sendMessage(Language.MessagesEnum.MODE_SELECTOR_COOLDOWN.getString(var4).replace("[seconds]", String.valueOf(this.cooldownSeconds)));
                } else {
-                  this.selectorCooldown.add(playerUniqueId);
+                  this.selectorCooldown.add(var4);
                   (new BukkitRunnable() {
                      public void run() {
-                        ModeSelectorGUI.this.selectorCooldown.remove(playerUniqueId);
+                        ModeSelectorGUI.this.selectorCooldown.remove(var4);
                      }
                   }).runTaskLaterAsynchronously(BambooLib.getPluginInstance(), this.cooldownSecondsTick);
-                  Bukkit.getPluginManager().callEvent(new PracticeSwitchEvent(player, practiceTypeMap.get(playerUniqueId), practiceType));
-                  this.create(player, practiceType);
+                  Bukkit.getPluginManager().callEvent(new PracticeSwitchEvent(var1, var5.get(var4), var2));
+                  this.create(var1, var2);
                }
 
             }
@@ -139,12 +139,12 @@ public class ModeSelectorGUI implements Listener {
    }
 
    @EventHandler
-   private void onPlayerInteract(PlayerInteractEvent event) {
-      if(!event.getPlayer().getWorld().getName().equalsIgnoreCase("bedwars_practice")) return;
-      if (event.getAction().name().contains("RIGHT")) {
-         Player player = event.getPlayer();
-         if (player.getItemInHand().getType().equals(this.modeSelectorMaterial)) {
-            this.open(player, !GameEngine.getInstance().getPracticeTypeMap().containsKey(player.getUniqueId()));
+   private void onPlayerInteract(PlayerInteractEvent var1) {
+      if(!var1.getPlayer().getWorld().getName().equalsIgnoreCase("bedwars_practice")) return;
+      if (var1.getAction().name().contains("RIGHT")) {
+         Player var2 = var1.getPlayer();
+         if (var2.getItemInHand().getType().equals(this.modeSelectorMaterial)) {
+            this.open(var2, !GameEngine.getInstance().getPracticeTypeMap().containsKey(var2.getUniqueId()));
          }
 
       }
@@ -152,25 +152,21 @@ public class ModeSelectorGUI implements Listener {
 
    public void create(Player var1, GameEngine.PracticeType var2) {
       Sounds.NOTE_PLING.getSound().play(var1, 1.0F, 3.0F);
-
-      BridgingMode bridgingMode = BridgingMode.getInstance();
-      bridgingMode.switchClear(var1);
-
-      MLGMode mlgMode = MLGMode.getInstance();
-      mlgMode.switchClear(var1);
-
-      FireballTNTJumpingMode fireballTNTJumpingMode = FireballTNTJumpingMode.getInstance();
-      fireballTNTJumpingMode.switchClear(var1);
-
+      BridgingMode var3 = BridgingMode.getInstance();
+      var3.switchClear(var1);
+      MLGMode var4 = MLGMode.getInstance();
+      var4.switchClear(var1);
+      FireballTNTJumpingMode var5 = FireballTNTJumpingMode.getInstance();
+      var5.switchClear(var1);
       switch(var2) {
       case BRIDGING:
-         bridgingMode.create(var1);
+         var3.create(var1);
          break;
       case MLG:
-         mlgMode.create(var1);
+         var4.create(var1);
          break;
       case FIREBALL_TNT_JUMPING:
-         fireballTNTJumpingMode.create(var1);
+         var5.create(var1);
       }
 
    }

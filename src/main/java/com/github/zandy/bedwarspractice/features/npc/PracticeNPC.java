@@ -28,125 +28,119 @@ import org.bukkit.event.Listener;
 
 public class PracticeNPC implements Listener {
    private static PracticeNPC instance = null;
-   private boolean initialized = false;
-
-   private PracticeNPC() {
-      // Private constructor to prevent instantiation
-   }
-
-   public static synchronized PracticeNPC getInstance() {
-      if (instance == null) {
-         instance = new PracticeNPC();
-      }
-      return instance;
-   }
+   private boolean init = false;
 
    public void init() {
       BambooUtils.registerEvent(this);
-      this.initialized = true;
+      this.init = true;
    }
 
    @EventHandler
-   private void onNPCRightClick(NPCRightClickEvent event) {
-      handleClick(event.getClicker(), event.getNPC().getId());
+   private void onNPCRightClick(NPCRightClickEvent var1) {
+      this.clickFunction(var1.getClicker(), var1.getNPC().getId());
    }
 
    @EventHandler
-   private void onNPCLeftClick(NPCLeftClickEvent event) {
-      handleClick(event.getClicker(), event.getNPC().getId());
+   private void onNPCLeftClick(NPCLeftClickEvent var1) {
+      this.clickFunction(var1.getClicker(), var1.getNPC().getId());
    }
 
    @EventHandler
-   private void onPracticeLeave(PracticeQuitEvent event) {
-      if (event.getPlayer().isOnline()) {
-         respawnNPCs(event.getPlayer());
+   private void onPracticeLeave(PracticeQuitEvent var1) {
+      if (var1.getPlayer().isOnline()) {
+         this.respawnNPCs(var1.getPlayer());
       }
+
    }
 
    @EventHandler
-   private void onLanguageChange(PlayerLanguageChangeEvent event) {
-      PlayerDataNPC.get(event.getPlayer().getUniqueId()).removeAll();
-      respawnNPCs(event.getPlayer());
+   private void onLanguageChange(PlayerLanguageChangeEvent var1) {
+      PlayerDataNPC.get(var1.getPlayer().getUniqueId()).removeAll();
+      this.respawnNPCs(var1.getPlayer());
    }
 
-   private void handleClick(Player player, int npcId) {
-      Arrays.stream(NPCStorage.NPCType.values()).forEach(npcType -> {
-         if (NPCStorage.getInstance().contains(npcType, npcId)) {
-            switch (npcType) {
-               case DEFAULT:
-                  ModeSelectorGUI.getInstance().open(player, true);
-                  break;
-               case BRIDGING:
-                  ModeSelectorGUI.getInstance().clickFunctionality(player, GameEngine.PracticeType.BRIDGING, true);
-                  break;
-               case MLG:
-                  ModeSelectorGUI.getInstance().clickFunctionality(player, GameEngine.PracticeType.MLG, true);
-                  break;
-               case FIREBALL_TNT_JUMPING:
-                  ModeSelectorGUI.getInstance().clickFunctionality(player, GameEngine.PracticeType.FIREBALL_TNT_JUMPING, true);
-                  break;
+   private void clickFunction(Player var1, int var2) {
+      Arrays.stream(NPCStorage.NPCType.values()).forEach((var2x) -> {
+         if (NPCStorage.getInstance().contains(var2x, var2)) {
+            switch(var2x) {
+            case DEFAULT:
+               ModeSelectorGUI.getInstance().open(var1, true);
+               break;
+            case BRIDGING:
+               ModeSelectorGUI.getInstance().clickFunctionality(var1, GameEngine.PracticeType.BRIDGING, true);
+               break;
+            case MLG:
+               ModeSelectorGUI.getInstance().clickFunctionality(var1, GameEngine.PracticeType.MLG, true);
+               break;
+            case FIREBALL_TNT_JUMPING:
+               ModeSelectorGUI.getInstance().clickFunctionality(var1, GameEngine.PracticeType.FIREBALL_TNT_JUMPING, true);
             }
          }
+
       });
    }
 
-   public void spawnNPC(NPC npc, Integer npcId, NPCStorage.NPCType npcType) {
-      npc.setAlwaysUseNameHologram(false);
-      Entity entity = npc.getEntity();
-      Location location = entity.getLocation().clone().add(0.0D, 1.55D, 0.0D);
-      List<RefreshablePlaceholder> placeholders = getRefreshablePlaceholders(npcType);
-      int refreshTick = Settings.SettingsEnum.NPC_REFRESH_TICK.getInt();
-      Bukkit.getOnlinePlayers().forEach(player ->
-              PlayerDataNPC.get(player.getUniqueId()).addNPC(npcId, new RefreshableHologram(player, "npc_" + npcId + "_" + player.getUniqueId(), location, npcType.getMessagesEnum().getStringList(player.getUniqueId()), placeholders, refreshTick))
-      );
+   public void spawnNPC(NPC var1, Integer var2, NPCStorage.NPCType var3) {
+      var1.setAlwaysUseNameHologram(false);
+      Entity var4 = var1.getEntity();
+      Location var5 = var4.getLocation().clone().add(0.0D, 1.55D, 0.0D);
+      List<RefreshablePlaceholder> var6 = this.getRefreshablePlaceholders(var3);
+      int var7 = Settings.SettingsEnum.NPC_REFRESH_TICK.getInt();
+      Bukkit.getOnlinePlayers().forEach((var5x) -> PlayerDataNPC.get(var5x.getUniqueId()).addNPC(var2, new RefreshableHologram(var5x, "npc_" + var2 + "_" + var5x.getUniqueId(), var5, var3.getMessagesEnum().getStringList(var5x.getUniqueId()), var6, var7)));
    }
 
-   public void respawnNPCs(Player player) {
-      int refreshTick = Settings.SettingsEnum.NPC_REFRESH_TICK.getInt();
-      Arrays.stream(NPCStorage.NPCType.values()).forEach(npcType ->
-              NPCStorage.getInstance().getIDList(npcType).forEach(npcId -> {
-                 Entity entity = CitizensAPI.getNPCRegistry().getById(npcId).getEntity();
-                 Location location = entity.getLocation().clone().add(0.0D, 1.55D, 0.0D);
-                 List<RefreshablePlaceholder> placeholders = getRefreshablePlaceholders(npcType);
-                 PlayerDataNPC.get(player.getUniqueId()).addNPC(npcId, new RefreshableHologram(player, "npc_" + npcId + "_" + player.getUniqueId(), location, npcType.getMessagesEnum().getStringList(player.getUniqueId()), placeholders, refreshTick));
-              })
-      );
+   public void respawnNPCs(Player var1) {
+      int var2 = Settings.SettingsEnum.NPC_REFRESH_TICK.getInt();
+      Arrays.stream(NPCStorage.NPCType.values()).forEach((var3) -> NPCStorage.getInstance().getIDList(var3).forEach((var4) -> {
+         Entity var5 = CitizensAPI.getNPCRegistry().getById(var4).getEntity();
+         Location var6 = var5.getLocation().clone().add(0.0D, 1.55D, 0.0D);
+         List<RefreshablePlaceholder> var7 = this.getRefreshablePlaceholders(var3);
+         PlayerDataNPC.get(var1.getUniqueId()).addNPC(var4, new RefreshableHologram(var1, "npc_" + var4 + "_" + var1.getUniqueId(), var6, var3.getMessagesEnum().getStringList(var1.getUniqueId()), var7, var2));
+      }));
    }
 
-   public void removeNPC(Integer npcId) {
-      PlayerDataNPC.getDataMap().values().forEach(playerData -> playerData.remove(npcId));
+   public void removeNPC(Integer var1) {
+      PlayerDataNPC.getDataMap().values().forEach((var1x) -> var1x.remove(var1));
    }
 
    public void despawnNPCs() {
       PlayerDataNPC.getDataMap().values().forEach(PlayerDataNPC::removeAll);
    }
 
-   private List<RefreshablePlaceholder> getRefreshablePlaceholders(final NPCStorage.NPCType npcType) {
-      ArrayList<RefreshablePlaceholder> placeholders = new ArrayList<>();
-      placeholders.add(new RefreshablePlaceholder(npcType.getPlaceholder(), Settings.SettingsEnum.NPC_REFRESH_TICK.getInt()) {
+   private List<RefreshablePlaceholder> getRefreshablePlaceholders(final NPCStorage.NPCType var1) {
+      ArrayList<RefreshablePlaceholder> var2 = new ArrayList<>();
+      var2.add(new RefreshablePlaceholder(var1.getPlaceholder(), Settings.SettingsEnum.NPC_REFRESH_TICK.getInt()) {
          public String refresh() {
-            int count = 0;
-            switch (npcType) {
-               case DEFAULT:
-                  count = GameEngine.getInstance().getPracticeTypeMap().size();
-                  break;
-               case BRIDGING:
-                  count = BridgingInfo.getBridgingInfoMap().size();
-                  break;
-               case MLG:
-                  count = MLGInfo.getMlgInfoMap().size();
-                  break;
-               case FIREBALL_TNT_JUMPING:
-                  count = FireballTNTJumpingInfo.getFireballTntJumpingMap().size();
-                  break;
+            int var1x = 0;
+            switch(var1) {
+            case DEFAULT:
+               var1x = GameEngine.getInstance().getPracticeTypeMap().size();
+               break;
+            case BRIDGING:
+               var1x = BridgingInfo.getBridgingInfoMap().size();
+               break;
+            case MLG:
+               var1x = MLGInfo.getMlgInfoMap().size();
+               break;
+            case FIREBALL_TNT_JUMPING:
+               var1x = FireballTNTJumpingInfo.getFireballTntJumpingMap().size();
             }
-            return String.valueOf(count);
+
+            return String.valueOf(var1x);
          }
       });
-      return placeholders;
+      return var2;
    }
 
-   public boolean isInitialized() {
-      return this.initialized;
+   public static PracticeNPC getInstance() {
+      if (instance == null) {
+         instance = new PracticeNPC();
+      }
+
+      return instance;
+   }
+
+   public boolean isInit() {
+      return this.init;
    }
 }

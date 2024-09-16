@@ -123,9 +123,9 @@ public class PracticeSettings extends BambooFile {
       final String path;
       final Object defaultValue;
 
-      GameSettingsEnum(String path, Object defaultValue) {
-         this.path = path;
-         this.defaultValue = defaultValue;
+      GameSettingsEnum(String var3, Object var4) {
+         this.path = var3;
+         this.defaultValue = var4;
       }
 
       public Materials getMaterial() {
@@ -133,13 +133,13 @@ public class PracticeSettings extends BambooFile {
       }
 
       public List<Material> getMaterials() {
-         ArrayList<Material> materials = new ArrayList<>();
+         ArrayList<Material> var1 = new ArrayList<>();
 
-         for (String mat : PracticeSettings.getInstance().getStringList(this.path)) {
-            materials.add(Materials.valueOf(mat).getItem().getMaterial());
-         }
+          for (String var3 : PracticeSettings.getInstance().getStringList(this.path)) {
+              var1.add(Materials.valueOf(var3).getItem().getMaterial());
+          }
 
-         return materials;
+         return var1;
       }
 
       public boolean getBoolean() {

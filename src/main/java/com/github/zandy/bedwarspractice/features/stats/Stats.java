@@ -9,55 +9,44 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class Stats {
-   private static final String TABLE_NAME = "Statistics";
+   private static final String tableName = "Statistics";
    private static Stats instance = null;
 
-   private Stats() {
-      // Private constructor to prevent instantiation
-   }
-
-   public static synchronized Stats getInstance() {
-      if (instance == null) {
-         instance = new Stats();
-      }
-      return instance;
-   }
-
-   public void addPlayer(UUID playerUUID) {
-      HashMap<StatsType, Double> statsMap = new HashMap<>();
-      BambooResultSet resultSet = null;
-      try {
-         resultSet = Database.getInstance().getResultSet(playerUUID, TABLE_NAME);
-         BambooResultSet finalResultSet = resultSet;
-         Arrays.stream(StatsType.values()).forEach(statsType -> {
-            double value;
-            try {
-               value = finalResultSet.getDouble(statsType.name());
-            } catch (Exception e) {
-               value = 0.0;
-            }
-            statsMap.put(statsType, value);
-         });
-      } finally {
-         if (resultSet != null) {
-            resultSet.close();
+   public void addPlayer(UUID var1) {
+      HashMap<StatsType, Double> var2 = new HashMap<>();
+      BambooResultSet var3 = Database.getInstance().getResultSet(var1, tableName);
+      Arrays.stream(Stats.StatsType.values()).forEach((var2x) -> {
+         double var3x;
+         try {
+            var3x = var3.getDouble(var2x.name());
+         } catch (Exception var6) {
+            var3x = 0.0D;
          }
-      }
-      new PlayerStats(playerUUID, statsMap);
+
+         var2.put(var2x, var3x);
+      });
+      var3.close();
+      new PlayerStats(var1, var2);
    }
 
    public static void createTable() {
-      ArrayList<Column> columns = new ArrayList<>();
-      columns.add(new Column("Player").setType(Column.ColumnType.VARCHAR).setLength(25));
-      columns.add(new Column("UUID").setType(Column.ColumnType.VARCHAR).setLength(50).setPrimaryKey());
-      Arrays.stream(StatsType.values()).forEach(statsType ->
-              columns.add(new Column(statsType.name()).setType(Column.ColumnType.DOUBLE).setDefault(0))
-      );
-      Database.getInstance().createTable(TABLE_NAME, columns);
+      ArrayList<Column> var0 = new ArrayList<>();
+      var0.add((new Column("Player")).setType(Column.ColumnType.VARCHAR).setLength(25));
+      var0.add((new Column("UUID")).setType(Column.ColumnType.VARCHAR).setLength(50).setPrimaryKey());
+      Arrays.stream(Stats.StatsType.values()).forEach((var1) -> var0.add((new Column(var1.name())).setType(Column.ColumnType.DOUBLE).setDefault(0)));
+      Database.getInstance().createTable("Statistics", var0);
+   }
+
+   public static Stats getInstance() {
+      if (instance == null) {
+         instance = new Stats();
+      }
+
+      return instance;
    }
 
    public static String getTableName() {
-      return TABLE_NAME;
+      return "Statistics";
    }
 
    public enum StatsType {
@@ -82,5 +71,6 @@ public class Stats {
       BRIDGING_BLOCKS_INFINITE,
       FIREBALL_TNT_JUMPING_LONGEST_JUMP_FIREBALL,
       FIREBALL_TNT_JUMPING_LONGEST_JUMP_TNT
+
    }
 }
