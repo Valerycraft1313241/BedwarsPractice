@@ -10,6 +10,7 @@ import com.github.zandy.bedwarspractice.commands.BedWarsPracticeLanguageCommand;
 import com.github.zandy.bedwarspractice.commands.admin.schematic.SchematicWorldCreator;
 import com.github.zandy.bedwarspractice.engine.*;
 import com.github.zandy.bedwarspractice.features.Placeholders;
+import com.github.zandy.bedwarspractice.features.chat.ChatHandler;
 import com.github.zandy.bedwarspractice.features.guis.GameSettingsGUI;
 import com.github.zandy.bedwarspractice.features.guis.ModeSelectorGUI;
 import com.github.zandy.bedwarspractice.features.npc.PracticeNPC;
@@ -107,7 +108,7 @@ public class Main extends JavaPlugin {
 
             Arrays.stream(BWPPatcher.PatchType.values()).forEach(BWPPatcher::patch);
             new Placeholders();
-
+            new ChatHandler();
             BambooUtils.consolePrint("&aBedWars Practice loaded successfully!");
             BambooUtils.consolePrint("&m--------------------------");
         }

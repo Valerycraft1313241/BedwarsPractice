@@ -1,8 +1,7 @@
 package com.github.zandy.bedwarspractice.features.chat;
 
-import com.github.zandy.bamboolib.placeholder.PlaceholderManager;
 import com.github.zandy.bamboolib.utils.BambooUtils;
-import com.github.zandy.bedwarspractice.files.Settings;
+import com.github.zandy.bedwarspractice.engine.WorldEngine;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,6 +15,7 @@ public class ChatHandler implements Listener {
     @EventHandler
     private void onPlayerChat(AsyncPlayerChatEvent e) {
         Player player = e.getPlayer();
-        e.setFormat(PlaceholderManager.getInstance().setPlaceholders(player, Settings.SettingsEnum.CHAT_FORMAT.getString().replace("[playerName]", player.getName())) + e.getMessage().replace("%", "%%"));
+        if(!WorldEngine.getInstance().getPracticeWorld().equals(player.getWorld())) return;
+        e.getRecipients().removeIf(p -> p.getWorld() != player.getWorld());
     }
 }
