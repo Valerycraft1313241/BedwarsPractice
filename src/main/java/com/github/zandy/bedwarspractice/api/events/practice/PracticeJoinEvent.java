@@ -11,10 +11,10 @@ public class PracticeJoinEvent extends Event {
     private final Player player;
     private final GameEngine.PracticeType practiceType;
 
-    public PracticeJoinEvent(Player var1, GameEngine.PracticeType var2) {
-        this.player = var1;
-        this.practiceType = var2;
-        var1.setGameMode(GameMode.SURVIVAL);
+    public PracticeJoinEvent(Player player, GameEngine.PracticeType practiceType) {
+        this.player = player;
+        this.practiceType = practiceType;
+        player.setGameMode(GameMode.SURVIVAL);
     }
 
     public static HandlerList getHandlerList() {

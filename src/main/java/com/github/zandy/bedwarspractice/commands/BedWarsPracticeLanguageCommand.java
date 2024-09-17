@@ -19,53 +19,51 @@ public class BedWarsPracticeLanguageCommand extends ParentCommand {
         this.setDescription("Language command for BedWarsPractice plugin.");
     }
 
-    public void sendDefaultMessage(CommandSender var1) {
-        if (!(var1 instanceof Player)) {
-            var1.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getString());
+    public void sendDefaultMessage(CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getString());
         }
-
     }
 
-    public boolean execute(CommandSender var1, String var2, String[] var3) {
-        if (!(var1 instanceof Player)) {
-            var1.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getString());
+    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getString());
             return false;
         } else {
-            Player var4 = (Player) var1;
-            if (var3.length == 0) {
-                this.sendUsage(var4);
+            Player player = (Player) sender;
+            if (args.length == 0) {
+                this.sendUsage(player);
                 return false;
             } else {
-                String var5 = var3[0].toUpperCase();
-                if (!Language.getInstance().getLanguageAbbreviations().contains(var5)) {
-                    var4.sendMessage(Language.MessagesEnum.COMMAND_PLAYER_LANGUAGE_NOT_FOUND.getPath());
-                    Language.getInstance().getLanguageAbbreviations().forEach((var1x) -> BambooUtils.sendTextComponent(var4, Language.MessagesEnum.COMMAND_PLAYER_LANGUAGE_LIST_FORMAT.getString(var4.getUniqueId()).replace("[languageAbbreviation]", var1x).replace("[languageName]", Language.getInstance().getLocaleFiles().get(var1x).getString(Language.MessagesEnum.PLUGIN_LANGUAGE_DISPLAY.getPath())), "/bwpl " + var1x, Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(var4.getUniqueId()), Action.RUN_COMMAND));
+                String languageAbbreviation = args[0].toUpperCase();
+                if (!Language.getInstance().getLanguageAbbreviations().contains(languageAbbreviation)) {
+                    player.sendMessage(Language.MessagesEnum.COMMAND_PLAYER_LANGUAGE_NOT_FOUND.getPath());
+                    Language.getInstance().getLanguageAbbreviations().forEach((abbreviation) -> BambooUtils.sendTextComponent(player, Language.MessagesEnum.COMMAND_PLAYER_LANGUAGE_LIST_FORMAT.getString(player.getUniqueId()).replace("[languageAbbreviation]", abbreviation).replace("[languageName]", Language.getInstance().getLocaleFiles().get(abbreviation).getString(Language.MessagesEnum.PLUGIN_LANGUAGE_DISPLAY.getPath())), "/bwpl " + abbreviation, Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(player.getUniqueId()), Action.RUN_COMMAND));
                     return false;
                 } else {
-                    String var6 = Language.getInstance().getPlayerLocale().get(var4.getUniqueId());
-                    Language.getInstance().getPlayerLocale().put(var4.getUniqueId(), var5);
-                    Database.getInstance().setString(var4.getUniqueId(), var5, "Language", "Profile");
-                    var4.sendMessage(Language.MessagesEnum.COMMAND_PLAYER_LANGUAGE_CHANGED.getString(var4.getUniqueId()).replace("[languageName]", Language.MessagesEnum.PLUGIN_LANGUAGE_DISPLAY.getString(var4.getUniqueId())).replace("[languageAbbreviation]", var5));
-                    Bukkit.getPluginManager().callEvent(new PlayerLanguageChangeEvent(var4, var6, var5));
+                    String oldLanguage = Language.getInstance().getPlayerLocale().get(player.getUniqueId());
+                    Language.getInstance().getPlayerLocale().put(player.getUniqueId(), languageAbbreviation);
+                    Database.getInstance().setString(player.getUniqueId(), languageAbbreviation, "Language", "Profile");
+                    player.sendMessage(Language.MessagesEnum.COMMAND_PLAYER_LANGUAGE_CHANGED.getString(player.getUniqueId()).replace("[languageName]", Language.MessagesEnum.PLUGIN_LANGUAGE_DISPLAY.getString(player.getUniqueId())).replace("[languageAbbreviation]", languageAbbreviation));
+                    Bukkit.getPluginManager().callEvent(new PlayerLanguageChangeEvent(player, oldLanguage, languageAbbreviation));
                     return true;
                 }
             }
         }
     }
 
-    private void sendUsage(Player var1) {
-        Language.MessagesEnum.COMMAND_PLAYER_LANGUAGE_USAGE.getStringList(var1.getUniqueId()).forEach((var1x) -> {
-            if (var1x.contains("bwpl")) {
-                BambooUtils.sendTextComponent(var1, var1x, "/bwpl ", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(var1.getUniqueId()), Action.SUGGEST_COMMAND);
+    private void sendUsage(Player player) {
+        Language.MessagesEnum.COMMAND_PLAYER_LANGUAGE_USAGE.getStringList(player.getUniqueId()).forEach((message) -> {
+            if (message.contains("bwpl")) {
+                BambooUtils.sendTextComponent(player, message, "/bwpl ", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(player.getUniqueId()), Action.SUGGEST_COMMAND);
             } else {
-                var1.sendMessage(var1x);
+                player.sendMessage(message);
             }
-
         });
-        Language.getInstance().getLanguageAbbreviations().forEach((var1x) -> BambooUtils.sendTextComponent(var1, Language.MessagesEnum.COMMAND_PLAYER_LANGUAGE_LIST_FORMAT.getString(var1.getUniqueId()).replace("[languageAbbreviation]", var1x).replace("[languageName]", Language.getInstance().getLocaleFiles().get(var1x).getString(Language.MessagesEnum.PLUGIN_LANGUAGE_DISPLAY.getPath())), "/bwpl " + var1x, Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(var1.getUniqueId()), Action.RUN_COMMAND));
+        Language.getInstance().getLanguageAbbreviations().forEach((abbreviation) -> BambooUtils.sendTextComponent(player, Language.MessagesEnum.COMMAND_PLAYER_LANGUAGE_LIST_FORMAT.getString(player.getUniqueId()).replace("[languageAbbreviation]", abbreviation).replace("[languageName]", Language.getInstance().getLocaleFiles().get(abbreviation).getString(Language.MessagesEnum.PLUGIN_LANGUAGE_DISPLAY.getPath())), "/bwpl " + abbreviation, Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(player.getUniqueId()), Action.RUN_COMMAND));
     }
 
-    public String noPermissionMessage(CommandSender var1) {
-        return var1 instanceof Player ? Language.MessagesEnum.PLUGIN_NO_PERMISSION.getString(((Player) var1).getUniqueId()) : Language.MessagesEnum.PLUGIN_NO_PERMISSION.getString();
+    public String noPermissionMessage(CommandSender sender) {
+        return sender instanceof Player ? Language.MessagesEnum.PLUGIN_NO_PERMISSION.getString(((Player) sender).getUniqueId()) : Language.MessagesEnum.PLUGIN_NO_PERMISSION.getString();
     }
 }

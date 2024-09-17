@@ -12,11 +12,11 @@ public class FireballTNTJumpingData implements PracticeData {
     private final FireballTNTJumpingEnums.FireballTNTJumpingWoolType woolType;
     private final List<Block> blocksPlaced;
 
-    public FireballTNTJumpingData(FireballTNTJumpingInfo var1) {
-        this.amountType = var1.getAmountType();
-        this.itemType = var1.getItemType();
-        this.woolType = var1.getWoolType();
-        this.blocksPlaced = var1.getBlocksPlaced();
+    public FireballTNTJumpingData(FireballTNTJumpingInfo fireballTNTJumpingInfo) {
+        this.amountType = fireballTNTJumpingInfo.getAmountType();
+        this.itemType = fireballTNTJumpingInfo.getItemType();
+        this.woolType = fireballTNTJumpingInfo.getWoolType();
+        this.blocksPlaced = fireballTNTJumpingInfo.getBlocksPlaced();
     }
 
     public FireballTNTJumpingEnums.FireballTNTJumpingAmountType getAmountType() {

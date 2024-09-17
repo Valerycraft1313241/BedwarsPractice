@@ -28,35 +28,35 @@ public class SetupQuitModule implements Listener {
         return instance;
     }
 
-    public void execute(Player var1) {
-        UUID var2 = var1.getUniqueId();
-        if (!SetupSetModule.getSetupNameMap().containsKey(var2)) {
-            var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_QUIT_NOT_IN_SETUP.getString(var2));
+    public void execute(Player player) {
+        UUID playerUUID = player.getUniqueId();
+        if (!SetupSetModule.getSetupNameMap().containsKey(playerUUID)) {
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_QUIT_NOT_IN_SETUP.getString(playerUUID));
         } else {
-            this.executeRemove(var1, var1.getLocation().getWorld().getSpawnLocation().clone().add(0.5D, 1.0D, 0.5D), SetupSetModule.getSetupEditSessionMap().get(var2));
+            this.executeRemove(player, player.getLocation().getWorld().getSpawnLocation().clone().add(0.5D, 1.0D, 0.5D), SetupSetModule.getSetupEditSessionMap().get(playerUUID));
         }
     }
 
     @EventHandler
-    private void onPlayerQuit(PlayerQuitEvent var1) {
-        Player var2 = var1.getPlayer();
-        if (SetupSetModule.getSetupEditSessionMap().containsKey(var2.getUniqueId())) {
-            this.executeRemove(var2, Lobby.getInstance().get(), SetupSetModule.getSetupEditSessionMap().get(var2.getUniqueId()));
+    private void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        if (SetupSetModule.getSetupEditSessionMap().containsKey(player.getUniqueId())) {
+            this.executeRemove(player, Lobby.getInstance().get(), SetupSetModule.getSetupEditSessionMap().get(player.getUniqueId()));
         }
     }
 
-    private void executeRemove(Player var1, Location var2, EditSession var3) {
-        SetupSetModule.getSetupNameMap().remove(var1.getUniqueId());
-        var1.teleport(var2);
-        var3.undo(var3);
-        SetupSetModule.getSetupEditSessionMap().remove(var1.getUniqueId());
-        SetupSession.remove(var1.getUniqueId());
-        SetupSetModule.getInstance().removeOffset(var1.getUniqueId());
-        var1.sendMessage(" ");
-        var1.sendMessage(" ");
-        var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var1.getUniqueId()));
-        List<String> var10000 = Language.MessagesEnum.COMMAND_ADMIN_SETUP_QUIT_SUCCESSFULLY.getStringList(var1.getUniqueId());
-        Objects.requireNonNull(var1);
-        var10000.forEach(var1::sendMessage);
+    private void executeRemove(Player player, Location spawnLocation, EditSession editSession) {
+        SetupSetModule.getSetupNameMap().remove(player.getUniqueId());
+        player.teleport(spawnLocation);
+        editSession.undo(editSession);
+        SetupSetModule.getSetupEditSessionMap().remove(player.getUniqueId());
+        SetupSession.remove(player.getUniqueId());
+        SetupSetModule.getInstance().removeOffset(player.getUniqueId());
+        player.sendMessage(" ");
+        player.sendMessage(" ");
+        player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+        List<String> messages = Language.MessagesEnum.COMMAND_ADMIN_SETUP_QUIT_SUCCESSFULLY.getStringList(player.getUniqueId());
+        Objects.requireNonNull(player);
+        messages.forEach(player::sendMessage);
     }
 }

@@ -35,38 +35,37 @@ public class SetupPosModule implements Listener {
         return instance;
     }
 
-    public void execute(Player var1, Position var2) {
-        SetupSession var3 = SetupSession.get(var1.getUniqueId());
-        var3.setRelativePosition(var2.getPos(), new RelativeLocation(var3.getSpawnLocation(), var2.getLocation(var1.getWorld())));
-        var1.sendMessage(" ");
-        var1.sendMessage(" ");
-        var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var1.getUniqueId()));
-        var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_POS_SET_SUCCESSFULLY.getString(var1.getUniqueId()).replace("[practiceName]", var3.getName()).replace("[posNumber]", String.valueOf(var2.getPos())));
-        Sounds.PLAYER_LEVELUP.getSound().play(var1, 3.0F, 3.0F);
+    public void execute(Player player, Position position) {
+        SetupSession setupSession = SetupSession.get(player.getUniqueId());
+        setupSession.setRelativePosition(position.getPos(), new RelativeLocation(setupSession.getSpawnLocation(), position.getLocation(player.getWorld())));
+        player.sendMessage(" ");
+        player.sendMessage(" ");
+        player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+        player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_POS_SET_SUCCESSFULLY.getString(player.getUniqueId()).replace("[practiceName]", setupSession.getName()).replace("[posNumber]", String.valueOf(position.getPos())));
+        Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
     }
 
-    public void executeWand(Player var1) {
-        var1.getInventory().setItem(0, this.wand);
-        var1.sendMessage(" ");
-        var1.sendMessage(" ");
-        var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var1.getUniqueId()));
-        var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_POS_WAND_RECEIVED.getString(var1.getUniqueId()));
+    public void executeWand(Player player) {
+        player.getInventory().setItem(0, this.wand);
+        player.sendMessage(" ");
+        player.sendMessage(" ");
+        player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+        player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_POS_WAND_RECEIVED.getString(player.getUniqueId()));
     }
 
     @EventHandler
-    private void onPlayerInteract(PlayerInteractEvent var1) {
-        if (var1.getItem() != null && var1.getItem().equals(this.wand)) {
-            Player var2 = var1.getPlayer();
-            Block var3 = var1.getClickedBlock();
-            var1.setCancelled(true);
-            switch (var1.getAction()) {
+    private void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getItem() != null && event.getItem().equals(this.wand)) {
+            Player player = event.getPlayer();
+            Block clickedBlock = event.getClickedBlock();
+            event.setCancelled(true);
+            switch (event.getAction()) {
                 case LEFT_CLICK_BLOCK:
-                    this.execute(var2, new Position(1, var3.getX(), var3.getY(), var3.getZ()));
+                    this.execute(player, new Position(1, clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ()));
                     break;
                 case RIGHT_CLICK_BLOCK:
-                    this.execute(var2, new Position(2, var3.getX(), var3.getY(), var3.getZ()));
+                    this.execute(player, new Position(2, clickedBlock.getX(), clickedBlock.getY(), clickedBlock.getZ()));
             }
-
         }
     }
 }

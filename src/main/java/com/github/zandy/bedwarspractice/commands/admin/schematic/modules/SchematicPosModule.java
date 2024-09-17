@@ -33,40 +33,39 @@ public class SchematicPosModule implements Listener {
         return instance;
     }
 
-    public void execute(Player var1, Position var2, boolean var3) {
-        UUID var4 = var1.getUniqueId();
-        if (!var3) {
-            var1.performCommand("/pos" + var2.getPos());
+    public void execute(Player player, Position position, boolean performCommand) {
+        UUID playerUUID = player.getUniqueId();
+        if (!performCommand) {
+            player.performCommand("/pos" + position.getPos());
         }
 
-        var1.sendMessage(" ");
-        var1.sendMessage(" ");
-        var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var4));
-        var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_POS_SET.getString(var4).replace("[posNumber]", String.valueOf(var2.getPos())));
-        Sounds.PLAYER_LEVELUP.getSound().play(var1, 3.0F, 3.0F);
+        player.sendMessage(" ");
+        player.sendMessage(" ");
+        player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
+        player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_POS_SET.getString(playerUUID).replace("[posNumber]", String.valueOf(position.getPos())));
+        Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
     }
 
-    public void executeWand(Player var1) {
-        var1.getInventory().setItem(0, this.wand);
-        var1.sendMessage(" ");
-        var1.sendMessage(" ");
-        var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var1.getUniqueId()));
-        var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_POS_WAND_RECEIVED.getString(var1.getUniqueId()));
+    public void executeWand(Player player) {
+        player.getInventory().setItem(0, this.wand);
+        player.sendMessage(" ");
+        player.sendMessage(" ");
+        player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+        player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_POS_WAND_RECEIVED.getString(player.getUniqueId()));
     }
 
     @EventHandler
-    private void onPlayerInteract(PlayerInteractEvent var1) {
-        if (var1.getItem() != null && var1.getItem().isSimilar(this.wand)) {
-            Player var2 = var1.getPlayer();
-            var1.setCancelled(true);
-            switch (var1.getAction()) {
+    private void onPlayerInteract(PlayerInteractEvent event) {
+        if (event.getItem() != null && event.getItem().isSimilar(this.wand)) {
+            Player player = event.getPlayer();
+            event.setCancelled(true);
+            switch (event.getAction()) {
                 case LEFT_CLICK_BLOCK:
-                    this.execute(var2, new Position(1, 0, 0, 0), true);
+                    this.execute(player, new Position(1, 0, 0, 0), true);
                     break;
                 case RIGHT_CLICK_BLOCK:
-                    this.execute(var2, new Position(2, 0, 0, 0), true);
+                    this.execute(player, new Position(2, 0, 0, 0), true);
             }
-
         }
     }
 }

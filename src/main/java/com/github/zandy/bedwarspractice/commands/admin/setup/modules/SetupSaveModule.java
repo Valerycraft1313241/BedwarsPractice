@@ -17,9 +17,9 @@ public class SetupSaveModule {
         return instance;
     }
 
-    public void execute(Player var1) {
-        if (SetupSession.get(var1.getUniqueId()).save(SetupSetModule.getSetupEditSessionMap().get(var1.getUniqueId()))) {
-            var1.teleport(var1.getWorld().getSpawnLocation().clone().add(0.5D, 1.0D, 0.5D));
+    public void execute(Player player) {
+        if (SetupSession.get(player.getUniqueId()).save(SetupSetModule.getSetupEditSessionMap().get(player.getUniqueId()))) {
+            player.teleport(player.getWorld().getSpawnLocation().clone().add(0.5D, 1.0D, 0.5D));
         }
 
     }

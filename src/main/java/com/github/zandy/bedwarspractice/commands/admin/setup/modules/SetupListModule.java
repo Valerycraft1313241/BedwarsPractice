@@ -28,26 +28,26 @@ public class SetupListModule {
         return instance;
     }
 
-    public void execute(Player var1) {
-        ArrayList<String> var2 = new ArrayList<>(this.requiredSchematics);
-        var2.remove("FIREBALL-TNT-JUMPING");
-        File var3 = new File("plugins/BedWarsPractice/Data");
-        if (var3.exists()) {
-            Arrays.stream(var3.listFiles()).forEach((var1x) -> var2.remove(var1x.getName().replace(".yml", "")));
+    public void execute(Player player) {
+        ArrayList<String> remainingSchematics = new ArrayList<>(this.requiredSchematics);
+        remainingSchematics.remove("FIREBALL-TNT-JUMPING");
+        File dataFolder = new File("plugins/BedWarsPractice/Data");
+        if (dataFolder.exists()) {
+            Arrays.stream(dataFolder.listFiles()).forEach((file) -> remainingSchematics.remove(file.getName().replace(".yml", "")));
         }
 
-        var1.sendMessage(" ");
-        var1.sendMessage(" ");
-        UUID var4 = var1.getUniqueId();
-        if (var2.isEmpty()) {
-            var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_LIST_ALL_CREATED.getString(var4));
-            Sounds.VILLAGER_NO.getSound().play(var1, 3.0F, 1.0F);
+        player.sendMessage(" ");
+        player.sendMessage(" ");
+        UUID playerUUID = player.getUniqueId();
+        if (remainingSchematics.isEmpty()) {
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_LIST_ALL_CREATED.getString(playerUUID));
+            Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
         } else {
-            var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_LIST_REQUIRED_SETUPS.getString(var4));
-            String var5 = Language.MessagesEnum.COMMAND_ADMIN_SETUP_LIST_ENUMERATION.getString(var4);
-            var2.forEach((var3x) -> BambooUtils.sendTextComponent(var1, var5.replace("[practiceName]", var3x), "/bwpa setup set " + var3x, Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(var4), Action.RUN_COMMAND));
-            var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_LIST_INFO.getString(var4));
-            Sounds.PLAYER_LEVELUP.getSound().play(var1, 3.0F, 3.0F);
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_LIST_REQUIRED_SETUPS.getString(playerUUID));
+            String enumerationMessage = Language.MessagesEnum.COMMAND_ADMIN_SETUP_LIST_ENUMERATION.getString(playerUUID);
+            remainingSchematics.forEach((schematic) -> BambooUtils.sendTextComponent(player, enumerationMessage.replace("[practiceName]", schematic), "/bwpa setup set " + schematic, Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(playerUUID), Action.RUN_COMMAND));
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_LIST_INFO.getString(playerUUID));
+            Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
         }
     }
 }

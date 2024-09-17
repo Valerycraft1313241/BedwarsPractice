@@ -11,10 +11,10 @@ public class PracticeChangeEvent extends Event {
     private final PracticeData oldPracticeData;
     private final PracticeData newPracticeData;
 
-    public PracticeChangeEvent(Player var1, PracticeData var2, PracticeData var3) {
-        this.player = var1;
-        this.oldPracticeData = var2;
-        this.newPracticeData = var3;
+    public PracticeChangeEvent(Player player, PracticeData oldPracticeData, PracticeData newPracticeData) {
+        this.player = player;
+        this.oldPracticeData = oldPracticeData;
+        this.newPracticeData = newPracticeData;
     }
 
     public static HandlerList getHandlerList() {

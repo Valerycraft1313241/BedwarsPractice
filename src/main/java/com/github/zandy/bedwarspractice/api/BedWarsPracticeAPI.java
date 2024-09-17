@@ -27,27 +27,27 @@ public class BedWarsPracticeAPI {
         return instance;
     }
 
-    public double getStatistic(UUID var1, Stats.StatsType var2) {
-        return PlayerStats.get(var1).get(var2);
+    public double getStatistic(UUID playerUUID, Stats.StatsType statsType) {
+        return PlayerStats.get(playerUUID).get(statsType);
     }
 
-    public String getISO(UUID var1) {
-        return Language.getInstance().getPlayerLocale().get(var1);
+    public String getISO(UUID playerUUID) {
+        return Language.getInstance().getPlayerLocale().get(playerUUID);
     }
 
     public double getAPIVersion() {
         return 1.3D;
     }
 
-    public PracticeCreator joinPractice(@NotNull Player var1, @NotNull GameEngine.PracticeType var2) {
+    public PracticeCreator joinPractice(@NotNull Player player, @NotNull GameEngine.PracticeType practiceType) {
 
-        switch (var2) {
+        switch (practiceType) {
             case BRIDGING:
-                return BridgingMode.getInstance().create(var1);
+                return BridgingMode.getInstance().create(player);
             case MLG:
-                return MLGMode.getInstance().create(var1);
+                return MLGMode.getInstance().create(player);
             case FIREBALL_TNT_JUMPING:
-                return FireballTNTJumpingMode.getInstance().create(var1);
+                return FireballTNTJumpingMode.getInstance().create(player);
             default:
                 return null;
         }

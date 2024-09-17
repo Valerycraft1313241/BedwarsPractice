@@ -18,16 +18,16 @@ public class BridgingData implements PracticeData {
     private final double duration;
     private final int placedBlocks;
 
-    public BridgingData(BridgingInfo var1) {
-        this.angleType = var1.getAngleType();
-        this.levelType = var1.getLevelType();
-        this.blocksType = var1.getBlocksType();
-        this.blocksPlaced = var1.getBlocksPlaced();
-        this.personalBest = var1.getPersonalBest();
-        this.practiceName = var1.formatArena();
-        this.statsType = var1.formatStatsType();
-        this.duration = var1.getPracticeTime();
-        this.placedBlocks = var1.getPlacedBlocks();
+    public BridgingData(BridgingInfo bridgingInfo) {
+        this.angleType = bridgingInfo.getAngleType();
+        this.levelType = bridgingInfo.getLevelType();
+        this.blocksType = bridgingInfo.getBlocksType();
+        this.blocksPlaced = bridgingInfo.getBlocksPlaced();
+        this.personalBest = bridgingInfo.getPersonalBest();
+        this.practiceName = bridgingInfo.formatArena();
+        this.statsType = bridgingInfo.formatStatsType();
+        this.duration = bridgingInfo.getPracticeTime();
+        this.placedBlocks = bridgingInfo.getPlacedBlocks();
     }
 
     public BridgingEnums.BridgingAngleType getAngleType() {

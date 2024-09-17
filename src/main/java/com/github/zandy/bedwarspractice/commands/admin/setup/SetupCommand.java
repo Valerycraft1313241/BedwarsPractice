@@ -20,166 +20,166 @@ public class SetupCommand extends SubCommand {
         super("setup", Language.MessagesEnum.COMMAND_ADMIN_SETUP_DESCRIPTION.getString(), BedWarsPracticeAdminCommand.getPermissions());
     }
 
-    public void execute(CommandSender var1, String[] var2) {
-        if (!(var1 instanceof Player)) {
-            var1.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getString());
+    public void execute(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getString());
         } else {
-            Player var3 = (Player) var1;
-            UUID var4 = var3.getUniqueId();
+            Player player = (Player) sender;
+            UUID uuid = player.getUniqueId();
             if (!Lobby.getInstance().isSet()) {
-                var3.sendMessage("");
-                var3.sendMessage("");
-                var3.sendMessage(Language.MessagesEnum.COMMAND_HEADER_DEFAULT.getString(var4));
-                Language.MessagesEnum.PLUGIN_LOBBY_NOT_SET.getStringList(var4).forEach((var2x) -> {
-                    if (var2x.toLowerCase().contains("bwpa")) {
-                        BambooUtils.sendTextComponent(var3, var2x, "/bwpa setSpawn", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(var4), Action.SUGGEST_COMMAND);
+                player.sendMessage("");
+                player.sendMessage("");
+                player.sendMessage(Language.MessagesEnum.COMMAND_HEADER_DEFAULT.getString(uuid));
+                Language.MessagesEnum.PLUGIN_LOBBY_NOT_SET.getStringList(uuid).forEach((argsx) -> {
+                    if (argsx.toLowerCase().contains("bwpa")) {
+                        BambooUtils.sendTextComponent(player, argsx, "/bwpa setSpawn", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(uuid), Action.SUGGEST_COMMAND);
                     } else {
-                        var3.sendMessage(var2x);
+                        player.sendMessage(argsx);
                     }
 
                 });
-            } else if (!SchematicWorldCreator.isInSchematicWorld(var3.getWorld())) {
-                var3.sendMessage(" ");
-                var3.sendMessage(" ");
-                var3.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var3.getUniqueId()));
-                Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_NOT_IN_SCHEMATIC_WORLD.getStringList(var4).forEach((var2x) -> {
-                    if (var2x.contains("/bwpa")) {
-                        BambooUtils.sendTextComponent(var3, var2x, "/bwpa schem create", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(var4), Action.RUN_COMMAND);
+            } else if (!SchematicWorldCreator.isInSchematicWorld(player.getWorld())) {
+                player.sendMessage(" ");
+                player.sendMessage(" ");
+                player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+                Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_NOT_IN_SCHEMATIC_WORLD.getStringList(uuid).forEach((argsx) -> {
+                    if (argsx.contains("/bwpa")) {
+                        BambooUtils.sendTextComponent(player, argsx, "/bwpa schem create", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(uuid), Action.RUN_COMMAND);
                     } else {
-                        var3.sendMessage(var2x);
+                        player.sendMessage(argsx);
                     }
 
                 });
-                Sounds.VILLAGER_NO.getSound().play(var3, 3.0F, 1.0F);
-            } else if (var2.length == 0) {
-                var3.sendMessage(" ");
-                var3.sendMessage(" ");
-                var3.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_DISPLAY_HEADER.getString(var4));
-                if (!SetupSession.exists(var3.getUniqueId())) {
-                    BambooUtils.sendTextComponent(var3, Language.MessagesEnum.COMMAND_ADMIN_SETUP_DISPLAY_SET.getString(var4), "/bwpa setup set ", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(var4), Action.SUGGEST_COMMAND);
-                    BambooUtils.sendTextComponent(var3, Language.MessagesEnum.COMMAND_ADMIN_SETUP_DISPLAY_LIST.getString(var4), "/bwpa setup list", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(var4), Action.RUN_COMMAND);
+                Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
+            } else if (args.length == 0) {
+                player.sendMessage(" ");
+                player.sendMessage(" ");
+                player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_DISPLAY_HEADER.getString(uuid));
+                if (!SetupSession.exists(player.getUniqueId())) {
+                    BambooUtils.sendTextComponent(player, Language.MessagesEnum.COMMAND_ADMIN_SETUP_DISPLAY_SET.getString(uuid), "/bwpa setup set ", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(uuid), Action.SUGGEST_COMMAND);
+                    BambooUtils.sendTextComponent(player, Language.MessagesEnum.COMMAND_ADMIN_SETUP_DISPLAY_LIST.getString(uuid), "/bwpa setup list", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(uuid), Action.RUN_COMMAND);
                 } else {
-                    BambooUtils.sendTextComponent(var3, Language.MessagesEnum.COMMAND_ADMIN_SETUP_DISPLAY_POS.getString(var4), "/bwpa setup pos ", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(var4), Action.SUGGEST_COMMAND);
-                    BambooUtils.sendTextComponent(var3, Language.MessagesEnum.COMMAND_ADMIN_SETUP_DISPLAY_SAVE.getString(var4), "/bwpa setup save", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(var4), Action.RUN_COMMAND);
-                    BambooUtils.sendTextComponent(var3, Language.MessagesEnum.COMMAND_ADMIN_SETUP_DISPLAY_QUIT.getString(var4), "/bwpa setup quit", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(var4), Action.RUN_COMMAND);
+                    BambooUtils.sendTextComponent(player, Language.MessagesEnum.COMMAND_ADMIN_SETUP_DISPLAY_POS.getString(uuid), "/bwpa setup pos ", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(uuid), Action.SUGGEST_COMMAND);
+                    BambooUtils.sendTextComponent(player, Language.MessagesEnum.COMMAND_ADMIN_SETUP_DISPLAY_SAVE.getString(uuid), "/bwpa setup save", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(uuid), Action.RUN_COMMAND);
+                    BambooUtils.sendTextComponent(player, Language.MessagesEnum.COMMAND_ADMIN_SETUP_DISPLAY_QUIT.getString(uuid), "/bwpa setup quit", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(uuid), Action.RUN_COMMAND);
                 }
 
-                Sounds.NOTE_PLING.getSound().play(var3, 3.0F, 1.0F);
+                Sounds.NOTE_PLING.getSound().play(player, 3.0F, 1.0F);
             } else {
-                String var5 = var2[0].toLowerCase();
-                byte var6 = -1;
-                switch (var5.hashCode()) {
+                String args0 = args[0].toLowerCase();
+                byte cmd = -1;
+                switch (args0.hashCode()) {
                     case 111188:
-                        if (var5.equals("pos")) {
-                            var6 = 2;
+                        if (args0.equals("pos")) {
+                            cmd = 2;
                         }
                         break;
                     case 113762:
-                        if (var5.equals("set")) {
-                            var6 = 0;
+                        if (args0.equals("set")) {
+                            cmd = 0;
                         }
                         break;
                     case 3322014:
-                        if (var5.equals("list")) {
-                            var6 = 1;
+                        if (args0.equals("list")) {
+                            cmd = 1;
                         }
                         break;
                     case 3482191:
-                        if (var5.equals("quit")) {
-                            var6 = 4;
+                        if (args0.equals("quit")) {
+                            cmd = 4;
                         }
                         break;
                     case 3522941:
-                        if (var5.equals("save")) {
-                            var6 = 3;
+                        if (args0.equals("save")) {
+                            cmd = 3;
                         }
                 }
 
-                switch (var6) {
+                switch (cmd) {
                     case 0:
-                        if (var2.length != 2) {
-                            var3.sendMessage(" ");
-                            var3.sendMessage(" ");
-                            var3.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var3.getUniqueId()));
-                            var3.sendMessage(Language.MessagesEnum.COMMAND_WRONG_USAGE.getString(var4));
-                            BambooUtils.sendTextComponent(var3, Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_USAGE.getString(var4), "/bwpa setup set ", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(var4), Action.SUGGEST_COMMAND);
-                            Sounds.VILLAGER_NO.getSound().play(var3, 3.0F, 1.0F);
+                        if (args.length != 2) {
+                            player.sendMessage(" ");
+                            player.sendMessage(" ");
+                            player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+                            player.sendMessage(Language.MessagesEnum.COMMAND_WRONG_USAGE.getString(uuid));
+                            BambooUtils.sendTextComponent(player, Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_USAGE.getString(uuid), "/bwpa setup set ", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(uuid), Action.SUGGEST_COMMAND);
+                            Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
                             return;
                         }
 
-                        SetupSetModule.getInstance().execute(var3, var2[1].toUpperCase());
+                        SetupSetModule.getInstance().execute(player, args[1].toUpperCase());
                         break;
                     case 1:
-                        SetupListModule.getInstance().execute(var3);
+                        SetupListModule.getInstance().execute(player);
                         break;
                     case 2:
-                        if (!SetupSession.exists(var3.getUniqueId())) {
-                            this.noSetupSession(var3);
+                        if (!SetupSession.exists(player.getUniqueId())) {
+                            this.noSetupSession(player);
                             return;
                         }
 
-                        if (var2.length < 2) {
-                            var3.sendMessage(" ");
-                            var3.sendMessage(" ");
-                            var3.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var3.getUniqueId()));
-                            var3.sendMessage(Language.MessagesEnum.COMMAND_WRONG_USAGE.getString(var4));
-                            BambooUtils.sendTextComponent(var3, Language.MessagesEnum.COMMAND_ADMIN_SETUP_POS_USAGE.getString(var4), "/bwpa setup pos ", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(var4), Action.SUGGEST_COMMAND);
-                            Sounds.VILLAGER_NO.getSound().play(var3, 3.0F, 1.0F);
+                        if (args.length < 2) {
+                            player.sendMessage(" ");
+                            player.sendMessage(" ");
+                            player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+                            player.sendMessage(Language.MessagesEnum.COMMAND_WRONG_USAGE.getString(uuid));
+                            BambooUtils.sendTextComponent(player, Language.MessagesEnum.COMMAND_ADMIN_SETUP_POS_USAGE.getString(uuid), "/bwpa setup pos ", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(uuid), Action.SUGGEST_COMMAND);
+                            Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
                             return;
                         }
 
-                        if (var2[1].equalsIgnoreCase("wand")) {
-                            SetupPosModule.getInstance().executeWand(var3);
+                        if (args[1].equalsIgnoreCase("wand")) {
+                            SetupPosModule.getInstance().executeWand(player);
                             return;
                         }
 
-                        SetupPosModule.getInstance().execute(var3, new Position(Integer.parseInt(var2[1]), var3.getLocation()));
+                        SetupPosModule.getInstance().execute(player, new Position(Integer.parseInt(args[1]), player.getLocation()));
                         break;
                     case 3:
                     case 4:
-                        if (!SetupSession.exists(var3.getUniqueId())) {
-                            this.noSetupSession(var3);
+                        if (!SetupSession.exists(player.getUniqueId())) {
+                            this.noSetupSession(player);
                             return;
                         }
 
-                        if (var2[0].equalsIgnoreCase("save")) {
-                            SetupSaveModule.getInstance().execute(var3);
+                        if (args[0].equalsIgnoreCase("save")) {
+                            SetupSaveModule.getInstance().execute(player);
                         } else {
-                            SetupQuitModule.getInstance().execute(var3);
+                            SetupQuitModule.getInstance().execute(player);
                         }
                         break;
                     default:
-                        var3.sendMessage(" ");
-                        var3.sendMessage(" ");
-                        var3.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var3.getUniqueId()));
-                        var3.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_WRONG_SUBCOMMAND.getString(var4).replace("[subCommand]", var2[0].toLowerCase()));
-                        Sounds.VILLAGER_NO.getSound().play(var3, 3.0F, 1.0F);
+                        player.sendMessage(" ");
+                        player.sendMessage(" ");
+                        player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+                        player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_WRONG_SUBCOMMAND.getString(uuid).replace("[subCommand]", args[0].toLowerCase()));
+                        Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
                 }
 
             }
         }
     }
 
-    public boolean canSee(CommandSender var1) {
-        if (!(var1 instanceof Player)) {
-            return this.hasPermission(var1);
+    public boolean canSee(CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            return this.hasPermission(sender);
         } else {
-            return this.hasPermission(var1) && SchematicWorldCreator.isInSchematicWorld(((Player) var1).getWorld());
+            return this.hasPermission(sender) && SchematicWorldCreator.isInSchematicWorld(((Player) sender).getWorld());
         }
     }
 
-    public void noSetupSession(Player var1) {
-        var1.sendMessage(" ");
-        var1.sendMessage(" ");
-        var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var1.getUniqueId()));
-        Language.MessagesEnum.COMMAND_ADMIN_SETUP_INVALID_SETUP_SESSION.getStringList(var1.getUniqueId()).forEach((var1x) -> {
-            if (var1x.contains("/bwpa")) {
-                BambooUtils.sendTextComponent(var1, var1x, "/bwpa setup set ", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(var1.getUniqueId()), Action.SUGGEST_COMMAND);
+    public void noSetupSession(Player sender) {
+        sender.sendMessage(" ");
+        sender.sendMessage(" ");
+        sender.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(sender.getUniqueId()));
+        Language.MessagesEnum.COMMAND_ADMIN_SETUP_INVALID_SETUP_SESSION.getStringList(sender.getUniqueId()).forEach((senderx) -> {
+            if (senderx.contains("/bwpa")) {
+                BambooUtils.sendTextComponent(sender, senderx, "/bwpa setup set ", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(sender.getUniqueId()), Action.SUGGEST_COMMAND);
             } else {
-                var1.sendMessage(var1x);
+                sender.sendMessage(senderx);
             }
 
         });
-        Sounds.VILLAGER_NO.getSound().play(var1, 3.0F, 1.0F);
+        Sounds.VILLAGER_NO.getSound().play(sender, 3.0F, 1.0F);
     }
 }

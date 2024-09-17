@@ -11,13 +11,13 @@ public class MLGData implements PracticeData {
     private final MLGEnums.MLGItemType itemType;
     private final MLGEnums.MLGShuffleType shuffleType;
 
-    public MLGData(MLGInfo var1) {
-        this.sizeType = var1.getSizeType();
-        this.heightType = var1.getHeightType();
-        this.positionType = var1.getPositionType();
-        this.tallnessType = var1.getTallnessType();
-        this.itemType = var1.getItemType();
-        this.shuffleType = var1.getShuffleType();
+    public MLGData(MLGInfo mlgInfo) {
+        this.sizeType = mlgInfo.getSizeType();
+        this.heightType = mlgInfo.getHeightType();
+        this.positionType = mlgInfo.getPositionType();
+        this.tallnessType = mlgInfo.getTallnessType();
+        this.itemType = mlgInfo.getItemType();
+        this.shuffleType = mlgInfo.getShuffleType();
     }
 
     public MLGEnums.MLGSizeType getSizeType() {

@@ -26,27 +26,25 @@ public class SchematicWorldCreator implements Listener {
         return world != null;
     }
 
-    public static boolean isInSchematicWorld(World var0) {
-        return isWorldGenerated() && world == var0;
+    public static boolean isInSchematicWorld(World world) {
+        return isWorldGenerated() && SchematicWorldCreator.world == world;
     }
 
     public static void unload() {
         if (world != null) {
-
-            for (Player var1 : world.getPlayers()) {
-                var1.teleport(Lobby.getInstance().get());
+            for (Player player : world.getPlayers()) {
+                player.teleport(Lobby.getInstance().get());
             }
 
             Bukkit.unloadWorld(world, false);
             world = null;
-            File var3 = new File("bedwars_practice_schematic_creator");
+            File worldDirectory = new File("bedwars_practice_schematic_creator");
 
             try {
-                if (var3.exists()) {
-                    FileUtils.deleteDirectory(var3);
+                if (worldDirectory.exists()) {
+                    FileUtils.deleteDirectory(worldDirectory);
                 }
-
-            } catch (IOException var2) {
+            } catch (IOException e) {
                 throw new BambooException(Arrays.asList("Could not remove 'bedwars_practice_schematic_creator' world.", "Please remove it manually once the server is closed!"));
             }
         }
@@ -54,14 +52,14 @@ public class SchematicWorldCreator implements Listener {
 
     public World getWorld() {
         if (world == null) {
-            WorldCreator var1 = new WorldCreator("bedwars_practice_schematic_creator");
-            var1.type(WorldType.FLAT);
-            var1.generateStructures(false);
+            WorldCreator worldCreator = new WorldCreator("bedwars_practice_schematic_creator");
+            worldCreator.type(WorldType.FLAT);
+            worldCreator.generateStructures(false);
             if (BWPUtils.isLegacy()) {
-                var1.generatorSettings("2;0;1");
+                worldCreator.generatorSettings("2;0;1");
             }
 
-            world = var1.createWorld();
+            world = worldCreator.createWorld();
             world.setStorm(false);
             world.setWeatherDuration(0);
             world.setThunderDuration(0);
@@ -80,10 +78,9 @@ public class SchematicWorldCreator implements Listener {
     }
 
     @EventHandler
-    private void onWeatherChange(WeatherChangeEvent var1) {
-        if (var1.toWeatherState()) {
-            var1.setCancelled(true);
+    private void onWeatherChange(WeatherChangeEvent event) {
+        if (event.toWeatherState()) {
+            event.setCancelled(true);
         }
-
     }
 }

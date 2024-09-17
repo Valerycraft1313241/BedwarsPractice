@@ -10,10 +10,10 @@ public class PlayerLanguageChangeEvent extends Event {
     private final String oldISO;
     private final String newISO;
 
-    public PlayerLanguageChangeEvent(Player var1, String var2, String var3) {
-        this.player = var1;
-        this.oldISO = var2;
-        this.newISO = var3;
+    public PlayerLanguageChangeEvent(Player player, String oldISO, String newISO) {
+        this.player = player;
+        this.oldISO = oldISO;
+        this.newISO = newISO;
     }
 
     public static HandlerList getHandlerList() {

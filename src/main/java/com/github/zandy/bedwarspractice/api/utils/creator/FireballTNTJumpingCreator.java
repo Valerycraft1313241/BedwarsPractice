@@ -8,22 +8,22 @@ import com.github.zandy.bedwarspractice.engine.practice.fireballtntjumping.Fireb
 public class FireballTNTJumpingCreator implements PracticeCreator {
     private final FireballTNTJumpingInfo fireballTNTJumpingInfo;
 
-    public FireballTNTJumpingCreator(FireballTNTJumpingInfo var1) {
-        this.fireballTNTJumpingInfo = var1;
+    public FireballTNTJumpingCreator(FireballTNTJumpingInfo fireballTNTJumpingInfo) {
+        this.fireballTNTJumpingInfo = fireballTNTJumpingInfo;
     }
 
-    public FireballTNTJumpingCreator setAmountType(FireballTNTJumpingEnums.FireballTNTJumpingAmountType var1) {
-        this.fireballTNTJumpingInfo.setAmountType(var1);
+    public FireballTNTJumpingCreator setAmountType(FireballTNTJumpingEnums.FireballTNTJumpingAmountType amountType) {
+        this.fireballTNTJumpingInfo.setAmountType(amountType);
         return this;
     }
 
-    public FireballTNTJumpingCreator setItemType(FireballTNTJumpingEnums.FireballTNTJumpingItemType var1) {
-        this.fireballTNTJumpingInfo.setItemType(var1);
+    public FireballTNTJumpingCreator setItemType(FireballTNTJumpingEnums.FireballTNTJumpingItemType itemType) {
+        this.fireballTNTJumpingInfo.setItemType(itemType);
         return this;
     }
 
-    public FireballTNTJumpingCreator setWoolType(FireballTNTJumpingEnums.FireballTNTJumpingWoolType var1) {
-        this.fireballTNTJumpingInfo.setWoolType(var1);
+    public FireballTNTJumpingCreator setWoolType(FireballTNTJumpingEnums.FireballTNTJumpingWoolType woolType) {
+        this.fireballTNTJumpingInfo.setWoolType(woolType);
         return this;
     }
 

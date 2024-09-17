@@ -7,22 +7,22 @@ import com.github.zandy.bedwarspractice.engine.practice.bridging.BridgingMode;
 public class BridgingCreator implements PracticeCreator {
     private final BridgingInfo bridgingInfo;
 
-    public BridgingCreator(BridgingInfo var1) {
-        this.bridgingInfo = var1;
+    public BridgingCreator(BridgingInfo bridgingInfo) {
+        this.bridgingInfo = bridgingInfo;
     }
 
-    public BridgingCreator setBlocksType(BridgingEnums.BridgingBlocksType var1) {
-        this.bridgingInfo.setBlocksType(var1);
+    public BridgingCreator setBlocksType(BridgingEnums.BridgingBlocksType blocksType) {
+        this.bridgingInfo.setBlocksType(blocksType);
         return this;
     }
 
-    public BridgingCreator setLevelType(BridgingEnums.BridgingLevelType var1) {
-        this.bridgingInfo.setLevelType(var1);
+    public BridgingCreator setLevelType(BridgingEnums.BridgingLevelType levelType) {
+        this.bridgingInfo.setLevelType(levelType);
         return this;
     }
 
-    public BridgingCreator setAngleType(BridgingEnums.BridgingAngleType var1) {
-        this.bridgingInfo.setAngleType(var1);
+    public BridgingCreator setAngleType(BridgingEnums.BridgingAngleType angleType) {
+        this.bridgingInfo.setAngleType(angleType);
         return this;
     }
 

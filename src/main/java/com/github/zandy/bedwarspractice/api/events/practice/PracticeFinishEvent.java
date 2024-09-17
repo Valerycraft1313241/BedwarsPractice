@@ -12,10 +12,10 @@ public class PracticeFinishEvent extends Event {
     private final GameEngine.PracticeType practiceType;
     private final PracticeData practiceData;
 
-    public PracticeFinishEvent(Player var1, GameEngine.PracticeType var2, PracticeData var3) {
-        this.player = var1;
-        this.practiceType = var2;
-        this.practiceData = var3;
+    public PracticeFinishEvent(Player player, GameEngine.PracticeType practiceType, PracticeData practiceData) {
+        this.player = player;
+        this.practiceType = practiceType;
+        this.practiceData = practiceData;
     }
 
     public static HandlerList getHandlerList() {

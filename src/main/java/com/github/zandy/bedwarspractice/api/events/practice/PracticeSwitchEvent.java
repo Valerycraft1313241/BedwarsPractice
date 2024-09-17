@@ -11,10 +11,10 @@ public class PracticeSwitchEvent extends Event {
     private final GameEngine.PracticeType oldPracticeMode;
     private final GameEngine.PracticeType newPracticeMode;
 
-    public PracticeSwitchEvent(Player var1, GameEngine.PracticeType var2, GameEngine.PracticeType var3) {
-        this.player = var1;
-        this.oldPracticeMode = var2;
-        this.newPracticeMode = var3;
+    public PracticeSwitchEvent(Player player, GameEngine.PracticeType oldPracticeMode, GameEngine.PracticeType newPracticeMode) {
+        this.player = player;
+        this.oldPracticeMode = oldPracticeMode;
+        this.newPracticeMode = newPracticeMode;
     }
 
     public static HandlerList getHandlerList() {

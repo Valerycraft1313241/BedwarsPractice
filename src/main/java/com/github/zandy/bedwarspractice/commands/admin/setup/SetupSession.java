@@ -19,7 +19,7 @@ import java.util.*;
 
 public class SetupSession {
     private static final HashMap<UUID, SetupSession> setupSessionMap = new HashMap<>();
-    private final GameEngine.PracticeType pType;
+    private final GameEngine.PracticeType practiceType;
     private final String name;
     private final Location spawnLocation;
     private final UUID uuid;
@@ -27,108 +27,106 @@ public class SetupSession {
     private RelativeLocation relativePosition1;
     private RelativeLocation relativePosition2;
 
-    public SetupSession(Player var1, GameEngine.PracticeType var2, String var3, Location var4) {
-        this.pType = var2;
-        this.name = var3;
-        this.spawnLocation = var4;
-        this.uuid = var1.getUniqueId();
+    public SetupSession(Player player, GameEngine.PracticeType practiceType, String name, Location spawnLocation) {
+        this.practiceType = practiceType;
+        this.name = name;
+        this.spawnLocation = spawnLocation;
+        this.uuid = player.getUniqueId();
         setupSessionMap.put(this.uuid, this);
     }
 
-    public SetupSession(Player var1, GameEngine.PracticeType var2, String var3, Location var4, RelativeLocation var5, RelativeLocation var6) {
-        this.pType = var2;
-        this.name = var3;
-        this.spawnLocation = var4;
-        this.uuid = var1.getUniqueId();
-        this.relativePosition1 = var5;
-        this.relativePosition2 = var6;
+    public SetupSession(Player player, GameEngine.PracticeType practiceType, String name, Location spawnLocation, RelativeLocation relativePosition1, RelativeLocation relativePosition2) {
+        this.practiceType = practiceType;
+        this.name = name;
+        this.spawnLocation = spawnLocation;
+        this.uuid = player.getUniqueId();
+        this.relativePosition1 = relativePosition1;
+        this.relativePosition2 = relativePosition2;
         setupSessionMap.put(this.uuid, this);
     }
 
-    public static boolean exists(UUID var0) {
-        return setupSessionMap.containsKey(var0);
+    public static boolean exists(UUID uuid) {
+        return setupSessionMap.containsKey(uuid);
     }
 
-    public static SetupSession get(UUID var0) {
-        return setupSessionMap.get(var0);
+    public static SetupSession get(UUID uuid) {
+        return setupSessionMap.get(uuid);
     }
 
-    public static void remove(UUID var0) {
-        setupSessionMap.remove(var0);
+    public static void remove(UUID uuid) {
+        setupSessionMap.remove(uuid);
     }
 
-    public void setRelativePosition(int var1, RelativeLocation var2) {
-        if (var1 == 1) {
-            this.relativePosition1 = var2;
+    public void setRelativePosition(int positionNumber, RelativeLocation relativePosition) {
+        if (positionNumber == 1) {
+            this.relativePosition1 = relativePosition;
         } else {
-            this.relativePosition2 = var2;
+            this.relativePosition2 = relativePosition;
         }
-
     }
 
     public boolean containsData() {
-        Player var1 = Bukkit.getPlayer(this.uuid);
-        if (!this.pType.equals(GameEngine.PracticeType.BRIDGING) && !this.pType.equals(GameEngine.PracticeType.MLG)) {
+        Player player = Bukkit.getPlayer(this.uuid);
+        if (!this.practiceType.equals(GameEngine.PracticeType.BRIDGING) && !this.practiceType.equals(GameEngine.PracticeType.MLG)) {
             return true;
         } else {
-            byte var2;
+            byte positionNumber;
             if (this.relativePosition1 == null) {
-                var2 = 1;
+                positionNumber = 1;
             } else if (this.relativePosition2 == null) {
-                var2 = 2;
+                positionNumber = 2;
             } else {
-                var2 = 0;
+                positionNumber = 0;
             }
 
-            if (var2 == 0) {
+            if (positionNumber == 0) {
                 return true;
             } else {
-                Language.MessagesEnum.COMMAND_ADMIN_SETUP_SAVE_POSITION_NOT_SET.getStringList(this.uuid).forEach((var3) -> {
-                    String var4 = var3.replace("[posNumber]", String.valueOf(var2));
-                    if (var3.contains("/bwpa setup pos")) {
-                        BambooUtils.sendTextComponent(var1, var4, "/bwpa setup pos", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(this.uuid), Action.SUGGEST_COMMAND);
+                Language.MessagesEnum.COMMAND_ADMIN_SETUP_SAVE_POSITION_NOT_SET.getStringList(this.uuid).forEach((message) -> {
+                    String formattedMessage = message.replace("[posNumber]", String.valueOf(positionNumber));
+                    if (message.contains("/bwpa setup pos")) {
+                        BambooUtils.sendTextComponent(player, formattedMessage, "/bwpa setup pos", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(this.uuid), Action.SUGGEST_COMMAND);
                     } else {
-                        var1.sendMessage(var4);
+                        player.sendMessage(formattedMessage);
                     }
-
                 });
                 return false;
             }
         }
     }
 
-    public boolean save(EditSession var1) {
+    public boolean save(EditSession editSession) {
         if (!this.containsData()) {
             return false;
         } else {
-            BambooFile var2 = new BambooFile(this.getName(), "Data");
-            var2.set("Position-1.X", this.relativePosition1.getRelativeX());
-            var2.set("Position-1.Y", this.relativePosition1.getRelativeY());
-            var2.set("Position-1.Z", this.relativePosition1.getRelativeZ());
-            var2.set("Position-2.X", this.relativePosition2.getRelativeX());
-            var2.set("Position-2.Y", this.relativePosition2.getRelativeY());
-            var2.set("Position-2.Z", this.relativePosition2.getRelativeZ());
-            Player var3 = Bukkit.getPlayer(this.uuid);
-            var3.sendMessage(" ");
-            var3.sendMessage(" ");
-            var3.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(this.uuid));
-            var3.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_SAVE_SUCCESSFULLY.getString(this.uuid).replace("[practiceName]", this.name));
-            var1.undo(var1);
+            BambooFile dataFile = new BambooFile(this.getName(), "Data");
+            dataFile.set("Position-1.X", this.relativePosition1.getRelativeX());
+            dataFile.set("Position-1.Y", this.relativePosition1.getRelativeY());
+            dataFile.set("Position-1.Z", this.relativePosition1.getRelativeZ());
+            dataFile.set("Position-2.X", this.relativePosition2.getRelativeX());
+            dataFile.set("Position-2.Y", this.relativePosition2.getRelativeY());
+            dataFile.set("Position-2.Z", this.relativePosition2.getRelativeZ());
+            Player player = Bukkit.getPlayer(this.uuid);
+            player.sendMessage(" ");
+            player.sendMessage(" ");
+            player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(this.uuid));
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_SAVE_SUCCESSFULLY.getString(this.uuid).replace("[practiceName]", this.name));
+            editSession.undo(editSession);
             setupSessionMap.remove(this.uuid);
-            ArrayList<String> var4 = new ArrayList<>(this.requiredSchematics);
-            var4.remove("FIREBALL-TNT-JUMPING");
-            File var5 = new File("plugins/BedWarsPractice/Data");
-            if (var5.exists()) {
-                Arrays.stream(var5.listFiles()).forEach((var1x) -> var4.remove(var1x.getName().replace(".yml", "")));
+            ArrayList<String> remainingSchematics = new ArrayList<>(this.requiredSchematics);
+            remainingSchematics.remove("FIREBALL-TNT-JUMPING");
+            File dataFolder = new File("plugins/BedWarsPractice/Data");
+            if (dataFolder.exists()) {
+                Arrays.stream(dataFolder.listFiles()).forEach((file) -> remainingSchematics.remove(file.getName().replace(".yml", "")));
             }
 
-            if (var4.isEmpty()) {
+            if (remainingSchematics.isEmpty()) {
                 SetupData.getInstance().setSetupDoneConfigurations(true);
             }
 
             SetupSetModule.getSetupNameMap().remove(this.uuid);
             SetupSetModule.getInstance().removeOffset(this.uuid);
-            var3.getWorld().getSpawnLocation().clone().add(0.5D, 1.0D, 0.5D);
+            player.getWorld().getSpawnLocation().clone().add(0.5D, 1.0D, 0.5D);
             return true;
         }
     }

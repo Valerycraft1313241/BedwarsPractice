@@ -55,97 +55,93 @@ public class SetupSetModule {
         return setupEditSessionMap;
     }
 
-    public void execute(Player var1, String var2) {
-        UUID var3 = var1.getUniqueId();
-        var1.sendMessage(" ");
-        var1.sendMessage(" ");
-        var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var3));
-        if (setupNameMap.containsKey(var3)) {
-            Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_ALREADY_IN_SETUP.getStringList(var3).forEach((var3x) -> {
-                if (var3x.contains("/bwpa")) {
-                    BambooUtils.sendTextComponent(var1, var3x.replace("[Name]", var2), "/bwpa setup quit", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(var3), Action.RUN_COMMAND);
+    public void execute(Player player, String practiceName) {
+        UUID playerUUID = player.getUniqueId();
+        player.sendMessage(" ");
+        player.sendMessage(" ");
+        player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
+        if (setupNameMap.containsKey(playerUUID)) {
+            Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_ALREADY_IN_SETUP.getStringList(playerUUID).forEach((message) -> {
+                if (message.contains("/bwpa")) {
+                    BambooUtils.sendTextComponent(player, message.replace("[Name]", practiceName), "/bwpa setup quit", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(playerUUID), Action.RUN_COMMAND);
                 } else {
-                    var1.sendMessage(var3x.replace("[Name]", var2));
+                    player.sendMessage(message.replace("[Name]", practiceName));
                 }
-
             });
-        } else if (!this.requiredSchematics.contains(var2)) {
-            Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_WRONG_PRACTICE_NAME.getStringList(var3).forEach((var2x) -> {
-                if (var2x.contains("/bwpa")) {
-                    BambooUtils.sendTextComponent(var1, var2x, "/bwpa setup list", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(var3), Action.RUN_COMMAND);
+        } else if (!this.requiredSchematics.contains(practiceName)) {
+            Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_WRONG_PRACTICE_NAME.getStringList(playerUUID).forEach((message) -> {
+                if (message.contains("/bwpa")) {
+                    BambooUtils.sendTextComponent(player, message, "/bwpa setup list", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(playerUUID), Action.RUN_COMMAND);
                 } else {
-                    var1.sendMessage(var2x);
+                    player.sendMessage(message);
                 }
-
             });
-            Sounds.VILLAGER_NO.getSound().play(var1, 3.0F, 1.0F);
+            Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
         } else {
             label41:
             {
                 if (BWPUtils.isLegacy()) {
-                    if (!BWPLegacyAdapter.getInstance().getClipboardCache().containsKey(var2)) {
+                    if (!BWPLegacyAdapter.getInstance().getClipboardCache().containsKey(practiceName)) {
                         break label41;
                     }
                 }
 
-                Location var4 = this.getSetupLocation(var3);
-                var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_LOADING_SCHEMATIC.getString(var3).replace("[schemName]", var2));
-                double[] var5 = (new BWPVector(var4)).toArray();
-                var4.getWorld().getEntities().forEach((var0) -> {
-                    if (var0.getType().equals(EntityType.DROPPED_ITEM)) {
-                        var0.remove();
+                Location setupLocation = this.getSetupLocation(playerUUID);
+                player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_LOADING_SCHEMATIC.getString(playerUUID).replace("[schemName]", practiceName));
+                double[] coordinates = (new BWPVector(setupLocation)).toArray();
+                setupLocation.getWorld().getEntities().forEach((entity) -> {
+                    if (entity.getType().equals(EntityType.DROPPED_ITEM)) {
+                        entity.remove();
                     }
-
                 });
-                World var6 = WESupport.getWEWorld(var1.getWorld());
-                getSetupEditSessionMap().put(var1.getUniqueId(), BWPLegacyAdapter.getInstance().pasteSchematic(var2, var6, var5));
-                var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_SCHEMATIC_LOADED.getString(var3));
-                Sounds.PLAYER_LEVELUP.getSound().play(var1, 3.0F, 3.0F);
-                GameEngine.PracticeType var7 = var2.contains("FIREBALL") ? GameEngine.PracticeType.FIREBALL_TNT_JUMPING : GameEngine.PracticeType.valueOf(var2.split("-")[0]);
-                var4.add(0.5D, 0.0D, 0.5D);
-                if (GameEngine.getInstance().getPracticeFile().containsKey(var2)) {
-                    BambooFile var8 = GameEngine.getInstance().getPracticeFile().get(var2);
-                    new SetupSession(var1, var7, var2, var4, new RelativeLocation((float) var8.getInt("Position-1.X"), (float) var8.getInt("Position-1.Y"), (float) var8.getInt("Position-1.Z")), new RelativeLocation((float) var8.getInt("Position-2.X"), (float) var8.getInt("Position-2.Y"), (float) var8.getInt("Position-2.Z")));
+                World world = WESupport.getWEWorld(player.getWorld());
+                getSetupEditSessionMap().put(player.getUniqueId(), BWPLegacyAdapter.getInstance().pasteSchematic(practiceName, world, coordinates));
+                player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_SCHEMATIC_LOADED.getString(playerUUID));
+                Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
+                GameEngine.PracticeType practiceType = practiceName.contains("FIREBALL") ? GameEngine.PracticeType.FIREBALL_TNT_JUMPING : GameEngine.PracticeType.valueOf(practiceName.split("-")[0]);
+                setupLocation.add(0.5D, 0.0D, 0.5D);
+                if (GameEngine.getInstance().getPracticeFile().containsKey(practiceName)) {
+                    BambooFile practiceFile = GameEngine.getInstance().getPracticeFile().get(practiceName);
+                    new SetupSession(player, practiceType, practiceName, setupLocation, new RelativeLocation((float) practiceFile.getInt("Position-1.X"), (float) practiceFile.getInt("Position-1.Y"), (float) practiceFile.getInt("Position-1.Z")), new RelativeLocation((float) practiceFile.getInt("Position-2.X"), (float) practiceFile.getInt("Position-2.Y"), (float) practiceFile.getInt("Position-2.Z")));
                 } else {
-                    new SetupSession(var1, var7, var2, var4);
+                    new SetupSession(player, practiceType, practiceName, setupLocation);
                 }
 
-                var1.teleport(var4);
-                Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_INFO_TUTORIAL.getStringList(var3).forEach((var1x) -> var1.sendMessage(var1x.replace("[spigotLink]", "https://bit.ly/3f4lyvF").replace("[youtubeLink]", "https://bit.ly/3BSNJXn")));
-                setupNameMap.put(var1.getUniqueId(), var2);
+                player.teleport(setupLocation);
+                Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_INFO_TUTORIAL.getStringList(playerUUID).forEach((message) -> player.sendMessage(message.replace("[spigotLink]", "https://bit.ly/3f4lyvF").replace("[youtubeLink]", "https://bit.ly/3BSNJXn")));
+                setupNameMap.put(player.getUniqueId(), practiceName);
                 return;
             }
 
-            Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_SCHEMATIC_NOT_FOUND.getStringList(var3).forEach((var3x) -> {
-                if (var3x.contains("/bwpa")) {
-                    BambooUtils.sendTextComponent(var1, var3x, "/bwpa schem save", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(var3), Action.SUGGEST_COMMAND);
+            Language.MessagesEnum.COMMAND_ADMIN_SETUP_SET_SCHEMATIC_NOT_FOUND.getStringList(playerUUID).forEach((message) -> {
+                if (message.contains("/bwpa")) {
+                    BambooUtils.sendTextComponent(player, message, "/bwpa schem save", Language.MessagesEnum.COMMAND_CLICK_TO_SUGGEST.getString(playerUUID), Action.SUGGEST_COMMAND);
                 } else {
-                    var1.sendMessage(var3x.replace("[schemName]", var2));
+                    player.sendMessage(message.replace("[schemName]", practiceName));
                 }
-
             });
-            Sounds.VILLAGER_NO.getSound().play(var1, 3.0F, 1.0F);
+            Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
         }
     }
 
-    public Location getSetupLocation(UUID var1) {
-        int var2 = this.getNextOffset();
+    public Location getSetupLocation(UUID playerUUID) {
+        int offset = this.getNextOffset();
         if (!this.availableOffsets.isEmpty() && this.availableOffsets.get(0) != null) {
-            var2 = this.availableOffsets.get(0);
-            this.availableOffsets.remove(var2);
-            this.getSetupOffsetMap().put(var1, var2);
+            offset = this.availableOffsets.get(0);
+            this.availableOffsets.remove(offset);
+            this.getSetupOffsetMap().put(playerUUID, offset);
         } else {
-            short var3 = 400;
-            this.nextOffset += var3;
+            short increment = 400;
+            this.nextOffset += increment;
         }
 
-        return this.getBaseLocation().clone().add(var2, 0.0D, 0.0D);
+        return this.getBaseLocation().clone().add(offset, 0.0D, 0.0D);
     }
 
-    public void removeOffset(UUID var1) {
+    public void removeOffset(UUID playerUUID) {
         Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> {
-            this.availableOffsets.add(this.getSetupOffsetMap().get(var1));
-            this.getSetupOffsetMap().remove(var1);
+            this.availableOffsets.add(this.getSetupOffsetMap().get(playerUUID));
+            this.getSetupOffsetMap().remove(playerUUID);
         }, 500L);
     }
 

@@ -8,8 +8,8 @@ public class PracticeQuitEvent extends Event {
     public static final HandlerList handlers = new HandlerList();
     private final Player player;
 
-    public PracticeQuitEvent(Player var1) {
-        this.player = var1;
+    public PracticeQuitEvent(Player player) {
+        this.player = player;
     }
 
     public static HandlerList getHandlerList() {
