@@ -31,43 +31,43 @@ public class SchematicLeaveModule implements Listener {
         return instance;
     }
 
-    public void execute(Player var1) {
-        if (SchematicWorldCreator.isInSchematicWorld(var1.getWorld())) {
-            if (SetupSession.exists(var1.getUniqueId())) {
-                var1.sendMessage(" ");
-                var1.sendMessage(" ");
-                Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LEAVE_SETUP_NOT_FINISHED.getStringList(var1.getUniqueId()).forEach((var1x) -> {
-                    if (var1x.toLowerCase().contains("/bwpa setup quit")) {
-                        BambooUtils.sendTextComponent(var1, var1x, "/bwpa setup quit", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(var1.getUniqueId()), Action.RUN_COMMAND);
+    public void execute(Player player) {
+        if (SchematicWorldCreator.isInSchematicWorld(player.getWorld())) {
+            if (SetupSession.exists(player.getUniqueId())) {
+                player.sendMessage(" ");
+                player.sendMessage(" ");
+                Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LEAVE_SETUP_NOT_FINISHED.getStringList(player.getUniqueId()).forEach((message) -> {
+                    if (message.toLowerCase().contains("/bwpa setup quit")) {
+                        BambooUtils.sendTextComponent(player, message, "/bwpa setup quit", Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(player.getUniqueId()), Action.RUN_COMMAND);
                     } else {
-                        var1.sendMessage(var1x);
+                        player.sendMessage(message);
                     }
 
                 });
             } else {
-                this.unloadModule(var1);
-                var1.sendMessage(" ");
-                var1.sendMessage(" ");
-                var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var1.getUniqueId()));
-                List<String> var10000 = Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LEAVE_SUCCESSFULLY.getStringList(var1.getUniqueId());
-                Objects.requireNonNull(var1);
-                var10000.forEach(var1::sendMessage);
-                Sounds.PLAYER_LEVELUP.getSound().play(var1, 3.0F, 3.0F);
+                this.unloadModule(player);
+                player.sendMessage(" ");
+                player.sendMessage(" ");
+                player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+                List<String> messages = Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LEAVE_SUCCESSFULLY.getStringList(player.getUniqueId());
+                Objects.requireNonNull(player);
+                messages.forEach(player::sendMessage);
+                Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
             }
         }
     }
 
     @EventHandler
-    private void onPlayerQuit(PlayerQuitEvent var1) {
-        if (SchematicWorldCreator.isInSchematicWorld(var1.getPlayer().getWorld())) {
-            this.unloadModule(var1.getPlayer());
+    private void onPlayerQuit(PlayerQuitEvent event) {
+        if (SchematicWorldCreator.isInSchematicWorld(event.getPlayer().getWorld())) {
+            this.unloadModule(event.getPlayer());
         }
 
     }
 
-    private void unloadModule(Player var1) {
-        Location var2 = Lobby.getInstance().get();
-        (new ArrayList<>(var1.getWorld().getPlayers())).forEach((var1x) -> var1x.teleport(var2));
+    private void unloadModule(Player player) {
+        Location lobbyLocation = Lobby.getInstance().get();
+        (new ArrayList<>(player.getWorld().getPlayers())).forEach((worldPlayer) -> worldPlayer.teleport(lobbyLocation));
         SchematicWorldCreator.unload();
     }
 }

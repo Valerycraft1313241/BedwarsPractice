@@ -70,11 +70,11 @@ public class GameEngine implements Listener {
     }
 
     public void init() {
-        File var1 = new File("plugins/BedWarsPractice/Data/");
-        if (var1.exists()) {
-            Arrays.stream(var1.listFiles()).forEach((var1x) -> {
-                String var2 = var1x.getName().replace(".yml", "");
-                this.practiceFile.put(var2, new BambooFile(var2, "Data"));
+        File dataFile = new File("plugins/BedWarsPractice/Data/");
+        if (dataFile.exists()) {
+            Arrays.stream(dataFile.listFiles()).forEach((file) -> {
+                String fileName = file.getName().replace(".yml", "");
+                this.practiceFile.put(fileName, new BambooFile(fileName, "Data"));
             });
         }
 
@@ -83,15 +83,15 @@ public class GameEngine implements Listener {
     }
 
     public void rebuildSchematicCache() {
-        File var1 = new File("plugins/BedWarsPractice/Schematics/");
-        if (var1.exists()) {
-            Arrays.stream(var1.listFiles()).forEach((var1x) -> {
-                String var2 = var1x.getName();
-                if (var2.contains("BRIDGING") || var2.contains("MLG") || var2.contains("FIREBALL-TNT-JUMPING")) {
+        File schematicsFile = new File("plugins/BedWarsPractice/Schematics/");
+        if (schematicsFile.exists()) {
+            Arrays.stream(schematicsFile.listFiles()).forEach((schematic) -> {
+                String schematicName = schematic.getName();
+                if (schematicName.contains("BRIDGING") || schematicName.contains("MLG") || schematicName.contains("FIREBALL-TNT-JUMPING")) {
                     try {
-                        BWPLegacyAdapter.getInstance().addSchematicToCache(var2, var1x);
-                    } catch (Exception var4) {
-                        throw new BambooErrorException(var4, this.getClass(), Arrays.asList("Schematic Cache rebuild failed!", "One ore more files are unreadable or corrupt"));
+                        BWPLegacyAdapter.getInstance().addSchematicToCache(schematicName, schematic);
+                    } catch (Exception e) {
+                        throw new BambooErrorException(e, this.getClass(), Arrays.asList("Schematic Cache rebuild failed!", "One ore more files are unreadable or corrupt"));
                     }
                 }
 
@@ -101,141 +101,141 @@ public class GameEngine implements Listener {
 
     public void serverReload() {
         if (Lobby.getInstance().isSet()) {
-            Location var1 = Lobby.getInstance().get();
-            this.getPracticeTypeMap().keySet().forEach((var1x) -> {
-                Bukkit.getPlayer(var1x).getInventory().clear();
-                ScoreboardEngine.getInstance().unload(var1x);
-                Bukkit.getPlayer(var1x).teleport(var1);
+            Location lobbyLocation = Lobby.getInstance().get();
+            this.getPracticeTypeMap().keySet().forEach((uuid) -> {
+                Bukkit.getPlayer(uuid).getInventory().clear();
+                ScoreboardEngine.getInstance().unload(uuid);
+                Bukkit.getPlayer(uuid).teleport(lobbyLocation);
             });
-            PracticeSpectator.getPracticeSpectators().keySet().forEach((var1x) -> {
-                Bukkit.getPlayer(var1x).getInventory().clear();
-                Bukkit.getPlayer(var1x).teleport(var1);
-                Bukkit.getPlayer(var1x).setGameMode(GameMode.SURVIVAL);
+            PracticeSpectator.getPracticeSpectators().keySet().forEach((uuid) -> {
+                Bukkit.getPlayer(uuid).getInventory().clear();
+                Bukkit.getPlayer(uuid).teleport(lobbyLocation);
+                Bukkit.getPlayer(uuid).setGameMode(GameMode.SURVIVAL);
             });
         }
     }
 
-    public Location getPracticeLocation(UUID var1) {
-        Integer var2 = this.getNextOffset();
-        boolean var3 = true;
+    public Location getPracticeLocation(UUID uuid) {
+        Integer offset = this.getNextOffset();
+        boolean bool = true;
         if (!this.availableOffsets.isEmpty() && this.availableOffsets.get(0) != null) {
-            if (this.getLastOffset().containsKey(var1)) {
-                Integer var4 = this.getLastOffset().get(var1);
-                if (this.availableOffsets.get(0).equals(var4)) {
-                    ArrayList<Integer> var5 = new ArrayList<>(this.availableOffsets);
-                    var5.remove(var4);
-                    if (!var5.isEmpty() && var5.get(0) != null) {
-                        var2 = var5.get(0);
-                        this.availableOffsets.remove(var2);
-                        var3 = false;
+            if (this.getLastOffset().containsKey(uuid)) {
+                Integer lastOffset = this.getLastOffset().get(uuid);
+                if (this.availableOffsets.get(0).equals(lastOffset)) {
+                    ArrayList<Integer> availableOffsets = new ArrayList<>(this.availableOffsets);
+                    availableOffsets.remove(lastOffset);
+                    if (!availableOffsets.isEmpty() && availableOffsets.get(0) != null) {
+                        offset = availableOffsets.get(0);
+                        this.availableOffsets.remove(offset);
+                        bool = false;
                     }
                 } else {
-                    var2 = this.availableOffsets.get(0);
-                    this.availableOffsets.remove(var2);
-                    var3 = false;
+                    offset = this.availableOffsets.get(0);
+                    this.availableOffsets.remove(offset);
+                    bool = false;
                 }
             } else {
-                var2 = this.availableOffsets.get(0);
-                this.availableOffsets.remove(var2);
-                var3 = false;
+                offset = this.availableOffsets.get(0);
+                this.availableOffsets.remove(offset);
+                bool = false;
             }
         }
 
-        if (var3) {
-            var2 = this.nextOffset += 350;
+        if (bool) {
+            offset = this.nextOffset += 350;
         }
 
-        this.practicePlayerOffset.put(var1, var2);
-        return this.getBaseLocation().clone().add((double) var2, 0.0D, 0.0D);
+        this.practicePlayerOffset.put(uuid, offset);
+        return this.getBaseLocation().clone().add((double) offset, 0.0D, 0.0D);
     }
 
     @EventHandler
-    private void onBlockBreak(BlockBreakEvent var1) {
-        if (var1.getBlock().getWorld().equals(WorldEngine.getInstance().getPracticeWorld())) {
-            var1.setCancelled(true);
+    private void onBlockBreak(BlockBreakEvent event) {
+        if (event.getBlock().getWorld().equals(WorldEngine.getInstance().getPracticeWorld())) {
+            event.setCancelled(true);
         }
 
     }
 
     @EventHandler
-    private void onPlayerInteract(PlayerInteractEvent var1) {
-        Block var2 = var1.getClickedBlock();
-        if (var2 != null && var2.getWorld().equals(WorldEngine.getInstance().getPracticeWorld())) {
-            if (this.restrictedInteract.contains(var2.getType()) || var2.getType().name().contains("BED")) {
-                var1.setCancelled(true);
+    private void onPlayerInteract(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+        if (block != null && block.getWorld().equals(WorldEngine.getInstance().getPracticeWorld())) {
+            if (this.restrictedInteract.contains(block.getType()) || block.getType().name().contains("BED")) {
+                event.setCancelled(true);
             }
 
         }
     }
 
     @EventHandler
-    private void onPlayerQuit(PlayerQuitEvent var1) {
-        Player var2 = var1.getPlayer();
-        if (var2.getWorld().equals(WorldEngine.getInstance().getPracticeWorld())) {
-            Bukkit.getPluginManager().callEvent(new PracticeQuitEvent(var2));
+    private void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        if (player.getWorld().equals(WorldEngine.getInstance().getPracticeWorld())) {
+            Bukkit.getPluginManager().callEvent(new PracticeQuitEvent(player));
         }
 
         if (InventoryCache.isInstantiated()) {
-            InventoryCache.getInstance().remove(var2);
+            InventoryCache.getInstance().remove(player);
         }
 
-        if (PracticeSpectator.isSpectating(var2.getUniqueId())) {
-            PracticeSpectator.remove(var2.getUniqueId());
-            var2.setGameMode(GameMode.SURVIVAL);
+        if (PracticeSpectator.isSpectating(player.getUniqueId())) {
+            PracticeSpectator.remove(player.getUniqueId());
+            player.setGameMode(GameMode.SURVIVAL);
         }
 
     }
 
     @EventHandler
-    private void onPracticeQuit(PracticeQuitEvent var1) {
-        Player var2 = var1.getPlayer();
-        if (this.getPracticeTypeMap().containsKey(var2.getUniqueId())) {
-            switch (this.getPracticeTypeMap().get(var2.getUniqueId())) {
+    private void onPracticeQuit(PracticeQuitEvent event) {
+        Player player = event.getPlayer();
+        if (this.getPracticeTypeMap().containsKey(player.getUniqueId())) {
+            switch (this.getPracticeTypeMap().get(player.getUniqueId())) {
                 case BRIDGING:
-                    BridgingMode.getInstance().quit(var2);
+                    BridgingMode.getInstance().quit(player);
                     break;
                 case MLG:
-                    MLGMode.getInstance().quit(var2);
+                    MLGMode.getInstance().quit(player);
                     break;
                 case FIREBALL_TNT_JUMPING:
-                    FireballTNTJumpingMode.getInstance().quit(var2);
+                    FireballTNTJumpingMode.getInstance().quit(player);
             }
 
-            Location var3 = Settings.SettingsEnum.PRACTICE_PROXY_ENABLED.getBoolean() ? Lobby.getInstance().get() : null;
-            this.getSpectators().get(var2.getUniqueId()).forEach((var1x) -> {
-                Player var2s = Bukkit.getPlayer(var1x);
-                var2s.getInventory().clear();
-                if (var3 != null) {
-                    var2s.teleport(var3);
+            Location lobbyLocation = Settings.SettingsEnum.PRACTICE_PROXY_ENABLED.getBoolean() ? Lobby.getInstance().get() : null;
+            this.getSpectators().get(player.getUniqueId()).forEach((spectator) -> {
+                Player player1 = Bukkit.getPlayer(spectator);
+                player1.getInventory().clear();
+                if (lobbyLocation != null) {
+                    player1.teleport(lobbyLocation);
                 }
 
-                PracticeSpectator.remove(var1x);
-                var2s.setGameMode(GameMode.SURVIVAL);
-                var2s.sendMessage(Language.MessagesEnum.SPECTATE_PLAYER_QUIT.getString(var1x));
+                PracticeSpectator.remove(spectator);
+                player1.setGameMode(GameMode.SURVIVAL);
+                player1.sendMessage(Language.MessagesEnum.SPECTATE_PLAYER_QUIT.getString(spectator));
             });
-            this.getSpectators().remove(var2.getUniqueId());
+            this.getSpectators().remove(player.getUniqueId());
         }
     }
 
     @EventHandler
-    private void onPracticeSwitch(PracticeJoinEvent var1) {
-        UUID var2 = var1.getPlayer().getUniqueId();
-        if (this.getSpectators().containsKey(var2)) {
-            GameEngine var3 = getInstance();
-            this.getSpectators().get(var2).forEach((var4) -> {
-                Player var5 = Bukkit.getPlayer(var4);
-                var5.teleport(this.getPracticeLocationMap().get(var2).clone().add(0.0D, 1.5D, 0.0D));
-                var5.sendMessage(" ");
-                var5.sendMessage(" ");
-                Language.MessagesEnum.SPECTATE_PRACTICE_MODE_CHANGED.getStringList(var4).forEach((var5x) -> {
-                    if (var5x.contains("[player_name]") && var5x.contains("[practice_mode]")) {
-                        var5.sendMessage(var5x.replace("[player_name]", var1.getPlayer().getName()).replace("[practice_mode]", var3.getPracticeTypeMap().get(var2).getDisplayName(var4)));
-                    } else if (var5x.contains("[player_name]")) {
-                        var5.sendMessage(var5x.replace("[player_name]", var1.getPlayer().getName()));
-                    } else if (var5x.contains("[practice_mode]")) {
-                        var5.sendMessage(var5x.replace("[practice_mode]", var3.getPracticeTypeMap().get(var2).getDisplayName(var4)));
-                    } else if (var5x.contains("[current_settings]")) {
-                        var5.sendMessage(var5x.replace("[current_settings]", var3.getCurrentGameSettings(var2, var4)));
+    private void onPracticeSwitch(PracticeJoinEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
+        if (this.getSpectators().containsKey(uuid)) {
+            GameEngine gameEngine = getInstance();
+            this.getSpectators().get(uuid).forEach((spectator) -> {
+                Player player1 = Bukkit.getPlayer(spectator);
+                player1.teleport(this.getPracticeLocationMap().get(uuid).clone().add(0.0D, 1.5D, 0.0D));
+                player1.sendMessage(" ");
+                player1.sendMessage(" ");
+                Language.MessagesEnum.SPECTATE_PRACTICE_MODE_CHANGED.getStringList(spectator).forEach((s) -> {
+                    if (s.contains("[player_name]") && s.contains("[practice_mode]")) {
+                        player1.sendMessage(s.replace("[player_name]", event.getPlayer().getName()).replace("[practice_mode]", gameEngine.getPracticeTypeMap().get(uuid).getDisplayName(spectator)));
+                    } else if (s.contains("[player_name]")) {
+                        player1.sendMessage(s.replace("[player_name]", event.getPlayer().getName()));
+                    } else if (s.contains("[practice_mode]")) {
+                        player1.sendMessage(s.replace("[practice_mode]", gameEngine.getPracticeTypeMap().get(uuid).getDisplayName(spectator)));
+                    } else if (s.contains("[current_settings]")) {
+                        player1.sendMessage(s.replace("[current_settings]", gameEngine.getCurrentGameSettings(uuid, spectator)));
                     }
 
                 });
@@ -244,26 +244,26 @@ public class GameEngine implements Listener {
     }
 
     @EventHandler
-    private void onPracticeChangeSettings(PracticeChangeEvent var1) {
-        UUID var2 = var1.getPlayer().getUniqueId();
-        if (this.getSpectators().containsKey(var2)) {
-            GameEngine var3 = getInstance();
-            this.getSpectators().get(var2).forEach((var4) -> {
-                Player var5 = Bukkit.getPlayer(var4);
-                var5.teleport(this.getPracticeLocationMap().get(var2).clone().add(0.0D, 1.5D, 0.0D));
-                var5.sendMessage(" ");
-                var5.sendMessage(" ");
-                Language.MessagesEnum.SPECTATE_SETTINGS_CHANGED.getStringList(var4).forEach((var5x) -> {
-                    if (var5x.contains("[player_name]")) {
-                        var5.sendMessage(var5x.replace("[player_name]", var1.getPlayer().getName()));
+    private void onPracticeChangeSettings(PracticeChangeEvent event) {
+        UUID uuid = event.getPlayer().getUniqueId();
+        if (this.getSpectators().containsKey(uuid)) {
+            GameEngine gameEngine = getInstance();
+            this.getSpectators().get(uuid).forEach((spectator) -> {
+                Player player1 = Bukkit.getPlayer(spectator);
+                player1.teleport(this.getPracticeLocationMap().get(uuid).clone().add(0.0D, 1.5D, 0.0D));
+                player1.sendMessage(" ");
+                player1.sendMessage(" ");
+                Language.MessagesEnum.SPECTATE_SETTINGS_CHANGED.getStringList(spectator).forEach((s) -> {
+                    if (s.contains("[player_name]")) {
+                        player1.sendMessage(s.replace("[player_name]", event.getPlayer().getName()));
                     }
 
-                    if (var5x.contains("[practice_mode]")) {
-                        var5.sendMessage(var5x.replace("[practice_mode]", var3.getPracticeTypeMap().get(var2).getDisplayName(var4)));
+                    if (s.contains("[practice_mode]")) {
+                        player1.sendMessage(s.replace("[practice_mode]", gameEngine.getPracticeTypeMap().get(uuid).getDisplayName(spectator)));
                     }
 
-                    if (var5x.contains("[current_settings]")) {
-                        var5.sendMessage(var5x.replace("[current_settings]", var3.getCurrentGameSettings(var2, var4)));
+                    if (s.contains("[current_settings]")) {
+                        player1.sendMessage(s.replace("[current_settings]", gameEngine.getCurrentGameSettings(uuid, spectator)));
                     }
 
                 });
@@ -272,98 +272,98 @@ public class GameEngine implements Listener {
     }
 
     @EventHandler
-    private void onGameModeChange(PlayerGameModeChangeEvent var1) {
-        UUID var2 = var1.getPlayer().getUniqueId();
-        if (PracticeSpectator.isSpectating(var2)) {
-            var1.getPlayer().sendMessage(Language.MessagesEnum.SPECTATE_GAMEMODE_NOT_CHANGEABLE.getString(var2));
-            var1.setCancelled(true);
+    private void onGameModeChange(PlayerGameModeChangeEvent event) {
+        UUID playerUUID = event.getPlayer().getUniqueId();
+        if (PracticeSpectator.isSpectating(playerUUID)) {
+            event.getPlayer().sendMessage(Language.MessagesEnum.SPECTATE_GAMEMODE_NOT_CHANGEABLE.getString(playerUUID));
+            event.setCancelled(true);
         }
     }
 
     @EventHandler
-    private void onWorldChange(PlayerChangedWorldEvent var1) {
-        if (this.getPracticeTypeMap().containsKey(var1.getPlayer().getUniqueId()) && var1.getFrom().getName().equals("bedwars_practice")) {
-            Bukkit.getPluginManager().callEvent(new PracticeQuitEvent(var1.getPlayer()));
+    private void onWorldChange(PlayerChangedWorldEvent event) {
+        if (this.getPracticeTypeMap().containsKey(event.getPlayer().getUniqueId()) && event.getFrom().getName().equals("bedwars_practice")) {
+            Bukkit.getPluginManager().callEvent(new PracticeQuitEvent(event.getPlayer()));
         }
-
     }
 
-    public String getCurrentGameSettings(UUID var1, UUID var2) {
-        String var3 = "";
-        String var4 = Language.MessagesEnum.SPECTATE_SETTINGS_DISPLAY_COMMA.getString(var2);
-        switch (this.getPracticeTypeMap().get(var1)) {
+    public String getCurrentGameSettings(UUID playerUUID, UUID spectatorUUID) {
+        String settings = "";
+        String separator = Language.MessagesEnum.SPECTATE_SETTINGS_DISPLAY_COMMA.getString(spectatorUUID);
+        switch (this.getPracticeTypeMap().get(playerUUID)) {
             case BRIDGING:
-                BridgingInfo var8 = BridgingInfo.get(var1);
-                var3 = Language.MessagesEnum.SPECTATE_SETTINGS_BRIDGING_BLOCKS.getString(var2).replace("[block_number]", var8.getBlocksType().getDisplayName(var2)) + var4 + Language.MessagesEnum.SPECTATE_SETTINGS_BRIDGING_ANGLE.getString(var2).replace("[angle_type]", var8.getAngleType().getDisplayName(var2)) + var4 + Language.MessagesEnum.SPECTATE_SETTINGS_BRIDGING_ELEVATION.getString(var2).replace("[elevation_type]", var8.getLevelType().getDisplayName(var2));
+                BridgingInfo bridgingInfo = BridgingInfo.get(playerUUID);
+                settings = Language.MessagesEnum.SPECTATE_SETTINGS_BRIDGING_BLOCKS.getString(spectatorUUID).replace("[block_number]", bridgingInfo.getBlocksType().getDisplayName(spectatorUUID)) + separator + Language.MessagesEnum.SPECTATE_SETTINGS_BRIDGING_ANGLE.getString(spectatorUUID).replace("[angle_type]", bridgingInfo.getAngleType().getDisplayName(spectatorUUID)) + separator + Language.MessagesEnum.SPECTATE_SETTINGS_BRIDGING_ELEVATION.getString(spectatorUUID).replace("[elevation_type]", bridgingInfo.getLevelType().getDisplayName(spectatorUUID));
                 break;
             case MLG:
-                MLGInfo var7 = MLGInfo.get(var1);
-                var3 = Language.MessagesEnum.SPECTATE_SETTINGS_MLG_SIZE.getString(var2).replace("[size_type]", var7.getSizeType().getDisplayName(var2)) + var4 + Language.MessagesEnum.SPECTATE_SETTINGS_MLG_HEIGHT.getString(var2).replace("[height_type]", var7.getHeightType().getDisplayName(var2)) + var4 + Language.MessagesEnum.SPECTATE_SETTINGS_MLG_POSITION.getString(var2).replace("[position_type]", var7.getPositionType().getDisplayName(var2)) + var4 + Language.MessagesEnum.SPECTATE_SETTINGS_MLG_TALLNESS.getString(var2).replace("[tallness_type]", String.valueOf(var7.getTallnessType().getValue()));
+                MLGInfo mlgInfo = MLGInfo.get(playerUUID);
+                settings = Language.MessagesEnum.SPECTATE_SETTINGS_MLG_SIZE.getString(spectatorUUID).replace("[size_type]", mlgInfo.getSizeType().getDisplayName(spectatorUUID)) + separator + Language.MessagesEnum.SPECTATE_SETTINGS_MLG_HEIGHT.getString(spectatorUUID).replace("[height_type]", mlgInfo.getHeightType().getDisplayName(spectatorUUID)) + separator + Language.MessagesEnum.SPECTATE_SETTINGS_MLG_POSITION.getString(spectatorUUID).replace("[position_type]", mlgInfo.getPositionType().getDisplayName(spectatorUUID)) + separator + Language.MessagesEnum.SPECTATE_SETTINGS_MLG_TALLNESS.getString(spectatorUUID).replace("[tallness_type]", String.valueOf(mlgInfo.getTallnessType().getValue()));
                 break;
             case FIREBALL_TNT_JUMPING:
-                FireballTNTJumpingInfo var5 = FireballTNTJumpingInfo.get(var1);
-                int var6 = var5.getAmountType().getValue();
-                var3 = Language.MessagesEnum.SPECTATE_SETTINGS_FIREBALL_TNT_JUMPING_ITEM_TYPE_AMOUNT.getString(var2).replace("[item_amount]", String.valueOf(var6)).replace("[item_type]", Language.MessagesEnum.valueOf("Spectate.Settings.Display.Fireball-TNT-Jumping.Item." + var5.getItemType().getValueName() + "." + (var6 == 1 ? "Singular" : "Plural")).getString(var2)) + var4 + Language.MessagesEnum.SPECTATE_SETTINGS_FIREBALL_TNT_JUMPING_WOOL.getString(var2).replace("[wool_type]", var5.getWoolType().getDisplayName(var2));
+                FireballTNTJumpingInfo fireballTNTJumpingInfo = FireballTNTJumpingInfo.get(playerUUID);
+                int itemAmount = fireballTNTJumpingInfo.getAmountType().getValue();
+                settings = Language.MessagesEnum.SPECTATE_SETTINGS_FIREBALL_TNT_JUMPING_ITEM_TYPE_AMOUNT.getString(spectatorUUID).replace("[item_amount]", String.valueOf(itemAmount)).replace("[item_type]", Language.MessagesEnum.valueOf("Spectate.Settings.Display.Fireball-TNT-Jumping.Item." + fireballTNTJumpingInfo.getItemType().getValueName() + "." + (itemAmount == 1 ? "Singular" : "Plural")).getString(spectatorUUID)) + separator + Language.MessagesEnum.SPECTATE_SETTINGS_FIREBALL_TNT_JUMPING_WOOL.getString(spectatorUUID).replace("[wool_type]", fireballTNTJumpingInfo.getWoolType().getDisplayName(spectatorUUID));
         }
 
-        return var3;
+        return settings;
     }
 
-    public Location initMode(Player var1, UUID var2, String var3, GameEngine.PracticeType var4) {
-        this.getPending().add(var2);
-        Location var5 = this.getPracticeLocation(var2);
-        Location var6 = var5.clone().add(0.5D, 0.0D, 0.5D);
-        double[] var7 = (new BWPVector(var5)).toArray();
-        World var8 = WorldEngine.getInstance().getPracticeWEWorld();
-        this.getPlayerEditSessionMap().put(var2, BWPLegacyAdapter.getInstance().pasteSchematic(var3, var8, var7));
-        var1.getInventory().clear();
+    public Location initMode(Player player, UUID playerUUID, String schematicName, GameEngine.PracticeType practiceType) {
+        this.getPending().add(playerUUID);
+        Location practiceLocation = this.getPracticeLocation(playerUUID);
+        Location teleportLocation = practiceLocation.clone().add(0.5D, 0.0D, 0.5D);
+        double[] coordinates = (new BWPVector(practiceLocation)).toArray();
+        World world = WorldEngine.getInstance().getPracticeWEWorld();
+        this.getPlayerEditSessionMap().put(playerUUID, BWPLegacyAdapter.getInstance().pasteSchematic(schematicName, world, coordinates));
+        player.getInventory().clear();
         Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> {
-            this.getPending().remove(var2);
-            var1.teleport(var6);
-            if (!this.spectators.containsKey(var2)) {
-                this.spectators.put(var2, new ArrayList<>());
+            this.getPending().remove(playerUUID);
+            player.teleport(teleportLocation);
+            if (!this.spectators.containsKey(playerUUID)) {
+                this.spectators.put(playerUUID, new ArrayList<>());
             }
 
         }, 5L);
-        this.getPracticeTypeMap().put(var2, var4);
-        this.getPracticeLocationMap().put(var2, var6);
-        PlayerDataNPC.get(var2).removeAll();
-        return var5;
+        this.getPracticeTypeMap().put(playerUUID, practiceType);
+        this.getPracticeLocationMap().put(playerUUID, teleportLocation);
+        PlayerDataNPC.get(playerUUID).removeAll();
+        return practiceLocation;
     }
 
-    public void clear(UUID var1, boolean var2, boolean var3) {
-        if (var2) {
-            this.getPracticeTypeMap().remove(var1);
+
+    public void clear(UUID uuid, boolean removePracticeMap, boolean removeOffset) {
+        if (removePracticeMap) {
+            this.getPracticeTypeMap().remove(uuid);
         }
 
-        if (this.getPracticePlayerOffset().containsKey(var1) && var3) {
-            int var4 = this.getPracticePlayerOffset().get(var1);
-            this.getLastOffset().put(var1, var4);
-            this.getAvailableOffsets().add(var4);
-            this.getPracticePlayerOffset().remove(var1);
+        if (this.getPracticePlayerOffset().containsKey(uuid) && removeOffset) {
+            int practiceOffset = this.getPracticePlayerOffset().get(uuid);
+            this.getLastOffset().put(uuid, practiceOffset);
+            this.getAvailableOffsets().add(practiceOffset);
+            this.getPracticePlayerOffset().remove(uuid);
         }
 
-        EditSession var5 = this.getPlayerEditSessionMap().get(var1);
-        var5.undo(var5);
-        this.getPlayerEditSessionMap().remove(var1);
-        this.getPracticeLocationMap().remove(var1);
+        EditSession editSession = this.getPlayerEditSessionMap().get(uuid);
+        editSession.undo(editSession);
+        this.getPlayerEditSessionMap().remove(uuid);
+        this.getPracticeLocationMap().remove(uuid);
     }
 
-    public Block getStandingBlock(Location var1) {
-        Block var2 = var1.clone().add(0.3D, -1.0D, -0.3D).getBlock();
-        if (!var2.getType().equals(Material.AIR)) {
-            return var2;
+    public Block getStandingBlock(Location location) {
+        Block block = location.clone().add(0.3D, -1.0D, -0.3D).getBlock();
+        if (!block.getType().equals(Material.AIR)) {
+            return block;
         } else {
-            Block var3 = var1.clone().add(-0.3D, -1.0D, -0.3D).getBlock();
-            if (!var3.getType().equals(Material.AIR)) {
-                return var3;
+            Block block1 = location.clone().add(-0.3D, -1.0D, -0.3D).getBlock();
+            if (!block1.getType().equals(Material.AIR)) {
+                return block1;
             } else {
-                Block var4 = var1.clone().add(0.3D, -1.0D, 0.3D).getBlock();
-                if (!var4.getType().equals(Material.AIR)) {
-                    return var4;
+                Block block2 = location.clone().add(0.3D, -1.0D, 0.3D).getBlock();
+                if (!block2.getType().equals(Material.AIR)) {
+                    return block2;
                 } else {
-                    Block var5 = var1.clone().add(-0.3D, -1.0D, 0.3D).getBlock();
-                    return !var5.getType().equals(Material.AIR) ? var5 : var1.getBlock();
+                    Block block3 = location.clone().add(-0.3D, -1.0D, 0.3D).getBlock();
+                    return !block3.getType().equals(Material.AIR) ? block3 : location.getBlock();
                 }
             }
         }
@@ -424,12 +424,12 @@ public class GameEngine implements Listener {
 
         private final Language.MessagesEnum displayName;
 
-        PracticeType(Language.MessagesEnum var3) {
-            this.displayName = var3;
+        PracticeType(Language.MessagesEnum messagesEnum) {
+            this.displayName = messagesEnum;
         }
 
-        public String getDisplayName(UUID var1) {
-            return this.displayName.getString(var1);
+        public String getDisplayName(UUID uuid) {
+            return this.displayName.getString(uuid);
         }
 
     }

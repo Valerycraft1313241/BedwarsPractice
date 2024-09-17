@@ -39,55 +39,55 @@ public class PlayerEngine implements Listener {
             new PlayerChangeLanguageListener();
         }
 
-        Bukkit.getOnlinePlayers().forEach((var1) -> this.join(var1.getUniqueId(), var1.getName()));
+        Bukkit.getOnlinePlayers().forEach((player) -> this.join(player.getUniqueId(), player.getName()));
     }
 
     @EventHandler
-    private void onPlayerJoin(PlayerJoinEvent var1) {
-        this.join(var1.getPlayer().getUniqueId(), var1.getPlayer().getName());
+    private void onPlayerJoin(PlayerJoinEvent event) {
+        this.join(event.getPlayer().getUniqueId(), event.getPlayer().getName());
     }
 
-    private void join(UUID var1, String var2) {
-        if (!Database.getInstance().hasAccount(var1, "Profile")) {
+    private void join(UUID playerUUID, String playerName) {
+        if (!Database.getInstance().hasAccount(playerUUID, "Profile")) {
             switch (Database.getInstance().getDatabaseType()) {
                 case MYSQL:
-                    Database.getInstance().createPlayer(var1, "Profile", Arrays.asList(new ColumnInfo("Player", var2), new ColumnInfo("UUID", var1)));
+                    Database.getInstance().createPlayer(playerUUID, "Profile", Arrays.asList(new ColumnInfo("Player", playerName), new ColumnInfo("UUID", playerUUID)));
                     break;
                 case FLAT_FILE:
-                    Database.getInstance().setString(var1, Settings.SettingsEnum.DEFAULT_LANGUAGE.getString().replace("English", "EN"), "Language", "Profile");
+                    Database.getInstance().setString(playerUUID, Settings.SettingsEnum.DEFAULT_LANGUAGE.getString().replace("English", "EN"), "Language", "Profile");
             }
         }
 
-        if (!Database.getInstance().hasAccount(var1, Stats.getTableName())) {
+        if (!Database.getInstance().hasAccount(playerUUID, Stats.getTableName())) {
             switch (Database.getInstance().getDatabaseType()) {
                 case MYSQL:
-                    Database.getInstance().createPlayer(var1, Stats.getTableName(), Arrays.asList(new ColumnInfo("Player", var2), new ColumnInfo("UUID", var1)));
+                    Database.getInstance().createPlayer(playerUUID, Stats.getTableName(), Arrays.asList(new ColumnInfo("Player", playerName), new ColumnInfo("UUID", playerUUID)));
                     break;
                 case FLAT_FILE:
-                    Arrays.stream(Stats.StatsType.values()).forEach((var1x) -> Database.getInstance().setDouble(var1, 0.0D, var1x.name(), Stats.getTableName()));
+                    Arrays.stream(Stats.StatsType.values()).forEach((statType) -> Database.getInstance().setDouble(playerUUID, 0.0D, statType.name(), Stats.getTableName()));
             }
         }
 
-        if (Database.getInstance().hasAccount(var1, Stats.getTableName())) {
-            Stats.getInstance().addPlayer(var1);
+        if (Database.getInstance().hasAccount(playerUUID, Stats.getTableName())) {
+            Stats.getInstance().addPlayer(playerUUID);
         }
 
-        if (!Language.getInstance().getPlayerLocale().containsKey(var1)) {
+        if (!Language.getInstance().getPlayerLocale().containsKey(playerUUID)) {
             if (Main.getBedWarsAPI() != null) {
-                Language.getInstance().getPlayerLocale().put(var1, Main.getBedWarsAPI().getPlayerLanguage(Bukkit.getPlayer(var1)).getIso().toUpperCase());
+                Language.getInstance().getPlayerLocale().put(playerUUID, Main.getBedWarsAPI().getPlayerLanguage(Bukkit.getPlayer(playerUUID)).getIso().toUpperCase());
             } else {
-                Language.getInstance().getPlayerLocale().put(var1, Database.getInstance().getString(var1, "Language", "Profile"));
+                Language.getInstance().getPlayerLocale().put(playerUUID, Database.getInstance().getString(playerUUID, "Language", "Profile"));
             }
         }
 
-        if (!PlayerDataNPC.contains(var1)) {
-            new PlayerDataNPC(var1);
+        if (!PlayerDataNPC.contains(playerUUID)) {
+            new PlayerDataNPC(playerUUID);
         } else {
-            PlayerDataNPC.get(var1).flush();
+            PlayerDataNPC.get(playerUUID).flush();
         }
 
         if (BambooUtils.isPluginEnabled("Citizens")) {
-            Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> PracticeNPC.getInstance().respawnNPCs(Bukkit.getPlayer(var1)), 1L);
+            Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> PracticeNPC.getInstance().respawnNPCs(Bukkit.getPlayer(playerUUID)), 1L);
         }
 
     }

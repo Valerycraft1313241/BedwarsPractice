@@ -35,90 +35,90 @@ public class DeleteNPCCommand extends SubCommand implements Listener {
         return instance;
     }
 
-    public void execute(CommandSender var1, String[] var2) {
-        if (!(var1 instanceof Player)) {
-            var1.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getPath());
+    public void execute(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getPath());
         } else {
-            Player var3 = (Player) var1;
-            UUID var4 = var3.getUniqueId();
+            Player player = (Player) sender;
+            UUID playerUUID = player.getUniqueId();
             if (!Lobby.getInstance().isSet()) {
-                var3.sendMessage(" ");
-                var3.sendMessage(" ");
-                var3.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var4));
-                List<String> var10000 = Language.MessagesEnum.PLUGIN_LOBBY_NOT_SET.getStringList(var4);
-                Objects.requireNonNull(var3);
-                var10000.forEach(var3::sendMessage);
-                Sounds.VILLAGER_NO.getSound().play(var3, 3.0F, 1.0F);
+                player.sendMessage(" ");
+                player.sendMessage(" ");
+                player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
+                List<String> messages = Language.MessagesEnum.PLUGIN_LOBBY_NOT_SET.getStringList(playerUUID);
+                Objects.requireNonNull(player);
+                messages.forEach(player::sendMessage);
+                Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
             } else {
-                boolean var5 = true;
-                NPCStorage.NPCType[] var6 = NPCStorage.NPCType.values();
+                boolean noNPCs = true;
+                NPCStorage.NPCType[] npcTypes = NPCStorage.NPCType.values();
 
-                for (NPCStorage.NPCType var9 : var6) {
-                    if (!NPCStorage.getInstance().isEmpty(var9)) {
-                        var5 = false;
+                for (NPCStorage.NPCType npcType : npcTypes) {
+                    if (!NPCStorage.getInstance().isEmpty(npcType)) {
+                        noNPCs = false;
                     }
                 }
 
-                if (var5) {
-                    var3.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var4));
-                    var3.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_DELETE_NO_NPCS_SET.getString());
+                if (noNPCs) {
+                    player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
+                    player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_DELETE_NO_NPCS_SET.getString());
                 } else {
-                    var3.sendMessage(" ");
-                    var3.sendMessage(" ");
-                    var3.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var4));
-                    var3.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_DELETE_CLICK_TO_DELETE.getString(var4));
-                    this.toClickList.add(var4);
-                    Sounds.PLAYER_LEVELUP.getSound().play(var3, 3.0F, 3.0F);
+                    player.sendMessage(" ");
+                    player.sendMessage(" ");
+                    player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
+                    player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_DELETE_CLICK_TO_DELETE.getString(playerUUID));
+                    this.toClickList.add(playerUUID);
+                    Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
                 }
             }
         }
     }
 
     @EventHandler
-    private void onNPCRightClick(NPCRightClickEvent var1) {
-        this.clickFunction(var1.getClicker(), var1.getClicker().getUniqueId(), var1.getNPC().getId());
+    private void onNPCRightClick(NPCRightClickEvent event) {
+        this.clickFunction(event.getClicker(), event.getClicker().getUniqueId(), event.getNPC().getId());
     }
 
     @EventHandler
-    private void onNPCLeftClick(NPCLeftClickEvent var1) {
-        this.clickFunction(var1.getClicker(), var1.getClicker().getUniqueId(), var1.getNPC().getId());
+    private void onNPCLeftClick(NPCLeftClickEvent event) {
+        this.clickFunction(event.getClicker(), event.getClicker().getUniqueId(), event.getNPC().getId());
     }
 
-    private void clickFunction(Player var1, UUID var2, int var3) {
-        if (this.toClickList.contains(var2)) {
-            boolean var4 = false;
-            NPCStorage.NPCType var5 = null;
-            NPCStorage.NPCType[] var6 = NPCStorage.NPCType.values();
+    private void clickFunction(Player player, UUID playerUUID, int npcID) {
+        if (this.toClickList.contains(playerUUID)) {
+            boolean isPracticeNPC = false;
+            NPCStorage.NPCType npcType = null;
+            NPCStorage.NPCType[] npcTypes = NPCStorage.NPCType.values();
 
-            for (NPCStorage.NPCType var9 : var6) {
-                if (NPCStorage.getInstance().getIDList(var9).contains(var3)) {
-                    var4 = true;
-                    var5 = var9;
+            for (NPCStorage.NPCType type : npcTypes) {
+                if (NPCStorage.getInstance().getIDList(type).contains(npcID)) {
+                    isPracticeNPC = true;
+                    npcType = type;
                     break;
                 }
             }
 
-            if (!var4) {
-                var1.sendMessage(" ");
-                var1.sendMessage(" ");
-                var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var2));
-                var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_DELETE_NOT_PRACTICE.getString(var2));
-                Sounds.VILLAGER_NO.getSound().play(var1, 3.0F, 1.0F);
+            if (!isPracticeNPC) {
+                player.sendMessage(" ");
+                player.sendMessage(" ");
+                player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
+                player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_DELETE_NOT_PRACTICE.getString(playerUUID));
+                Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
             } else {
-                NPCStorage.getInstance().remove(var5, var3);
-                PracticeNPC.getInstance().removeNPC(var3);
-                this.toClickList.remove(var2);
-                var1.sendMessage(" ");
-                var1.sendMessage(" ");
-                var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var2));
-                var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_DELETE_DELETED.getString(var2));
-                Sounds.PLAYER_LEVELUP.getSound().play(var1, 3.0F, 3.0F);
+                NPCStorage.getInstance().remove(npcType, npcID);
+                PracticeNPC.getInstance().removeNPC(npcID);
+                this.toClickList.remove(playerUUID);
+                player.sendMessage(" ");
+                player.sendMessage(" ");
+                player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
+                player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_DELETE_DELETED.getString(playerUUID));
+                Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
             }
         }
     }
 
-    public boolean canSee(CommandSender var1) {
-        Lobby var2 = Lobby.getInstance();
-        return var1 instanceof Player && this.hasPermission(var1) && var2.isSet() && var2.get().getWorld().equals(((Player) var1).getWorld());
+    public boolean canSee(CommandSender sender) {
+        Lobby lobby = Lobby.getInstance();
+        return sender instanceof Player && this.hasPermission(sender) && lobby.isSet() && lobby.get().getWorld().equals(((Player) sender).getWorld());
     }
 }

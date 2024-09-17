@@ -11,12 +11,12 @@ public class BridgingEnums {
 
         private final Language.MessagesEnum displayName;
 
-        BridgingAngleType(Language.MessagesEnum var3) {
-            this.displayName = var3;
+        BridgingAngleType(Language.MessagesEnum displayName) {
+            this.displayName = displayName;
         }
 
-        public String getDisplayName(UUID var1) {
-            return this.displayName.getString(var1);
+        public String getDisplayName(UUID playerUUID) {
+            return this.displayName.getString(playerUUID);
         }
 
     }
@@ -28,12 +28,12 @@ public class BridgingEnums {
 
         private final Language.MessagesEnum displayName;
 
-        BridgingLevelType(Language.MessagesEnum var3) {
-            this.displayName = var3;
+        BridgingLevelType(Language.MessagesEnum displayName) {
+            this.displayName = displayName;
         }
 
-        public String getDisplayName(UUID var1) {
-            return this.displayName.getString(var1);
+        public String getDisplayName(UUID playerUUID) {
+            return this.displayName.getString(playerUUID);
         }
 
     }
@@ -44,23 +44,23 @@ public class BridgingEnums {
         BLOCKS_100,
         BLOCKS_INFINITE;
 
-        public String getDisplayName(UUID var1) {
-            String var2 = "";
+        public String getDisplayName(UUID playerUUID) {
+            String displayName = "";
             switch (this) {
                 case BLOCKS_30:
-                    var2 = String.valueOf(30);
+                    displayName = String.valueOf(30);
                     break;
                 case BLOCKS_50:
-                    var2 = String.valueOf(50);
+                    displayName = String.valueOf(50);
                     break;
                 case BLOCKS_100:
-                    var2 = String.valueOf(100);
+                    displayName = String.valueOf(100);
                     break;
                 case BLOCKS_INFINITE:
-                    var2 = Language.MessagesEnum.SPECTATE_SETTINGS_DISPLAY_BRIDGING_BLOCKS_INFINITE.getString(var1);
+                    displayName = Language.MessagesEnum.SPECTATE_SETTINGS_DISPLAY_BRIDGING_BLOCKS_INFINITE.getString(playerUUID);
             }
 
-            return var2;
+            return displayName;
         }
 
         public String getDistance() {

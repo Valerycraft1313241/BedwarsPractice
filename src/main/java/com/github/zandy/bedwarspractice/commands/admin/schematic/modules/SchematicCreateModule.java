@@ -27,31 +27,31 @@ public class SchematicCreateModule implements Listener {
         return instance;
     }
 
-    public void execute(Player var1) {
-        World var2 = (new SchematicWorldCreator()).getWorld();
-        Location var3 = var2.getSpawnLocation();
-        int var4 = var3.getBlockX();
-        int var5 = var3.getBlockY();
-        int var6 = var3.getBlockZ();
+    public void execute(Player player) {
+        World world = (new SchematicWorldCreator()).getWorld();
+        Location spawnLocation = world.getSpawnLocation();
+        int blockX = spawnLocation.getBlockX();
+        int blockY = spawnLocation.getBlockY();
+        int blockZ = spawnLocation.getBlockZ();
 
-        for (int var7 = var4 - 1; var7 <= var4 + 1; ++var7) {
-            for (int var8 = var6 - 1; var8 <= var6 + 1; ++var8) {
-                var2.getBlockAt(var7, var5, var8).setType(Material.BEDROCK);
+        for (int x = blockX - 1; x <= blockX + 1; ++x) {
+            for (int z = blockZ - 1; z <= blockZ + 1; ++z) {
+                world.getBlockAt(x, blockY, z).setType(Material.BEDROCK);
             }
         }
 
-        var1.teleport(var3.clone().add(0.5D, 1.0D, 0.5D));
+        player.teleport(spawnLocation.clone().add(0.5D, 1.0D, 0.5D));
         Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> {
-            var1.sendMessage(" ");
-            var1.sendMessage(" ");
-            var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var1.getUniqueId()));
-            var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_CREATE_INFO_TELEPORTED.getString(var1.getUniqueId()));
+            player.sendMessage(" ");
+            player.sendMessage(" ");
+            player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_CREATE_INFO_TELEPORTED.getString(player.getUniqueId()));
 
-            for (String var2x : Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_CREATE_INFO_TUTORIAL.getStringList(var1.getUniqueId())) {
-                var1.sendMessage(var2x.replace("[spigotLink]", "https://bit.ly/3f4lyvF").replace("[youtubeLink]", "https://bit.ly/3BSNJXn"));
+            for (String message : Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_CREATE_INFO_TUTORIAL.getStringList(player.getUniqueId())) {
+                player.sendMessage(message.replace("[spigotLink]", "https://bit.ly/3f4lyvF").replace("[youtubeLink]", "https://bit.ly/3BSNJXn"));
             }
 
-            Sounds.PLAYER_LEVELUP.getSound().play(var1, 3.0F, 3.0F);
+            Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
         }, 10L);
     }
 }

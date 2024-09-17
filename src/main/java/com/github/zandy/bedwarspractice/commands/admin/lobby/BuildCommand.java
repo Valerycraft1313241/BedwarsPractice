@@ -27,27 +27,27 @@ public class BuildCommand extends SubCommand {
         return instance;
     }
 
-    public void execute(CommandSender var1, String[] var2) {
-        if (!(var1 instanceof Player)) {
-            var1.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getString());
+    public void execute(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getString());
         } else {
-            Player var3 = (Player) var1;
-            var3.sendMessage(" ");
-            var3.sendMessage(" ");
-            var3.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var3.getUniqueId()));
-            var3.sendMessage((this.buildList.contains(var3.getUniqueId()) ? Language.MessagesEnum.COMMAND_ADMIN_BUILD_DISABLED : Language.MessagesEnum.COMMAND_ADMIN_BUILD_ENABLED).getString(var3.getUniqueId()));
-            if (this.buildList.contains(var3.getUniqueId())) {
-                this.buildList.remove(var3.getUniqueId());
+            Player player = (Player) sender;
+            player.sendMessage(" ");
+            player.sendMessage(" ");
+            player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+            player.sendMessage((this.buildList.contains(player.getUniqueId()) ? Language.MessagesEnum.COMMAND_ADMIN_BUILD_DISABLED : Language.MessagesEnum.COMMAND_ADMIN_BUILD_ENABLED).getString(player.getUniqueId()));
+            if (this.buildList.contains(player.getUniqueId())) {
+                this.buildList.remove(player.getUniqueId());
             } else {
-                this.buildList.add(var3.getUniqueId());
+                this.buildList.add(player.getUniqueId());
             }
 
-            Sounds.PLAYER_LEVELUP.getSound().play(var3, 3.0F, 3.0F);
+            Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
         }
     }
 
-    public boolean canSee(CommandSender var1) {
-        return this.hasPermission(var1);
+    public boolean canSee(CommandSender sender) {
+        return this.hasPermission(sender);
     }
 
     public List<UUID> getBuildList() {

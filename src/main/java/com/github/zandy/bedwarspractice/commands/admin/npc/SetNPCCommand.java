@@ -38,95 +38,95 @@ public class SetNPCCommand extends SubCommand implements Listener {
         return instance;
     }
 
-    public void execute(CommandSender var1, String[] var2) {
-        if (!(var1 instanceof Player)) {
-            var1.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getString());
+    public void execute(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getString());
         } else {
-            Player var3 = (Player) var1;
-            UUID var4 = var3.getUniqueId();
+            Player player = (Player) sender;
+            UUID playerUUID = player.getUniqueId();
             if (!Lobby.getInstance().isSet()) {
-                var3.sendMessage(" ");
-                var3.sendMessage(" ");
-                var3.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var4));
-                List<String> var10000 = Language.MessagesEnum.PLUGIN_LOBBY_NOT_SET.getStringList(var4);
-                Objects.requireNonNull(var3);
-                var10000.forEach(var3::sendMessage);
-                Sounds.VILLAGER_NO.getSound().play(var3, 3.0F, 1.0F);
-            } else if (var2.length == 0) {
-                var3.sendMessage(" ");
-                var3.sendMessage(" ");
-                var3.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var4));
-                var3.sendMessage(Language.MessagesEnum.COMMAND_WRONG_USAGE.getString(var4));
-                this.sendWrongUsageMessage(var3);
-                Sounds.VILLAGER_NO.getSound().play(var3, 3.0F, 1.0F);
+                player.sendMessage(" ");
+                player.sendMessage(" ");
+                player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
+                List<String> messages = Language.MessagesEnum.PLUGIN_LOBBY_NOT_SET.getStringList(playerUUID);
+                Objects.requireNonNull(player);
+                messages.forEach(player::sendMessage);
+                Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
+            } else if (args.length == 0) {
+                player.sendMessage(" ");
+                player.sendMessage(" ");
+                player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
+                player.sendMessage(Language.MessagesEnum.COMMAND_WRONG_USAGE.getString(playerUUID));
+                this.sendWrongUsageMessage(player);
+                Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
             } else {
-                String var6 = var2[0].toLowerCase();
-                byte var7 = -1;
-                switch (var6.hashCode()) {
+                String npcTypeString = args[0].toLowerCase();
+                byte npcTypeByte = -1;
+                switch (npcTypeString.hashCode()) {
                     case 108200:
-                        if (var6.equals("mlg")) {
-                            var7 = 2;
+                        if (npcTypeString.equals("mlg")) {
+                            npcTypeByte = 2;
                         }
                         break;
                     case 194511366:
-                        if (var6.equals("bridging")) {
-                            var7 = 1;
+                        if (npcTypeString.equals("bridging")) {
+                            npcTypeByte = 1;
                         }
                         break;
                     case 1544803905:
-                        if (var6.equals("default")) {
-                            var7 = 0;
+                        if (npcTypeString.equals("default")) {
+                            npcTypeByte = 0;
                         }
                         break;
                     case 1647511919:
-                        if (var6.equals("fireballtntjumping")) {
-                            var7 = 3;
+                        if (npcTypeString.equals("fireballtntjumping")) {
+                            npcTypeByte = 3;
                         }
                 }
 
-                NPCStorage.NPCType var5;
-                switch (var7) {
+                NPCStorage.NPCType npcType;
+                switch (npcTypeByte) {
                     case 0:
                     case 1:
                     case 2:
-                        var5 = NPCStorage.NPCType.valueOf(var2[0].toUpperCase());
+                        npcType = NPCStorage.NPCType.valueOf(args[0].toUpperCase());
                         break;
                     case 3:
-                        var5 = NPCStorage.NPCType.FIREBALL_TNT_JUMPING;
+                        npcType = NPCStorage.NPCType.FIREBALL_TNT_JUMPING;
                         break;
                     default:
-                        this.sendWrongUsageMessage(var3);
+                        this.sendWrongUsageMessage(player);
                         return;
                 }
 
-                var3.sendMessage(" ");
-                var3.sendMessage(" ");
-                var3.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var4));
-                var3.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_CLICK_TO_APPLY.getString(var4));
-                this.toClickList.add(var4);
-                this.npcTypeMap.put(var4, var5);
-                Sounds.PLAYER_LEVELUP.getSound().play(var3, 3.0F, 3.0F);
+                player.sendMessage(" ");
+                player.sendMessage(" ");
+                player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
+                player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_CLICK_TO_APPLY.getString(playerUUID));
+                this.toClickList.add(playerUUID);
+                this.npcTypeMap.put(playerUUID, npcType);
+                Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
             }
         }
     }
 
-    private void sendFormattedComponent(Player var1, String var2, String var3) {
-        BambooUtils.sendTextComponent(var1, var2, "/bwpa setNPC " + var3, Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(var1.getUniqueId()), Action.RUN_COMMAND);
+    private void sendFormattedComponent(Player player, String message, String command) {
+        BambooUtils.sendTextComponent(player, message, "/bwpa setNPC " + command, Language.MessagesEnum.COMMAND_CLICK_TO_RUN.getString(player.getUniqueId()), Action.RUN_COMMAND);
     }
 
-    private void sendWrongUsageMessage(Player var1) {
-        Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_WRONG_USAGE.getStringList(var1.getUniqueId()).forEach((var2) -> {
-            String var3 = var2.toLowerCase();
-            if (var3.contains("default")) {
-                this.sendFormattedComponent(var1, var2, "Default");
-            } else if (var3.contains("bridging")) {
-                this.sendFormattedComponent(var1, var2, "Bridging");
-            } else if (var3.contains("mlg")) {
-                this.sendFormattedComponent(var1, var2, "MLG");
-            } else if (var3.contains("fireball/tnt jumping")) {
-                this.sendFormattedComponent(var1, var2, "FireballTntJumping");
+    private void sendWrongUsageMessage(Player player) {
+        Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_WRONG_USAGE.getStringList(player.getUniqueId()).forEach((message) -> {
+            String lowerCaseMessage = message.toLowerCase();
+            if (lowerCaseMessage.contains("default")) {
+                this.sendFormattedComponent(player, message, "Default");
+            } else if (lowerCaseMessage.contains("bridging")) {
+                this.sendFormattedComponent(player, message, "Bridging");
+            } else if (lowerCaseMessage.contains("mlg")) {
+                this.sendFormattedComponent(player, message, "MLG");
+            } else if (lowerCaseMessage.contains("fireball/tnt jumping")) {
+                this.sendFormattedComponent(player, message, "FireballTntJumping");
             } else {
-                var1.sendMessage(var2);
+                player.sendMessage(message);
             }
 
         });
@@ -135,46 +135,46 @@ public class SetNPCCommand extends SubCommand implements Listener {
     @EventHandler(
             priority = EventPriority.HIGHEST
     )
-    private void onNPCRightClick(NPCRightClickEvent var1) {
-        var1.setCancelled(this.clickFunction(var1.getClicker(), var1.getClicker().getUniqueId(), var1.getNPC().getId()));
+    private void onNPCRightClick(NPCRightClickEvent event) {
+        event.setCancelled(this.clickFunction(event.getClicker(), event.getClicker().getUniqueId(), event.getNPC().getId()));
     }
 
     @EventHandler(
             priority = EventPriority.HIGHEST
     )
-    private void onNPCLeftClick(NPCLeftClickEvent var1) {
-        var1.setCancelled(this.clickFunction(var1.getClicker(), var1.getClicker().getUniqueId(), var1.getNPC().getId()));
+    private void onNPCLeftClick(NPCLeftClickEvent event) {
+        event.setCancelled(this.clickFunction(event.getClicker(), event.getClicker().getUniqueId(), event.getNPC().getId()));
     }
 
-    private boolean clickFunction(Player var1, UUID var2, int var3) {
-        if (!this.toClickList.contains(var2)) {
+    private boolean clickFunction(Player player, UUID playerUUID, int npcID) {
+        if (!this.toClickList.contains(playerUUID)) {
             return false;
         } else {
-            NPCStorage.NPCType var4 = this.npcTypeMap.get(var2);
-            if (NPCStorage.getInstance().contains(var4, var3)) {
-                var1.sendMessage(" ");
-                var1.sendMessage(" ");
-                var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var2));
-                var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_ALREADY_EXISTS.getString(var2));
-                Sounds.VILLAGER_NO.getSound().play(var1, 3.0F, 1.0F);
+            NPCStorage.NPCType npcType = this.npcTypeMap.get(playerUUID);
+            if (NPCStorage.getInstance().contains(npcType, npcID)) {
+                player.sendMessage(" ");
+                player.sendMessage(" ");
+                player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
+                player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_ALREADY_EXISTS.getString(playerUUID));
+                Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
                 return false;
             } else {
-                NPCStorage.getInstance().add(var4, var3);
-                PracticeNPC.getInstance().spawnNPC(CitizensAPI.getNPCRegistry().getById(var3), var3, var4);
-                this.toClickList.remove(var2);
-                var1.sendMessage(" ");
-                var1.sendMessage(" ");
-                var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var2));
-                var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_ADDED.getString(var2));
-                var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_TYPE_ADDED.getString(var2).replace("[practiceType]", var4.getType().getString(var2)));
-                Sounds.PLAYER_LEVELUP.getSound().play(var1, 3.0F, 3.0F);
+                NPCStorage.getInstance().add(npcType, npcID);
+                PracticeNPC.getInstance().spawnNPC(CitizensAPI.getNPCRegistry().getById(npcID), npcID, npcType);
+                this.toClickList.remove(playerUUID);
+                player.sendMessage(" ");
+                player.sendMessage(" ");
+                player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
+                player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_ADDED.getString(playerUUID));
+                player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_TYPE_ADDED.getString(playerUUID).replace("[practiceType]", npcType.getType().getString(playerUUID)));
+                Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
                 return true;
             }
         }
     }
 
-    public boolean canSee(CommandSender var1) {
-        Lobby var2 = Lobby.getInstance();
-        return var1 instanceof Player && this.hasPermission(var1) && var2.isSet() && var2.get().getWorld().equals(((Player) var1).getWorld());
+    public boolean canSee(CommandSender sender) {
+        Lobby lobby = Lobby.getInstance();
+        return sender instanceof Player && this.hasPermission(sender) && lobby.isSet() && lobby.get().getWorld().equals(((Player) sender).getWorld());
     }
 }

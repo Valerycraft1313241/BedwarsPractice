@@ -14,10 +14,10 @@ public class PlayerChangeLanguageListener implements Listener {
     }
 
     @EventHandler
-    private void onPlayerChangeLanguage(PlayerLangChangeEvent var1) {
-        String var2 = var1.getOldLang().toUpperCase();
-        String var3 = var1.getNewLang().toUpperCase();
-        Language.getInstance().getPlayerLocale().put(var1.getPlayer().getUniqueId(), var3);
-        Bukkit.getPluginManager().callEvent(new PlayerLanguageChangeEvent(var1.getPlayer(), var2, var3));
+    private void onPlayerChangeLanguage(PlayerLangChangeEvent event) {
+        String oldLang = event.getOldLang().toUpperCase();
+        String newLang = event.getNewLang().toUpperCase();
+        Language.getInstance().getPlayerLocale().put(event.getPlayer().getUniqueId(), newLang);
+        Bukkit.getPluginManager().callEvent(new PlayerLanguageChangeEvent(event.getPlayer(), oldLang, newLang));
     }
 }

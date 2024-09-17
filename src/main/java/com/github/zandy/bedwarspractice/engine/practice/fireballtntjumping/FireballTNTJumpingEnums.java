@@ -12,12 +12,12 @@ public class FireballTNTJumpingEnums {
 
         final Language.MessagesEnum displayName;
 
-        FireballTNTJumpingWoolType(Language.MessagesEnum var3) {
-            this.displayName = var3;
+        FireballTNTJumpingWoolType(Language.MessagesEnum messagesEnum) {
+            this.displayName = messagesEnum;
         }
 
-        public String getDisplayName(UUID var1) {
-            return this.displayName.getString(var1);
+        public String getDisplayName(UUID uuid) {
+            return this.displayName.getString(uuid);
         }
 
     }
@@ -29,9 +29,9 @@ public class FireballTNTJumpingEnums {
         final Stats.StatsType value;
         final String valueName;
 
-        FireballTNTJumpingItemType(Stats.StatsType var3, String var4) {
-            this.value = var3;
-            this.valueName = var4;
+        FireballTNTJumpingItemType(Stats.StatsType statsType, String valueName) {
+            this.value = statsType;
+            this.valueName = valueName;
         }
 
         public Stats.StatsType getValue() {
@@ -51,8 +51,8 @@ public class FireballTNTJumpingEnums {
 
         final int value;
 
-        FireballTNTJumpingAmountType(int var3) {
-            this.value = var3;
+        FireballTNTJumpingAmountType(int value) {
+            this.value = value;
         }
 
         public int getValue() {

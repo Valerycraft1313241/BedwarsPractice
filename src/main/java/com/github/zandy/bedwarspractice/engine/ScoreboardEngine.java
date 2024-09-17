@@ -37,68 +37,65 @@ public class ScoreboardEngine implements Listener {
 
     public void init() {
         BambooUtils.registerEvent(this);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(BambooLib.getPluginInstance(), () -> (new HashMap<>(this.sidebarMap)).forEach((var0, var1) -> {
-            if (GameEngine.getInstance().getPracticeTypeMap().containsKey(var0)) {
-                var1.refresh();
+        Bukkit.getScheduler().runTaskTimerAsynchronously(BambooLib.getPluginInstance(), () -> (new HashMap<>(this.sidebarMap)).forEach((playerUUID, scoreboard) -> {
+            if (GameEngine.getInstance().getPracticeTypeMap().containsKey(playerUUID)) {
+                scoreboard.refresh();
             }
 
         }), 0L, Settings.SettingsEnum.SCOREBOARD_REFRESH_TICK.getInt());
     }
 
-    public void sendSidebar(Player var1, GameEngine.PracticeType var2) {
+    public void sendSidebar(Player player, GameEngine.PracticeType practiceType) {
         if (Main.getBedWarsAPI() != null) {
-            Main.getBedWarsAPI().getScoreboardUtil().removePlayerScoreboard(var1);
+            Main.getBedWarsAPI().getScoreboardUtil().removePlayerScoreboard(player);
         }
 
-        UUID var3 = var1.getUniqueId();
-        if (this.sidebarMap.containsKey(var3)) {
-            this.sidebarMap.get(var3).destroy();
+        UUID playerUUID = player.getUniqueId();
+        if (this.sidebarMap.containsKey(playerUUID)) {
+            this.sidebarMap.get(playerUUID).destroy();
         }
 
-        List<String> var4;
-        HashMap<String, Callable<String>> var5;
-        switch (var2) {
+        List<String> scoreboardLines;
+        HashMap<String, Callable<String>> placeholders;
+        switch (practiceType) {
             case BRIDGING:
-                BridgingMode var8 = BridgingMode.getInstance();
-                var4 = var8.getScoreboardLines(var3);
-                var5 = var8.getPlaceholders(var3);
+                BridgingMode bridgingMode = BridgingMode.getInstance();
+                scoreboardLines = bridgingMode.getScoreboardLines(playerUUID);
+                placeholders = bridgingMode.getPlaceholders(playerUUID);
                 break;
             case MLG:
-                MLGMode var7 = MLGMode.getInstance();
-                var4 = var7.getScoreboardLines(var3);
-                var5 = var7.getPlaceholders(var3);
+                MLGMode mlgMode = MLGMode.getInstance();
+                scoreboardLines = mlgMode.getScoreboardLines(playerUUID);
+                placeholders = mlgMode.getPlaceholders(playerUUID);
                 break;
             case FIREBALL_TNT_JUMPING:
-                FireballTNTJumpingMode var6 = FireballTNTJumpingMode.getInstance();
-                var4 = var6.getScoreboardLines(var3);
-                var5 = var6.getPlaceholders(var3);
+                FireballTNTJumpingMode fireballTNTJumpingMode = FireballTNTJumpingMode.getInstance();
+                scoreboardLines = fireballTNTJumpingMode.getScoreboardLines(playerUUID);
+                placeholders = fireballTNTJumpingMode.getPlaceholders(playerUUID);
                 break;
             default:
                 return;
         }
 
-        this.sidebarMap.put(var3, new Scoreboard(var1, Language.MessagesEnum.GAME_SCOREBOARD_TITLE.getString(var3), var4, var5));
+        this.sidebarMap.put(playerUUID, new Scoreboard(player, Language.MessagesEnum.GAME_SCOREBOARD_TITLE.getString(playerUUID), scoreboardLines, placeholders));
     }
 
     @EventHandler
-    private void onPracticeQuit(PracticeQuitEvent var1) {
-        UUID var2 = var1.getPlayer().getUniqueId();
-        if (this.sidebarMap.containsKey(var2)) {
-            Scoreboard var3 = this.sidebarMap.get(var2);
-            var3.destroy();
-            this.sidebarMap.remove(var2);
+    private void onPracticeQuit(PracticeQuitEvent event) {
+        UUID playerUUID = event.getPlayer().getUniqueId();
+        if (this.sidebarMap.containsKey(playerUUID)) {
+            Scoreboard scoreboard = this.sidebarMap.get(playerUUID);
+            scoreboard.destroy();
+            this.sidebarMap.remove(playerUUID);
             if (Main.getBedWarsAPI() != null) {
-                Main.getBedWarsAPI().getScoreboardUtil().givePlayerScoreboard(var1.getPlayer(), true);
+                Main.getBedWarsAPI().getScoreboardUtil().givePlayerScoreboard(event.getPlayer(), true);
             }
-
-
         }
     }
 
-    public void unload(UUID var1) {
-        if (this.sidebarMap.containsKey(var1)) {
-            this.sidebarMap.get(var1).destroy();
+    public void unload(UUID playerUUID) {
+        if (this.sidebarMap.containsKey(playerUUID)) {
+            this.sidebarMap.get(playerUUID).destroy();
         }
-
     }
 }

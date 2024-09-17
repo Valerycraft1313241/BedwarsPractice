@@ -30,30 +30,27 @@ public class MLGInfo {
     private Block waterPlaced = null;
     private boolean shuffleItem = false;
 
-    public MLGInfo(UUID var1) {
-        this.uuid = var1;
+    public MLGInfo(UUID uuid) {
+        this.uuid = uuid;
         this.sizeType = MLGEnums.MLGSizeType.LARGE;
         this.heightType = MLGEnums.MLGHeightType.HIGH;
         this.positionType = MLGEnums.MLGPositionType.CENTER;
         this.tallnessType = MLGEnums.MLGTallnessType.BLOCKS_1;
         this.itemType = MLGEnums.MLGItemType.WATER;
         this.shuffleType = MLGEnums.MLGShuffleType.NONE;
-        mlgInfoMap.put(var1, this);
+        mlgInfoMap.put(uuid, this);
     }
 
-    public static MLGInfo get(@NotNull UUID var0) {
-
-        return mlgInfoMap.get(var0);
+    public static MLGInfo get(@NotNull UUID uuid) {
+        return mlgInfoMap.get(uuid);
     }
 
-    public static boolean contains(@NotNull UUID var0) {
-
-        return mlgInfoMap.containsKey(var0);
+    public static boolean contains(@NotNull UUID uuid) {
+        return mlgInfoMap.containsKey(uuid);
     }
 
-    public static void remove(@NotNull UUID var0) {
-
-        mlgInfoMap.remove(var0);
+    public static void remove(@NotNull UUID uuid) {
+        mlgInfoMap.remove(uuid);
     }
 
     public static HashMap<UUID, MLGInfo> getMlgInfoMap() {
@@ -90,84 +87,83 @@ public class MLGInfo {
         return this.cuboidRegion;
     }
 
-    public void setCuboidRegion(Location var1) {
-        this.cuboidRegion = (new FinishPositions("MLG", var1)).getRegion();
+    public void setCuboidRegion(Location location) {
+        this.cuboidRegion = (new FinishPositions("MLG", location)).getRegion();
     }
 
     public MLGEnums.MLGSizeType getSizeType() {
         return this.sizeType;
     }
 
-    public void setSizeType(MLGEnums.MLGSizeType var1) {
-        this.sizeType = var1;
+    public void setSizeType(MLGEnums.MLGSizeType sizeType) {
+        this.sizeType = sizeType;
     }
 
     public MLGEnums.MLGHeightType getHeightType() {
         return this.heightType;
     }
 
-    public void setHeightType(MLGEnums.MLGHeightType var1) {
-        this.heightType = var1;
+    public void setHeightType(MLGEnums.MLGHeightType heightType) {
+        this.heightType = heightType;
     }
 
     public MLGEnums.MLGPositionType getPositionType() {
         return this.positionType;
     }
 
-    public void setPositionType(MLGEnums.MLGPositionType var1) {
-        this.positionType = var1;
+    public void setPositionType(MLGEnums.MLGPositionType positionType) {
+        this.positionType = positionType;
     }
 
     public MLGEnums.MLGTallnessType getTallnessType() {
         return this.tallnessType;
     }
 
-    public void setTallnessType(MLGEnums.MLGTallnessType var1) {
-        this.tallnessType = var1;
+    public void setTallnessType(MLGEnums.MLGTallnessType tallnessType) {
+        this.tallnessType = tallnessType;
     }
 
     public MLGEnums.MLGItemType getItemType() {
         return this.itemType;
     }
 
-    public void setItemType(MLGEnums.MLGItemType var1) {
-        this.itemType = var1;
+    public void setItemType(MLGEnums.MLGItemType itemType) {
+        this.itemType = itemType;
     }
 
     public MLGEnums.MLGShuffleType getShuffleType() {
         return this.shuffleType;
     }
 
-    public void setShuffleType(MLGEnums.MLGShuffleType var1) {
-        this.shuffleType = var1;
+    public void setShuffleType(MLGEnums.MLGShuffleType shuffleType) {
+        this.shuffleType = shuffleType;
     }
 
     public PlatformGenerator getPlatformGenerator() {
         return this.platformGenerator;
     }
 
-    public void setPlatformGenerator(PlatformGenerator var1) {
-        this.platformGenerator = var1;
+    public void setPlatformGenerator(PlatformGenerator platformGenerator) {
+        this.platformGenerator = platformGenerator;
     }
 
     public BukkitTask getJumpTask() {
         return this.jumpTask;
     }
 
-    public void setJumpTask(BukkitTask var1) {
-        this.jumpTask = var1;
+    public void setJumpTask(BukkitTask jumpTask) {
+        this.jumpTask = jumpTask;
     }
 
-    public void setWaterPlaced(Block var1) {
-        this.waterPlaced = var1;
+    public void setWaterPlaced(Block waterPlaced) {
+        this.waterPlaced = waterPlaced;
     }
 
     public boolean isShuffleItem() {
         return this.shuffleItem;
     }
 
-    public void setShuffleItem(boolean var1) {
-        this.shuffleItem = var1;
+    public void setShuffleItem(boolean shuffleItem) {
+        this.shuffleItem = shuffleItem;
     }
-
 }

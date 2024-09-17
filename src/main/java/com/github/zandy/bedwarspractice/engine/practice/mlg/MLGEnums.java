@@ -25,9 +25,9 @@ public class MLGEnums {
         final int value;
         final Materials materials;
 
-        MLGTallnessType(int var3, Materials var4) {
-            this.value = var3;
-            this.materials = var4;
+        MLGTallnessType(int value, Materials materials) {
+            this.value = value;
+            this.materials = materials;
         }
 
         public int getValue() {
@@ -46,12 +46,12 @@ public class MLGEnums {
 
         private final Language.MessagesEnum displayName;
 
-        MLGPositionType(Language.MessagesEnum var3) {
-            this.displayName = var3;
+        MLGPositionType(Language.MessagesEnum displayName) {
+            this.displayName = displayName;
         }
 
-        public String getDisplayName(UUID var1) {
-            return this.displayName.getString(var1);
+        public String getDisplayName(UUID playerUUID) {
+            return this.displayName.getString(playerUUID);
         }
 
     }
@@ -64,17 +64,17 @@ public class MLGEnums {
         final int value;
         final Language.MessagesEnum displayName;
 
-        MLGHeightType(int var3, Language.MessagesEnum var4) {
-            this.value = var3;
-            this.displayName = var4;
+        MLGHeightType(int value, Language.MessagesEnum displayName) {
+            this.value = value;
+            this.displayName = displayName;
         }
 
         public int getValue() {
             return this.value;
         }
 
-        public String getDisplayName(UUID var1) {
-            return this.displayName.getString(var1);
+        public String getDisplayName(UUID playerUUID) {
+            return this.displayName.getString(playerUUID);
         }
 
     }
@@ -86,12 +86,12 @@ public class MLGEnums {
 
         private final Language.MessagesEnum displayName;
 
-        MLGSizeType(Language.MessagesEnum var3) {
-            this.displayName = var3;
+        MLGSizeType(Language.MessagesEnum displayName) {
+            this.displayName = displayName;
         }
 
-        public String getDisplayName(UUID var1) {
-            return this.displayName.getString(var1);
+        public String getDisplayName(UUID playerUUID) {
+            return this.displayName.getString(playerUUID);
         }
 
     }

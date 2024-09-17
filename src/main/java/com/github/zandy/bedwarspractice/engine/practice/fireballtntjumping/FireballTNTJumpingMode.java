@@ -62,7 +62,7 @@ public class FireballTNTJumpingMode implements Listener {
         this.platformOffset = PracticeSettings.GameSettingsEnum.FIREBALL_TNT_JUMPING_PLATFORM_OFFSET.getInt();
         this.platformLength = PracticeSettings.GameSettingsEnum.FIREBALL_TNT_JUMPING_PLATFORM_LENGTH.getInt();
         BambooUtils.registerEvent(this);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(BambooLib.getPluginInstance(), () -> FireballTNTJumpingInfo.getFireballTntJumpingMap().keySet().forEach((var0) -> VersionSupport.getInstance().sendActionBar(Bukkit.getPlayer(var0), Language.MessagesEnum.GAME_FIREBALL_TNT_JUMPING_ACTION_BAR.getString(var0))), 0L, 40L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(BambooLib.getPluginInstance(), () -> FireballTNTJumpingInfo.getFireballTntJumpingMap().keySet().forEach((uuid) -> VersionSupport.getInstance().sendActionBar(Bukkit.getPlayer(uuid), Language.MessagesEnum.GAME_FIREBALL_TNT_JUMPING_ACTION_BAR.getString(uuid))), 0L, 40L);
     }
 
     public static FireballTNTJumpingMode getInstance() {
@@ -73,280 +73,274 @@ public class FireballTNTJumpingMode implements Listener {
         return instance;
     }
 
-    public FireballTNTJumpingCreator create(Player var1) {
-        UUID var2 = var1.getUniqueId();
-        FireballTNTJumpingInfo var3 = new FireballTNTJumpingInfo(var2);
-        var3.setPlatformGenerator((new PlatformGenerator()).create(GameEngine.getInstance().initMode(var1, var2, "FIREBALL-TNT-JUMPING", GameEngine.PracticeType.FIREBALL_TNT_JUMPING).clone().add(0.0D, -2.0D, this.platformOffset), this.platformLength, this.platformMaterial));
+    public FireballTNTJumpingCreator create(Player player) {
+        UUID playerUUID = player.getUniqueId();
+        FireballTNTJumpingInfo jumpingInfo = new FireballTNTJumpingInfo(playerUUID);
+        jumpingInfo.setPlatformGenerator((new PlatformGenerator()).create(GameEngine.getInstance().initMode(player, playerUUID, "FIREBALL-TNT-JUMPING", GameEngine.PracticeType.FIREBALL_TNT_JUMPING).clone().add(0.0D, -2.0D, this.platformOffset), this.platformLength, this.platformMaterial));
         Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> {
-            this.giveItems(var1);
-            Bukkit.getPluginManager().callEvent(new PracticeJoinEvent(var1, GameEngine.PracticeType.FIREBALL_TNT_JUMPING));
+            this.giveItems(player);
+            Bukkit.getPluginManager().callEvent(new PracticeJoinEvent(player, GameEngine.PracticeType.FIREBALL_TNT_JUMPING));
         }, 5L);
-        ScoreboardEngine.getInstance().sendSidebar(var1, GameEngine.PracticeType.FIREBALL_TNT_JUMPING);
-        return new FireballTNTJumpingCreator(var3);
+        ScoreboardEngine.getInstance().sendSidebar(player, GameEngine.PracticeType.FIREBALL_TNT_JUMPING);
+        return new FireballTNTJumpingCreator(jumpingInfo);
     }
 
-    private void restart(Player var1, boolean var2, int var3) {
-        UUID var4 = var1.getUniqueId();
-        var1.teleport(GameEngine.getInstance().getPracticeLocationMap().get(var4));
-        var1.sendMessage(var2 ? Language.MessagesEnum.GAME_FIREBALL_TNT_JUMPING_FINISHED_MESSAGE.getString(var4).replace("[blocks]", String.valueOf(var3)) : Language.MessagesEnum.GAME_FAILED.getString(var4));
-        (var2 ? Sounds.PLAYER_LEVELUP : Sounds.ENDERMAN_TELEPORT).getSound().play(var1, 1.0F, 1.0F);
-        FireballTNTJumpingInfo var5 = FireballTNTJumpingInfo.get(var4);
-        if (var2) {
-            Bukkit.getPluginManager().callEvent(new PracticeFinishEvent(var1, GameEngine.PracticeType.FIREBALL_TNT_JUMPING, new FireballTNTJumpingData(var5)));
-            if (var5.getStatistic() < var3) {
-                var5.setStatistic(var3);
+    private void restart(Player player, boolean finished, int blocks) {
+        UUID playerUUID = player.getUniqueId();
+        player.teleport(GameEngine.getInstance().getPracticeLocationMap().get(playerUUID));
+        player.sendMessage(finished ? Language.MessagesEnum.GAME_FIREBALL_TNT_JUMPING_FINISHED_MESSAGE.getString(playerUUID).replace("[blocks]", String.valueOf(blocks)) : Language.MessagesEnum.GAME_FAILED.getString(playerUUID));
+        (finished ? Sounds.PLAYER_LEVELUP : Sounds.ENDERMAN_TELEPORT).getSound().play(player, 1.0F, 1.0F);
+        FireballTNTJumpingInfo jumpingInfo = FireballTNTJumpingInfo.get(playerUUID);
+        if (finished) {
+            Bukkit.getPluginManager().callEvent(new PracticeFinishEvent(player, GameEngine.PracticeType.FIREBALL_TNT_JUMPING, new FireballTNTJumpingData(jumpingInfo)));
+            if (jumpingInfo.getStatistic() < blocks) {
+                jumpingInfo.setStatistic(blocks);
             }
         }
 
-        this.giveItems(var1);
-        int var6 = 0;
+        this.giveItems(player);
+        int delay = 0;
 
-        for (Iterator<Block> var7 = var5.getBlocksPlaced().iterator(); var7.hasNext(); ++var6) {
-            Block var8 = var7.next();
-            Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> var8.setType(Material.AIR), var6 + 4);
+        for (Iterator<Block> iterator = jumpingInfo.getBlocksPlaced().iterator(); iterator.hasNext(); ++delay) {
+            Block block = iterator.next();
+            Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> block.setType(Material.AIR), delay + 4);
         }
 
-        var5.removeBlocksPlaced();
+        jumpingInfo.removeBlocksPlaced();
     }
 
-    public void refresh(Player var1, FireballTNTJumpingData var2) {
-        UUID var3 = var1.getUniqueId();
-        int var4 = 0;
-        FireballTNTJumpingInfo var5 = FireballTNTJumpingInfo.get(var3);
+    public void refresh(Player player, FireballTNTJumpingData data) {
+        UUID playerUUID = player.getUniqueId();
+        int delay = 0;
+        FireballTNTJumpingInfo jumpingInfo = FireballTNTJumpingInfo.get(playerUUID);
 
-        for (Iterator<Block> var6 = var5.getBlocksPlaced().iterator(); var6.hasNext(); ++var4) {
-            Block var7 = var6.next();
-            Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> var7.setType(Material.AIR), var4 + 4);
+        for (Iterator<Block> iterator = jumpingInfo.getBlocksPlaced().iterator(); iterator.hasNext(); ++delay) {
+            Block block = iterator.next();
+            Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> block.setType(Material.AIR), delay + 4);
         }
 
-        this.giveItems(var1);
-        var1.teleport(GameEngine.getInstance().getPracticeLocationMap().get(var3));
-        if (var2 != null) {
-            Bukkit.getPluginManager().callEvent(new PracticeChangeEvent(var1, var2, var5.toData()));
+        this.giveItems(player);
+        player.teleport(GameEngine.getInstance().getPracticeLocationMap().get(playerUUID));
+        if (data != null) {
+            Bukkit.getPluginManager().callEvent(new PracticeChangeEvent(player, data, jumpingInfo.toData()));
         }
-
     }
 
-    public void quit(Player var1) {
-        UUID var2 = var1.getUniqueId();
-        GameEngine var3 = GameEngine.getInstance();
-        var3.clear(var2, true, true);
-        var3.getLastOffset().remove(var2);
-        var1.getInventory().clear();
+    public void quit(Player player) {
+        UUID playerUUID = player.getUniqueId();
+        GameEngine gameEngine = GameEngine.getInstance();
+        gameEngine.clear(playerUUID, true, true);
+        gameEngine.getLastOffset().remove(playerUUID);
+        player.getInventory().clear();
         if (!Settings.SettingsEnum.PRACTICE_PROXY_ENABLED.getBoolean()) {
-            var1.teleport(Lobby.getInstance().get());
+            player.teleport(Lobby.getInstance().get());
         }
 
-        FireballTNTJumpingInfo var4 = FireballTNTJumpingInfo.get(var2);
-        var4.removeBlocksPlaced();
-        var4.getPlatformGenerator().destroy();
-        FireballTNTJumpingInfo.remove(var2);
+        FireballTNTJumpingInfo jumpingInfo = FireballTNTJumpingInfo.get(playerUUID);
+        jumpingInfo.removeBlocksPlaced();
+        jumpingInfo.getPlatformGenerator().destroy();
+        FireballTNTJumpingInfo.remove(playerUUID);
         if (InventoryCache.isInstantiated()) {
-            InventoryCache.getInstance().restore(var1);
+            InventoryCache.getInstance().restore(player);
         }
-
     }
 
-    public void switchClear(Player var1) {
-        UUID var2 = var1.getUniqueId();
-        if (FireballTNTJumpingInfo.contains(var2)) {
-            GameEngine.getInstance().clear(var2, true, true);
-            FireballTNTJumpingInfo var3 = FireballTNTJumpingInfo.get(var2);
-            var3.removeBlocksPlaced();
-            var3.getPlatformGenerator().destroy();
-            FireballTNTJumpingInfo.remove(var2);
-            var1.getInventory().clear();
+    public void switchClear(Player player) {
+        UUID playerUUID = player.getUniqueId();
+        if (FireballTNTJumpingInfo.contains(playerUUID)) {
+            GameEngine.getInstance().clear(playerUUID, true, true);
+            FireballTNTJumpingInfo jumpingInfo = FireballTNTJumpingInfo.get(playerUUID);
+            jumpingInfo.removeBlocksPlaced();
+            jumpingInfo.getPlatformGenerator().destroy();
+            FireballTNTJumpingInfo.remove(playerUUID);
+            player.getInventory().clear();
         }
     }
 
     @EventHandler
-    private void onBlockPlace(BlockPlaceEvent var1) {
-        Player var2 = var1.getPlayer();
-        UUID var3 = var2.getUniqueId();
-        if (FireballTNTJumpingInfo.contains(var3)) {
-            if (var2.getItemInHand().getType().equals(this.settingsItem.getMaterial())) {
-                var1.setCancelled(true);
+    private void onBlockPlace(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+        UUID playerUUID = player.getUniqueId();
+        if (FireballTNTJumpingInfo.contains(playerUUID)) {
+            if (player.getItemInHand().getType().equals(this.settingsItem.getMaterial())) {
+                event.setCancelled(true);
             } else {
-                Block var4 = var1.getBlock();
-                if (var4.getZ() >= 1 && var4.getZ() <= this.placeableAreaOffset) {
-                    FireballTNTJumpingInfo.get(var3).addBlocksPlaced(var4);
+                Block block = event.getBlock();
+                if (block.getZ() >= 1 && block.getZ() <= this.placeableAreaOffset) {
+                    FireballTNTJumpingInfo.get(playerUUID).addBlocksPlaced(block);
                 } else {
-                    var1.setCancelled(true);
-                    var2.sendMessage(Language.MessagesEnum.GAME_BLOCK_NOT_PLACEABLE.getString(var3));
+                    event.setCancelled(true);
+                    player.sendMessage(Language.MessagesEnum.GAME_BLOCK_NOT_PLACEABLE.getString(playerUUID));
                 }
             }
         }
     }
 
     @EventHandler
-    private void onBlockPlacePlatform(BlockPlaceEvent var1) {
-        Player var2 = var1.getPlayer();
-        UUID var3 = var2.getUniqueId();
-        if (FireballTNTJumpingInfo.contains(var3)) {
-            FireballTNTJumpingInfo var4 = FireballTNTJumpingInfo.get(var3);
-            if (var2.getLocation().getBlockZ() > var4.getPlatformGenerator().getStartingZ()) {
-                if (!var4.isBlockPlaced()) {
-                    var4.setBlockPlaced(true);
-                }
-
-            }
-        }
-    }
-
-    @EventHandler
-    private void onPlayerMovePlaceReset(PlayerMoveEvent var1) {
-        Player var2 = var1.getPlayer();
-        UUID var3 = var2.getUniqueId();
-        if (FireballTNTJumpingInfo.contains(var3)) {
-            FireballTNTJumpingInfo var4 = FireballTNTJumpingInfo.get(var3);
-            if (var4.isBlockPlaced()) {
-                var1.setCancelled(true);
-                var4.setBlockPlaced(false);
-            }
-
-        }
-    }
-
-    @EventHandler
-    private void onPlayerMoveReset(PlayerMoveEvent var1) {
-        UUID var2 = var1.getPlayer().getUniqueId();
-        if (!GameEngine.getInstance().getPending().contains(var2) && FireballTNTJumpingInfo.contains(var2)) {
-            Location var3 = GameEngine.getInstance().getPracticeLocationMap().get(var2);
-            Location var4 = var1.getTo();
-            if (var4.getBlockY() <= this.voidRestart || var4.getBlockX() < var3.getBlockX() - 100 || var4.getBlockX() > var3.getBlockX() + 100) {
-                this.restart(var1.getPlayer(), false, 0);
-            }
-
-        }
-    }
-
-    @EventHandler
-    private void onPlayerMoveFinish(PlayerMoveEvent var1) {
-        UUID var2 = var1.getPlayer().getUniqueId();
-        if (FireballTNTJumpingInfo.contains(var2)) {
-            Block var3 = GameEngine.getInstance().getStandingBlock(var1.getPlayer().getLocation());
-            if (var3.getType().equals(this.platformMaterial.getItem().getMaterial())) {
-                if (!BWPUtils.isLegacy() || var3.getData() == (byte) this.platformMaterial.getData()) {
-                    this.restart(var1.getPlayer(), true, var1.getTo().getBlockZ() - this.placeableAreaOffset + 1);
+    private void onBlockPlacePlatform(BlockPlaceEvent event) {
+        Player player = event.getPlayer();
+        UUID playerUUID = player.getUniqueId();
+        if (FireballTNTJumpingInfo.contains(playerUUID)) {
+            FireballTNTJumpingInfo jumpingInfo = FireballTNTJumpingInfo.get(playerUUID);
+            if (player.getLocation().getBlockZ() > jumpingInfo.getPlatformGenerator().getStartingZ()) {
+                if (!jumpingInfo.isBlockPlaced()) {
+                    jumpingInfo.setBlockPlaced(true);
                 }
             }
         }
     }
 
     @EventHandler
-    private void onPlayerInteractFireball(PlayerInteractEvent var1) {
-        if (var1.getAction().name().contains("RIGHT")) {
-            if (FireballTNTJumpingInfo.contains(var1.getPlayer().getUniqueId())) {
-                Player var2 = var1.getPlayer();
-                ItemStack var3 = var2.getItemInHand();
-                if (var3.getType() == Materials.FIRE_CHARGE.getItem().getMaterial()) {
-                    var1.setCancelled(true);
-                    if (var3.getAmount() != 1) {
-                        var3.setAmount(var3.getAmount() - 1);
+    private void onPlayerMovePlaceReset(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        UUID playerUUID = player.getUniqueId();
+        if (FireballTNTJumpingInfo.contains(playerUUID)) {
+            FireballTNTJumpingInfo jumpingInfo = FireballTNTJumpingInfo.get(playerUUID);
+            if (jumpingInfo.isBlockPlaced()) {
+                event.setCancelled(true);
+                jumpingInfo.setBlockPlaced(false);
+            }
+        }
+    }
+
+    @EventHandler
+    private void onPlayerMoveReset(PlayerMoveEvent event) {
+        UUID playerUUID = event.getPlayer().getUniqueId();
+        if (!GameEngine.getInstance().getPending().contains(playerUUID) && FireballTNTJumpingInfo.contains(playerUUID)) {
+            Location practiceLocation = GameEngine.getInstance().getPracticeLocationMap().get(playerUUID);
+            Location toLocation = event.getTo();
+            if (toLocation.getBlockY() <= this.voidRestart || toLocation.getBlockX() < practiceLocation.getBlockX() - 100 || toLocation.getBlockX() > practiceLocation.getBlockX() + 100) {
+                this.restart(event.getPlayer(), false, 0);
+            }
+        }
+    }
+
+    @EventHandler
+    private void onPlayerMoveFinish(PlayerMoveEvent event) {
+        UUID playerUUID = event.getPlayer().getUniqueId();
+        if (FireballTNTJumpingInfo.contains(playerUUID)) {
+            Block standingBlock = GameEngine.getInstance().getStandingBlock(event.getPlayer().getLocation());
+            if (standingBlock.getType().equals(this.platformMaterial.getItem().getMaterial())) {
+                if (!BWPUtils.isLegacy() || standingBlock.getData() == (byte) this.platformMaterial.getData()) {
+                    this.restart(event.getPlayer(), true, event.getTo().getBlockZ() - this.placeableAreaOffset + 1);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    private void onPlayerInteractFireball(PlayerInteractEvent event) {
+        if (event.getAction().name().contains("RIGHT")) {
+            if (FireballTNTJumpingInfo.contains(event.getPlayer().getUniqueId())) {
+                Player player = event.getPlayer();
+                ItemStack itemInHand = player.getItemInHand();
+                if (itemInHand.getType() == Materials.FIRE_CHARGE.getItem().getMaterial()) {
+                    event.setCancelled(true);
+                    if (itemInHand.getAmount() != 1) {
+                        itemInHand.setAmount(itemInHand.getAmount() - 1);
                     } else {
-                        var2.getInventory().remove(var3);
+                        player.getInventory().remove(itemInHand);
                     }
 
-                    Fireball var4 = var2.launchProjectile(Fireball.class);
-                    Vector var5 = var2.getEyeLocation().getDirection();
-                    var4 = VersionSupport.getInstance().setFireballDirection(var4, var5);
-                    var4.setVelocity(var4.getDirection().multiply(2.5D));
-                    var4.setIsIncendiary(false);
+                    Fireball fireball = player.launchProjectile(Fireball.class);
+                    Vector direction = player.getEyeLocation().getDirection();
+                    fireball = VersionSupport.getInstance().setFireballDirection(fireball, direction);
+                    fireball.setVelocity(fireball.getDirection().multiply(2.5D));
+                    fireball.setIsIncendiary(false);
                 }
             }
         }
     }
 
-    void pushAway(Player player, Location l, double hf, double rf) {
-        Location loc = player.getLocation();
-        double hf1 = Math.max(-4.0, Math.min(4.0, hf));
-        double rf1 = Math.max(-4.0, Math.min(4.0, -1.0 * rf));
-        player.setVelocity(l.toVector().subtract(loc.toVector()).normalize().multiply(rf1).setY(hf1));
+    void pushAway(Player player, Location location, double heightForce, double radiusForce) {
+        Location playerLocation = player.getLocation();
+        double adjustedHeightForce = Math.max(-4.0, Math.min(4.0, heightForce));
+        double adjustedRadiusForce = Math.max(-4.0, Math.min(4.0, -1.0 * radiusForce));
+        player.setVelocity(location.toVector().subtract(playerLocation.toVector()).normalize().multiply(adjustedRadiusForce).setY(adjustedHeightForce));
     }
 
     @EventHandler
-    private void onFireballExplosion(EntityExplodeEvent var1) {
-        Entity var2 = var1.getEntity();
-        if (var2.getType().equals(EntityType.FIREBALL) || var2.getType().equals(EntityType.PRIMED_TNT)) {
-            if (WorldEngine.getInstance().getPracticeWorld().equals(var2.getWorld())) {
-                var1.setCancelled(true);
-                Location var3 = var1.getLocation();
-                var3.getWorld()
-                        .getNearbyEntities(var3, 3.0D, 3.0D, 3.0D)
+    private void onFireballExplosion(EntityExplodeEvent event) {
+        Entity entity = event.getEntity();
+        if (entity.getType().equals(EntityType.FIREBALL) || entity.getType().equals(EntityType.PRIMED_TNT)) {
+            if (WorldEngine.getInstance().getPracticeWorld().equals(entity.getWorld())) {
+                event.setCancelled(true);
+                Location explosionLocation = event.getLocation();
+                explosionLocation.getWorld()
+                        .getNearbyEntities(explosionLocation, 3.0D, 3.0D, 3.0D)
                         .stream()
-                        .filter((var0) -> var0.getType().equals(EntityType.PLAYER))
+                        .filter((nearbyEntity) -> nearbyEntity.getType().equals(EntityType.PLAYER))
                         .forEach(
-                                (var1x) -> {
+                                (nearbyPlayer) -> {
                                     double heightForce = 1.25;
                                     double radiusForce = 1.6;
-                                    this.pushAway((Player) var1x, var3, heightForce, radiusForce);
+                                    this.pushAway((Player) nearbyPlayer, explosionLocation, heightForce, radiusForce);
                                 }
                         );
-
             }
         }
     }
 
     @EventHandler
-    private void onPlayerInteractTNT(PlayerInteractEvent var1) {
-        UUID var2 = var1.getPlayer().getUniqueId();
-        if (var1.getAction().equals(Action.RIGHT_CLICK_BLOCK) && FireballTNTJumpingInfo.contains(var2)) {
-            if (FireballTNTJumpingInfo.get(var2).getItemType().equals(FireballTNTJumpingEnums.FireballTNTJumpingItemType.TNT)) {
-                Player var3 = var1.getPlayer();
-                ItemStack var4 = var3.getItemInHand();
-                if (var4.getType() == Materials.TNT.getItem().getMaterial()) {
-                    var1.setCancelled(true);
-                    if (var4.getAmount() != 1) {
-                        var4.setAmount(var4.getAmount() - 1);
+    private void onPlayerInteractTNT(PlayerInteractEvent event) {
+        UUID playerUUID = event.getPlayer().getUniqueId();
+        if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && FireballTNTJumpingInfo.contains(playerUUID)) {
+            if (FireballTNTJumpingInfo.get(playerUUID).getItemType().equals(FireballTNTJumpingEnums.FireballTNTJumpingItemType.TNT)) {
+                Player player = event.getPlayer();
+                ItemStack itemInHand = player.getItemInHand();
+                if (itemInHand.getType() == Materials.TNT.getItem().getMaterial()) {
+                    event.setCancelled(true);
+                    if (itemInHand.getAmount() != 1) {
+                        itemInHand.setAmount(itemInHand.getAmount() - 1);
                     } else {
-                        var3.getInventory().remove(var4);
+                        player.getInventory().remove(itemInHand);
                     }
 
-                    Location var5 = var1.getClickedBlock().getLocation().clone().add(0.0D, 1.0D, 0.0D);
-                    TNTPrimed var6 = var5.getWorld().spawn(var5.clone().add(0.5D, 1.0D, 0.5D), TNTPrimed.class);
-                    Sounds.DIG_GRASS.getSound().play(var3, 1.0F, 1.0F);
-                    var6.setFuseTicks(40);
+                    Location clickedBlockLocation = event.getClickedBlock().getLocation().clone().add(0.0D, 1.0D, 0.0D);
+                    TNTPrimed tnt = clickedBlockLocation.getWorld().spawn(clickedBlockLocation.clone().add(0.5D, 1.0D, 0.5D), TNTPrimed.class);
+                    Sounds.DIG_GRASS.getSound().play(player, 1.0F, 1.0F);
+                    tnt.setFuseTicks(40);
                 }
             }
         }
     }
 
     @EventHandler
-    private void onPlayerDamage(EntityDamageEvent var1) {
-        if (var1.getEntityType().equals(EntityType.PLAYER)) {
-            if (FireballTNTJumpingInfo.contains(var1.getEntity().getUniqueId())) {
-                var1.setDamage(0.0D);
+    private void onPlayerDamage(EntityDamageEvent event) {
+        if (event.getEntityType().equals(EntityType.PLAYER)) {
+            if (FireballTNTJumpingInfo.contains(event.getEntity().getUniqueId())) {
+                event.setDamage(0.0D);
             }
-
         }
     }
 
-    public List<String> getScoreboardLines(UUID var1) {
-        return Language.MessagesEnum.GAME_SCOREBOARD_FIREBALL_TNT_JUMPING_LINES.getStringList(var1);
+    public List<String> getScoreboardLines(UUID playerUUID) {
+        return Language.MessagesEnum.GAME_SCOREBOARD_FIREBALL_TNT_JUMPING_LINES.getStringList(playerUUID);
     }
 
-    public HashMap<String, Callable<String>> getPlaceholders(UUID var1) {
-        HashMap<String, Callable<String>> var2 = new HashMap<>();
-        GameEngine var3 = GameEngine.getInstance();
-        var2.put("[month]", () -> String.valueOf(var3.getCalendar().get(Calendar.MONTH) + 1));
-        var2.put("[day]", () -> String.valueOf(var3.getCalendar().get(Calendar.DATE)));
-        var2.put("[year]", () -> String.valueOf(var3.getCalendar().get(Calendar.YEAR)));
-        var2.put("[game_mode]", () -> Language.MessagesEnum.GAME_SCOREBOARD_GAMEMODE_FIREBALL_TNT_JUMPING.getString(var1));
-        var2.put("[longest_jump]", () -> String.valueOf(FireballTNTJumpingInfo.get(var1).getStatistic()));
-        return var2;
+    public HashMap<String, Callable<String>> getPlaceholders(UUID playerUUID) {
+        HashMap<String, Callable<String>> placeholders = new HashMap<>();
+        GameEngine gameEngine = GameEngine.getInstance();
+        placeholders.put("[month]", () -> String.valueOf(gameEngine.getCalendar().get(Calendar.MONTH) + 1));
+        placeholders.put("[day]", () -> String.valueOf(gameEngine.getCalendar().get(Calendar.DATE)));
+        placeholders.put("[year]", () -> String.valueOf(gameEngine.getCalendar().get(Calendar.YEAR)));
+        placeholders.put("[game_mode]", () -> Language.MessagesEnum.GAME_SCOREBOARD_GAMEMODE_FIREBALL_TNT_JUMPING.getString(playerUUID));
+        placeholders.put("[longest_jump]", () -> String.valueOf(FireballTNTJumpingInfo.get(playerUUID).getStatistic()));
+        return placeholders;
     }
 
-    private void giveItems(Player var1) {
-        PlayerInventory var2 = var1.getInventory();
-        FireballTNTJumpingInfo var3 = FireballTNTJumpingInfo.get(var1.getUniqueId());
-        var2.clear();
-        var2.setItem(0, (var3.getItemType().equals(FireballTNTJumpingEnums.FireballTNTJumpingItemType.FIREBALL) ? Materials.FIRE_CHARGE : Materials.TNT).getItem().setAmount(var3.getAmountType().getValue()).build());
-        UUID var4 = var1.getUniqueId();
-        if (var3.getWoolType().equals(FireballTNTJumpingEnums.FireballTNTJumpingWoolType.ENABLE)) {
-            var2.setItem(1, this.playerBlockMaterial.getItem().setAmount(32).build());
+    private void giveItems(Player player) {
+        PlayerInventory inventory = player.getInventory();
+        FireballTNTJumpingInfo jumpingInfo = FireballTNTJumpingInfo.get(player.getUniqueId());
+        inventory.clear();
+        inventory.setItem(0, (jumpingInfo.getItemType().equals(FireballTNTJumpingEnums.FireballTNTJumpingItemType.FIREBALL) ? Materials.FIRE_CHARGE : Materials.TNT).getItem().setAmount(jumpingInfo.getAmountType().getValue()).build());
+        UUID playerUUID = player.getUniqueId();
+        if (jumpingInfo.getWoolType().equals(FireballTNTJumpingEnums.FireballTNTJumpingWoolType.ENABLE)) {
+            inventory.setItem(1, this.playerBlockMaterial.getItem().setAmount(32).build());
         }
 
-        var2.setItem(7, this.settingsItem.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_ITEM_NAME.getString(var4)).setLore(Language.MessagesEnum.GAME_SETTINGS_ITEM_LORE.getStringList(var4)).build());
-        var2.setItem(8, this.modeSelectorItem.setDisplayName(Language.MessagesEnum.MODE_SELECTOR_ITEM_NAME.getString(var4)).setLore(Language.MessagesEnum.MODE_SELECTOR_ITEM_LORE.getStringList(var4)).build());
+        inventory.setItem(7, this.settingsItem.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_ITEM_NAME.getString(playerUUID)).setLore(Language.MessagesEnum.GAME_SETTINGS_ITEM_LORE.getStringList(playerUUID)).build());
+        inventory.setItem(8, this.modeSelectorItem.setDisplayName(Language.MessagesEnum.MODE_SELECTOR_ITEM_NAME.getString(playerUUID)).setLore(Language.MessagesEnum.MODE_SELECTOR_ITEM_LORE.getStringList(playerUUID)).build());
     }
+
 }

@@ -27,17 +27,16 @@ public class SpectatorEngine implements Listener {
     }
 
     @EventHandler
-    private void onPlayerMove(PlayerMoveEvent var1) {
-        UUID var2 = var1.getPlayer().getUniqueId();
-        if (PracticeSpectator.getPracticeSpectators().containsKey(var2)) {
-            Player var3 = var1.getPlayer();
-            Location var4 = GameEngine.getInstance().getPracticeLocationMap().get(PracticeSpectator.get(var2).getTarget().getUniqueId());
-            Location var5 = var1.getTo();
-            if (var5.getBlockX() < var4.getBlockX() - 100 || var5.getBlockX() > var4.getBlockX() + 100) {
-                var3.teleport(var4.clone());
-                var3.sendMessage(Language.MessagesEnum.PRACTICE_NAME_FIREBALL_TNT_JUMPING.getString(var2));
+    private void onPlayerMove(PlayerMoveEvent event) {
+        UUID playerUUID = event.getPlayer().getUniqueId();
+        if (PracticeSpectator.getPracticeSpectators().containsKey(playerUUID)) {
+            Player player = event.getPlayer();
+            Location targetLocation = GameEngine.getInstance().getPracticeLocationMap().get(PracticeSpectator.get(playerUUID).getTarget().getUniqueId());
+            Location toLocation = event.getTo();
+            if (toLocation.getBlockX() < targetLocation.getBlockX() - 100 || toLocation.getBlockX() > targetLocation.getBlockX() + 100) {
+                player.teleport(targetLocation.clone());
+                player.sendMessage(Language.MessagesEnum.PRACTICE_NAME_FIREBALL_TNT_JUMPING.getString(playerUUID));
             }
-
         }
     }
 }

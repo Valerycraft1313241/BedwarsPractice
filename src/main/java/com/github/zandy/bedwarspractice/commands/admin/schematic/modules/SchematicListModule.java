@@ -26,25 +26,25 @@ public class SchematicListModule {
         return instance;
     }
 
-    public void execute(Player var1) {
-        ArrayList<String> var2 = new ArrayList<>(this.requiredSchematics);
-        File var3 = new File("plugins/BedWarsPractice/Schematics");
-        if (var3.exists()) {
-            Arrays.stream(var3.listFiles()).forEach((var1x) -> var2.remove(var1x.getName().replace(BWPUtils.getExtension(), "")));
+    public void execute(Player player) {
+        ArrayList<String> missingSchematics = new ArrayList<>(this.requiredSchematics);
+        File schematicsFolder = new File("plugins/BedWarsPractice/Schematics");
+        if (schematicsFolder.exists()) {
+            Arrays.stream(schematicsFolder.listFiles()).forEach((file) -> missingSchematics.remove(file.getName().replace(BWPUtils.getExtension(), "")));
         }
 
-        var1.sendMessage(" ");
-        var1.sendMessage(" ");
-        if (var2.isEmpty()) {
-            var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LIST_ALL_CREATED.getString(var1.getUniqueId()));
-            Sounds.VILLAGER_NO.getSound().play(var1, 3.0F, 1.0F);
+        player.sendMessage(" ");
+        player.sendMessage(" ");
+        if (missingSchematics.isEmpty()) {
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LIST_ALL_CREATED.getString(player.getUniqueId()));
+            Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
         } else {
-            var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var1.getUniqueId()));
-            var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LIST_REQUIRED_SCHEMATICS.getString(var1.getUniqueId()));
-            String var4 = Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LIST_ENUMERATION.getString(var1.getUniqueId());
-            var2.forEach((var2x) -> var1.sendMessage(var4.replace("[schemName]", var2x)));
-            var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LIST_INFO.getString(var1.getUniqueId()));
-            Sounds.PLAYER_LEVELUP.getSound().play(var1, 3.0F, 3.0F);
+            player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LIST_REQUIRED_SCHEMATICS.getString(player.getUniqueId()));
+            String enumerationMessage = Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LIST_ENUMERATION.getString(player.getUniqueId());
+            missingSchematics.forEach((schematicName) -> player.sendMessage(enumerationMessage.replace("[schemName]", schematicName)));
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LIST_INFO.getString(player.getUniqueId()));
+            Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
         }
     }
 }

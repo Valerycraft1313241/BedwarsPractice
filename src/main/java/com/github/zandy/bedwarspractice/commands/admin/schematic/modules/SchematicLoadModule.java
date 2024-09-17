@@ -26,24 +26,24 @@ public class SchematicLoadModule {
         return instance;
     }
 
-    public void execute(Player var1, String var2) {
-        File var3 = new File("plugins/BedWarsPractice/Schematics/", var2 + BWPUtils.getExtension());
-        var1.sendMessage(" ");
-        var1.sendMessage(" ");
-        if (!var3.exists()) {
-            var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LOAD_FILE_NOT_FOUND.getString(var1.getUniqueId()).replace("[schemName]", var2));
-            Sounds.VILLAGER_NO.getSound().play(var1, 3.0F, 1.0F);
+    public void execute(Player player, String schematicName) {
+        File schematicFile = new File("plugins/BedWarsPractice/Schematics/", schematicName + BWPUtils.getExtension());
+        player.sendMessage(" ");
+        player.sendMessage(" ");
+        if (!schematicFile.exists()) {
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LOAD_FILE_NOT_FOUND.getString(player.getUniqueId()).replace("[schemName]", schematicName));
+            Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
         } else {
-            Location var4 = var1.getLocation();
-            var1.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var1.getUniqueId()));
-            var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LOAD_LOADING.getString(var1.getUniqueId()).replace("[schemName]", var2));
-            World var5 = WESupport.getWEWorld(var1.getWorld());
-            double[] var6 = (new BWPVector(var4)).toArray();
+            Location playerLocation = player.getLocation();
+            player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LOAD_LOADING.getString(player.getUniqueId()).replace("[schemName]", schematicName));
+            World world = WESupport.getWEWorld(player.getWorld());
+            double[] coordinates = (new BWPVector(playerLocation)).toArray();
             if (BWPUtils.isLegacy()) {
-                BWPLegacyAdapter.getInstance().pasteSchematic(var2, var5, var6);
+                BWPLegacyAdapter.getInstance().pasteSchematic(schematicName, world, coordinates);
             }
-            Sounds.PLAYER_LEVELUP.getSound().play(var1, 3.0F, 3.0F);
-            var1.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LOAD_LOADED_AND_PASTED.getString(var1.getUniqueId()));
+            Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SCHEMATIC_LOAD_LOADED_AND_PASTED.getString(player.getUniqueId()));
         }
     }
 }

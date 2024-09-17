@@ -24,36 +24,36 @@ public class FireballTNTJumpingInfo {
     private PlatformGenerator platformGenerator;
     private boolean blockPlaced;
 
-    public FireballTNTJumpingInfo(UUID var1) {
-        this.uuid = var1;
+    public FireballTNTJumpingInfo(UUID uuid) {
+        this.uuid = uuid;
         this.amountType = FireballTNTJumpingEnums.FireballTNTJumpingAmountType.AMOUNT_1;
         this.itemType = FireballTNTJumpingEnums.FireballTNTJumpingItemType.FIREBALL;
         this.woolType = FireballTNTJumpingEnums.FireballTNTJumpingWoolType.DISABLE;
-        fireballTntJumpingMap.put(var1, this);
+        fireballTntJumpingMap.put(uuid, this);
     }
 
-    public static FireballTNTJumpingInfo get(@NotNull UUID var0) {
-        return fireballTntJumpingMap.get(var0);
+    public static FireballTNTJumpingInfo get(@NotNull UUID uuid) {
+        return fireballTntJumpingMap.get(uuid);
     }
 
-    public static boolean contains(@NotNull UUID var0) {
-        return fireballTntJumpingMap.containsKey(var0);
+    public static boolean contains(@NotNull UUID uuid) {
+        return fireballTntJumpingMap.containsKey(uuid);
     }
 
-    public static void remove(@NotNull UUID var0) {
-        fireballTntJumpingMap.remove(var0);
+    public static void remove(@NotNull UUID uuid) {
+        fireballTntJumpingMap.remove(uuid);
     }
 
     public static HashMap<UUID, FireballTNTJumpingInfo> getFireballTntJumpingMap() {
         return fireballTntJumpingMap;
     }
 
-    public void addBlocksPlaced(Block var1) {
-        this.blocksPlaced.add(var1);
+    public void addBlocksPlaced(Block block) {
+        this.blocksPlaced.add(block);
     }
 
     public void removeBlocksPlaced() {
-        this.blocksPlaced.forEach((var0) -> var0.setType(Material.AIR));
+        this.blocksPlaced.forEach((block) -> block.setType(Material.AIR));
     }
 
     public Player getPlayer() {
@@ -64,8 +64,8 @@ public class FireballTNTJumpingInfo {
         return (int) PlayerStats.get(this.uuid).get(this.itemType.getValue());
     }
 
-    public void setStatistic(int var1) {
-        PlayerStats.get(this.uuid).set(this.itemType.getValue(), var1);
+    public void setStatistic(int statistic) {
+        PlayerStats.get(this.uuid).set(this.itemType.getValue(), statistic);
     }
 
     public FireballTNTJumpingData toData() {
@@ -76,32 +76,32 @@ public class FireballTNTJumpingInfo {
         return this.amountType;
     }
 
-    public void setAmountType(FireballTNTJumpingEnums.FireballTNTJumpingAmountType var1) {
-        this.amountType = var1;
+    public void setAmountType(FireballTNTJumpingEnums.FireballTNTJumpingAmountType amountType) {
+        this.amountType = amountType;
     }
 
     public FireballTNTJumpingEnums.FireballTNTJumpingItemType getItemType() {
         return this.itemType;
     }
 
-    public void setItemType(FireballTNTJumpingEnums.FireballTNTJumpingItemType var1) {
-        this.itemType = var1;
+    public void setItemType(FireballTNTJumpingEnums.FireballTNTJumpingItemType itemType) {
+        this.itemType = itemType;
     }
 
     public FireballTNTJumpingEnums.FireballTNTJumpingWoolType getWoolType() {
         return this.woolType;
     }
 
-    public void setWoolType(FireballTNTJumpingEnums.FireballTNTJumpingWoolType var1) {
-        this.woolType = var1;
+    public void setWoolType(FireballTNTJumpingEnums.FireballTNTJumpingWoolType woolType) {
+        this.woolType = woolType;
     }
 
     public PlatformGenerator getPlatformGenerator() {
         return this.platformGenerator;
     }
 
-    public void setPlatformGenerator(PlatformGenerator var1) {
-        this.platformGenerator = var1;
+    public void setPlatformGenerator(PlatformGenerator platformGenerator) {
+        this.platformGenerator = platformGenerator;
     }
 
     public List<Block> getBlocksPlaced() {
@@ -112,8 +112,7 @@ public class FireballTNTJumpingInfo {
         return this.blockPlaced;
     }
 
-    public void setBlockPlaced(boolean var1) {
-        this.blockPlaced = var1;
+    public void setBlockPlaced(boolean blockPlaced) {
+        this.blockPlaced = blockPlaced;
     }
-
 }

@@ -341,31 +341,31 @@ public class Language {
         final Object defaultValue;
         boolean noLanguageSupport = false;
 
-        MessagesEnum(String var3, Object var4) {
-            this.path = var3;
-            this.defaultValue = var4;
+        MessagesEnum(String path, Object defaultValue) {
+            this.path = path;
+            this.defaultValue = defaultValue;
         }
 
-        MessagesEnum(String var3, Object var4, boolean var5) {
-            this.path = var3;
-            this.defaultValue = var4;
-            this.noLanguageSupport = var5;
+        MessagesEnum(String path, Object defaultValue, boolean noLanguageSupport) {
+            this.path = path;
+            this.defaultValue = defaultValue;
+            this.noLanguageSupport = noLanguageSupport;
         }
 
         public boolean hasNoLanguageSupport() {
             return this.noLanguageSupport;
         }
 
-        public String getString(UUID var1) {
-            return Language.getInstance().getLocaleFiles().get(Language.getInstance().getPlayerLocale().getOrDefault(var1, "EN")).getString(this.path);
+        public String getString(UUID uuid) {
+            return Language.getInstance().getLocaleFiles().get(Language.getInstance().getPlayerLocale().getOrDefault(uuid, "EN")).getString(this.path);
         }
 
         public String getString() {
             return Language.getInstance().getLocaleFiles().get("EN").getString(this.path);
         }
 
-        public List<String> getStringList(UUID var1) {
-            return Language.getInstance().getLocaleFiles().get(Language.getInstance().getPlayerLocale().getOrDefault(var1, "EN")).getStringList(this.path);
+        public List<String> getStringList(UUID uuid) {
+            return Language.getInstance().getLocaleFiles().get(Language.getInstance().getPlayerLocale().getOrDefault(uuid, "EN")).getStringList(this.path);
         }
 
         public List<String> getStringList() {

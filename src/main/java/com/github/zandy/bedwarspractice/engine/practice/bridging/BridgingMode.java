@@ -53,17 +53,17 @@ public class BridgingMode implements Listener {
         this.settingsItem = PracticeSettings.GameSettingsEnum.GAME_SETTINGS_MATERIAL.getMaterial().getItem();
         this.modeSelectorItem = PracticeSettings.GameSettingsEnum.MODE_SELECTOR_MATERIAL.getMaterial().getItem();
         BambooUtils.registerEvent(this);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(BambooLib.getPluginInstance(), () -> BridgingInfo.getBridgingInfoMap().keySet().forEach((var0) -> {
-            BridgingInfo var1 = BridgingInfo.get(var0);
-            if (var1.getBlocksPlaced() != null) {
-                var1.addPracticeTime();
-                VersionSupport.getInstance().sendActionBar(Bukkit.getPlayer(var0), Language.MessagesEnum.GAME_BRIDGING_ACTION_BAR_TIMER_COLOR.getString(var0) + String.format("%,.2f", var1.getPracticeTime()));
+        Bukkit.getScheduler().runTaskTimerAsynchronously(BambooLib.getPluginInstance(), () -> BridgingInfo.getBridgingInfoMap().keySet().forEach((playerUUID) -> {
+            BridgingInfo bridgingInfo = BridgingInfo.get(playerUUID);
+            if (bridgingInfo.getBlocksPlaced() != null) {
+                bridgingInfo.addPracticeTime();
+                VersionSupport.getInstance().sendActionBar(Bukkit.getPlayer(playerUUID), Language.MessagesEnum.GAME_BRIDGING_ACTION_BAR_TIMER_COLOR.getString(playerUUID) + String.format("%,.2f", bridgingInfo.getPracticeTime()));
             }
 
         }), 1L, 1L);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(BambooLib.getPluginInstance(), () -> BridgingInfo.getBridgingInfoMap().keySet().forEach((var0) -> {
-            if (BridgingInfo.get(var0).getBlocksPlaced() == null) {
-                VersionSupport.getInstance().sendActionBar(Bukkit.getPlayer(var0), Language.MessagesEnum.GAME_BRIDGING_ACTION_BAR_START_TIMER.getString(var0));
+        Bukkit.getScheduler().runTaskTimerAsynchronously(BambooLib.getPluginInstance(), () -> BridgingInfo.getBridgingInfoMap().keySet().forEach((playerUUID) -> {
+            if (BridgingInfo.get(playerUUID).getBlocksPlaced() == null) {
+                VersionSupport.getInstance().sendActionBar(Bukkit.getPlayer(playerUUID), Language.MessagesEnum.GAME_BRIDGING_ACTION_BAR_START_TIMER.getString(playerUUID));
             }
 
         }), 0L, 40L);
@@ -77,130 +77,130 @@ public class BridgingMode implements Listener {
         return instance;
     }
 
-    public BridgingCreator create(Player var1) {
-        UUID var2 = var1.getUniqueId();
-        BridgingInfo var3 = new BridgingInfo(var2);
-        var3.setCuboidRegion(GameEngine.getInstance().initMode(var1, var2, var3.formatArena(), GameEngine.PracticeType.BRIDGING));
+    public BridgingCreator create(Player player) {
+        UUID playerUUID = player.getUniqueId();
+        BridgingInfo bridgingInfo = new BridgingInfo(playerUUID);
+        bridgingInfo.setCuboidRegion(GameEngine.getInstance().initMode(player, playerUUID, bridgingInfo.formatArena(), GameEngine.PracticeType.BRIDGING));
         Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> {
-            this.giveItems(var1);
-            Bukkit.getPluginManager().callEvent(new PracticeJoinEvent(var1, GameEngine.PracticeType.BRIDGING));
+            this.giveItems(player);
+            Bukkit.getPluginManager().callEvent(new PracticeJoinEvent(player, GameEngine.PracticeType.BRIDGING));
         }, 5L);
-        ScoreboardEngine.getInstance().sendSidebar(var1, GameEngine.PracticeType.BRIDGING);
-        return new BridgingCreator(var3);
+        ScoreboardEngine.getInstance().sendSidebar(player, GameEngine.PracticeType.BRIDGING);
+        return new BridgingCreator(bridgingInfo);
     }
 
-    public void refresh(Player var1, BridgingData var2) {
-        UUID var3 = var1.getUniqueId();
-        BridgingInfo var4 = BridgingInfo.get(var3);
-        var4.removeBlocksPlaced(true);
-        var4.removePracticeTime();
-        var4.removePlacedBlocks();
-        GameEngine var5 = GameEngine.getInstance();
-        var1.getInventory().clear();
-        Location var6 = var5.getPracticeLocationMap().get(var3);
-        if (var4.isInfinite()) {
-            if (!var4.isInfiniteBefore()) {
-                var6 = this.loadSetting(var4, var3, var5);
-                var4.setInfiniteBefore(true);
-                ScoreboardEngine.getInstance().sendSidebar(var1, GameEngine.PracticeType.BRIDGING);
+    public void refresh(Player player, BridgingData bridgingData) {
+        UUID playerUUID = player.getUniqueId();
+        BridgingInfo bridgingInfo = BridgingInfo.get(playerUUID);
+        bridgingInfo.removeBlocksPlaced(true);
+        bridgingInfo.removePracticeTime();
+        bridgingInfo.removePlacedBlocks();
+        GameEngine gameEngine = GameEngine.getInstance();
+        player.getInventory().clear();
+        Location practiceLocation = gameEngine.getPracticeLocationMap().get(playerUUID);
+        if (bridgingInfo.isInfinite()) {
+            if (!bridgingInfo.isInfiniteBefore()) {
+                practiceLocation = this.loadSetting(bridgingInfo, playerUUID, gameEngine);
+                bridgingInfo.setInfiniteBefore(true);
+                ScoreboardEngine.getInstance().sendSidebar(player, GameEngine.PracticeType.BRIDGING);
             }
         } else {
-            if (var4.isInfiniteBefore()) {
-                var4.setInfiniteBefore(false);
-                ScoreboardEngine.getInstance().sendSidebar(var1, GameEngine.PracticeType.BRIDGING);
+            if (bridgingInfo.isInfiniteBefore()) {
+                bridgingInfo.setInfiniteBefore(false);
+                ScoreboardEngine.getInstance().sendSidebar(player, GameEngine.PracticeType.BRIDGING);
             }
 
-            var6 = this.loadSetting(var4, var3, var5);
+            practiceLocation = this.loadSetting(bridgingInfo, playerUUID, gameEngine);
         }
 
-        var1.teleport(var6);
-        this.giveItems(var1);
-        if (var2 != null) {
-            Bukkit.getPluginManager().callEvent(new PracticeChangeEvent(var1, var2, var4.toData()));
+        player.teleport(practiceLocation);
+        this.giveItems(player);
+        if (bridgingData != null) {
+            Bukkit.getPluginManager().callEvent(new PracticeChangeEvent(player, bridgingData, bridgingInfo.toData()));
         }
 
     }
 
-    private Location loadSetting(BridgingInfo var1, UUID var2, GameEngine var3) {
-        var3.clear(var2, false, true);
-        Location var4 = var3.getPracticeLocation(var2);
-        double[] var5 = (new BWPVector(var4)).toArray();
-        World var6 = WorldEngine.getInstance().getPracticeWEWorld();
-        var3.getPlayerEditSessionMap().put(var2, BWPLegacyAdapter.getInstance().pasteSchematic(var1.formatArena(), var6, var5));
-        if (!var1.isInfinite()) {
-            var1.setCuboidRegion(var4);
+    private Location loadSetting(BridgingInfo bridgingInfo, UUID playerUUID, GameEngine gameEngine) {
+        gameEngine.clear(playerUUID, false, true);
+        Location practiceLocation = gameEngine.getPracticeLocation(playerUUID);
+        double[] coordinates = (new BWPVector(practiceLocation)).toArray();
+        World world = WorldEngine.getInstance().getPracticeWEWorld();
+        gameEngine.getPlayerEditSessionMap().put(playerUUID, BWPLegacyAdapter.getInstance().pasteSchematic(bridgingInfo.formatArena(), world, coordinates));
+        if (!bridgingInfo.isInfinite()) {
+            bridgingInfo.setCuboidRegion(practiceLocation);
         }
 
-        Location var7 = var4.clone().add(0.5D, 0.0D, 0.5D);
-        var3.getPracticeLocationMap().put(var2, var7);
-        return var7;
+        Location teleportLocation = practiceLocation.clone().add(0.5D, 0.0D, 0.5D);
+        gameEngine.getPracticeLocationMap().put(playerUUID, teleportLocation);
+        return teleportLocation;
     }
 
-    public void quit(Player var1) {
-        UUID var2 = var1.getUniqueId();
-        BridgingInfo var3 = BridgingInfo.get(var2);
-        var3.removeBlocksPlaced(true);
-        var3.removePlacedBlocks();
-        GameEngine var4 = GameEngine.getInstance();
-        var4.clear(var2, true, true);
-        var4.getLastOffset().remove(var2);
-        var1.getInventory().clear();
+    public void quit(Player player) {
+        UUID playerUUID = player.getUniqueId();
+        BridgingInfo bridgingInfo = BridgingInfo.get(playerUUID);
+        bridgingInfo.removeBlocksPlaced(true);
+        bridgingInfo.removePlacedBlocks();
+        GameEngine gameEngine = GameEngine.getInstance();
+        gameEngine.clear(playerUUID, true, true);
+        gameEngine.getLastOffset().remove(playerUUID);
+        player.getInventory().clear();
         if (!Settings.SettingsEnum.PRACTICE_PROXY_ENABLED.getBoolean()) {
-            var1.teleport(Lobby.getInstance().get());
+            player.teleport(Lobby.getInstance().get());
         }
 
-        BridgingInfo.remove(var2);
+        BridgingInfo.remove(playerUUID);
         if (InventoryCache.isInstantiated()) {
-            InventoryCache.getInstance().restore(var1);
+            InventoryCache.getInstance().restore(player);
         }
 
     }
 
-    public void switchClear(Player var1) {
-        UUID var2 = var1.getUniqueId();
-        if (BridgingInfo.contains(var2)) {
-            BridgingInfo var3 = BridgingInfo.get(var2);
-            var3.removeBlocksPlaced(true);
-            var3.removePlacedBlocks();
-            GameEngine.getInstance().clear(var2, true, true);
-            BridgingInfo.remove(var2);
-            var1.getInventory().clear();
+    public void switchClear(Player player) {
+        UUID playerUUID = player.getUniqueId();
+        if (BridgingInfo.contains(playerUUID)) {
+            BridgingInfo bridgingInfo = BridgingInfo.get(playerUUID);
+            bridgingInfo.removeBlocksPlaced(true);
+            bridgingInfo.removePlacedBlocks();
+            GameEngine.getInstance().clear(playerUUID, true, true);
+            BridgingInfo.remove(playerUUID);
+            player.getInventory().clear();
         }
     }
 
-    private void giveItems(Player var1) {
-        PlayerInventory var2 = var1.getInventory();
-        var2.clear();
+    private void giveItems(Player player) {
+        PlayerInventory inventory = player.getInventory();
+        inventory.clear();
 
-        for (int var3 = 0; var3 <= 3; ++var3) {
-            var2.setItem(var3, this.bridgingBlock);
+        for (int i = 0; i <= 3; ++i) {
+            inventory.setItem(i, this.bridgingBlock);
         }
 
-        UUID var4 = var1.getUniqueId();
-        var2.setItem(7, this.settingsItem.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_ITEM_NAME.getString(var4)).setLore(Language.MessagesEnum.GAME_SETTINGS_ITEM_LORE.getStringList(var4)).build());
-        var2.setItem(8, this.modeSelectorItem.setDisplayName(Language.MessagesEnum.MODE_SELECTOR_ITEM_NAME.getString(var4)).setLore(Language.MessagesEnum.MODE_SELECTOR_ITEM_LORE.getStringList(var4)).build());
+        UUID playerUUID = player.getUniqueId();
+        inventory.setItem(7, this.settingsItem.setDisplayName(Language.MessagesEnum.GAME_SETTINGS_ITEM_NAME.getString(playerUUID)).setLore(Language.MessagesEnum.GAME_SETTINGS_ITEM_LORE.getStringList(playerUUID)).build());
+        inventory.setItem(8, this.modeSelectorItem.setDisplayName(Language.MessagesEnum.MODE_SELECTOR_ITEM_NAME.getString(playerUUID)).setLore(Language.MessagesEnum.MODE_SELECTOR_ITEM_LORE.getStringList(playerUUID)).build());
     }
 
     @EventHandler
-    private void onBlockPlace(BlockPlaceEvent var1) {
-        if (BridgingInfo.contains(var1.getPlayer().getUniqueId())) {
-            Player var2 = var1.getPlayer();
-            if (var2.getItemInHand().getType().equals(this.settingsItem.getMaterial())) {
-                var1.setCancelled(true);
+    private void onBlockPlace(BlockPlaceEvent event) {
+        if (BridgingInfo.contains(event.getPlayer().getUniqueId())) {
+            Player player = event.getPlayer();
+            if (player.getItemInHand().getType().equals(this.settingsItem.getMaterial())) {
+                event.setCancelled(true);
             } else {
-                UUID var3 = var2.getUniqueId();
-                Block var4 = var1.getBlock();
-                if (var4.getZ() < 1) {
-                    var1.setCancelled(true);
-                    var2.sendMessage(Language.MessagesEnum.GAME_BLOCK_NOT_PLACEABLE.getString(var3));
+                UUID playerUUID = player.getUniqueId();
+                Block block = event.getBlock();
+                if (block.getZ() < 1) {
+                    event.setCancelled(true);
+                    player.sendMessage(Language.MessagesEnum.GAME_BLOCK_NOT_PLACEABLE.getString(playerUUID));
                 } else {
-                    BridgingInfo var5 = BridgingInfo.get(var3);
-                    var5.addBlockPlaced(var4);
-                    var5.addPlacedBlocks();
-                    if (var5.isInfinite()) {
-                        ItemStack var6 = var1.getItemInHand();
-                        var6.setAmount(64);
-                        var1.getPlayer().setItemInHand(var6);
+                    BridgingInfo bridgingInfo = BridgingInfo.get(playerUUID);
+                    bridgingInfo.addBlockPlaced(block);
+                    bridgingInfo.addPlacedBlocks();
+                    if (bridgingInfo.isInfinite()) {
+                        ItemStack itemInHand = event.getItemInHand();
+                        itemInHand.setAmount(64);
+                        event.getPlayer().setItemInHand(itemInHand);
                     }
                 }
             }
@@ -208,116 +208,115 @@ public class BridgingMode implements Listener {
     }
 
     @EventHandler
-    private void onPlayerMoveAverageSpeed(PlayerMoveEvent var1) {
-        UUID var2 = var1.getPlayer().getUniqueId();
-        if (BridgingInfo.contains(var2)) {
-            double var3 = var1.getFrom().getX() - var1.getTo().getX();
-            double var5 = 0.0D;
-            double var7 = var1.getFrom().getZ() - var1.getTo().getZ();
-            BridgingInfo.get(var2).setAverageSpeed(String.format("%,.2f", Math.sqrt(var3 * var3 + var5 * var5 + var7 * var7) * 20.0D));
+    private void onPlayerMoveAverageSpeed(PlayerMoveEvent event) {
+        UUID playerUUID = event.getPlayer().getUniqueId();
+        if (BridgingInfo.contains(playerUUID)) {
+            double deltaX = event.getFrom().getX() - event.getTo().getX();
+            double deltaY = 0.0D;
+            double deltaZ = event.getFrom().getZ() - event.getTo().getZ();
+            BridgingInfo.get(playerUUID).setAverageSpeed(String.format("%,.2f", Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ) * 20.0D));
         }
     }
 
     @EventHandler
-    private void onPlayerMoveFinish(PlayerMoveEvent var1) {
-        if (BridgingInfo.contains(var1.getPlayer().getUniqueId())) {
-            Player var2 = var1.getPlayer();
-            double[] var3 = (new BWPVector(var2.getLocation())).toArray();
-            CuboidRegion var4 = BridgingInfo.get(var2.getUniqueId()).getCuboidRegion();
+    private void onPlayerMoveFinish(PlayerMoveEvent event) {
+        if (BridgingInfo.contains(event.getPlayer().getUniqueId())) {
+            Player player = event.getPlayer();
+            double[] coordinates = (new BWPVector(player.getLocation())).toArray();
+            CuboidRegion cuboidRegion = BridgingInfo.get(player.getUniqueId()).getCuboidRegion();
             if (BWPUtils.isLegacy()) {
-                if (!BWPLegacyAdapter.getInstance().cuboidRegionContains(var4, var3)) {
+                if (!BWPLegacyAdapter.getInstance().cuboidRegionContains(cuboidRegion, coordinates)) {
                     return;
                 }
             }
 
-            this.restart(var2, true);
+            this.restart(player, true);
         }
     }
 
     @EventHandler
-    private void onPlayerDamage(EntityDamageEvent var1) {
-        if (var1.getEntityType().equals(EntityType.PLAYER)) {
-            if (BridgingInfo.contains(var1.getEntity().getUniqueId())) {
-                var1.setCancelled(true);
+    private void onPlayerDamage(EntityDamageEvent event) {
+        if (event.getEntityType().equals(EntityType.PLAYER)) {
+            if (BridgingInfo.contains(event.getEntity().getUniqueId())) {
+                event.setCancelled(true);
             }
-
         }
     }
 
     @EventHandler
-    private void onPlayerMoveReset(PlayerMoveEvent var1) {
-        UUID var2 = var1.getPlayer().getUniqueId();
-        if (!GameEngine.getInstance().getPending().contains(var2) && BridgingInfo.contains(var2)) {
-            Location var3 = GameEngine.getInstance().getPracticeLocationMap().get(var2);
-            Location var4 = var1.getTo();
-            if (var4.getBlockY() <= this.voidRestart || var4.getBlockX() < var3.getBlockX() - 100 || var4.getBlockX() > var3.getBlockX() + 100) {
-                this.restart(var1.getPlayer(), false);
+    private void onPlayerMoveReset(PlayerMoveEvent event) {
+        UUID playerUUID = event.getPlayer().getUniqueId();
+        if (!GameEngine.getInstance().getPending().contains(playerUUID) && BridgingInfo.contains(playerUUID)) {
+            Location practiceLocation = GameEngine.getInstance().getPracticeLocationMap().get(playerUUID);
+            Location toLocation = event.getTo();
+            if (toLocation.getBlockY() <= this.voidRestart || toLocation.getBlockX() < practiceLocation.getBlockX() - 100 || toLocation.getBlockX() > practiceLocation.getBlockX() + 100) {
+                this.restart(event.getPlayer(), false);
             }
-
         }
     }
 
-    private void restart(Player var1, boolean var2) {
-        UUID var3 = var1.getUniqueId();
-        var1.teleport(GameEngine.getInstance().getPracticeLocationMap().get(var3));
-        this.giveItems(var1);
-        BridgingInfo var4 = BridgingInfo.get(var3);
-        int var8;
-        if (var2) {
-            double var5 = var4.getPracticeTime();
-            if (var5 != 0.0D) {
-                String var7 = String.format("%,.2f", var5);
-                var1.sendMessage(Language.MessagesEnum.GAME_BRIDGING_FINISHED_MESSAGE.getString(var3).replace("[seconds]", var7));
-                VersionSupport.getInstance().sendTitle(var1, Language.MessagesEnum.GAME_BRIDGING_FINISHED_TITLE.getString(var3).replace("[seconds]", var7), "");
-                if (var4.getStatistic() > var5 || var4.getStatistic() == 0.0D) {
-                    var4.setStatistic(var5);
+    private void restart(Player player, boolean finished) {
+        UUID playerUUID = player.getUniqueId();
+        player.teleport(GameEngine.getInstance().getPracticeLocationMap().get(playerUUID));
+        this.giveItems(player);
+        BridgingInfo bridgingInfo = BridgingInfo.get(playerUUID);
+        int delay;
+        if (finished) {
+            double practiceTime = bridgingInfo.getPracticeTime();
+            if (practiceTime != 0.0D) {
+                String formattedTime = String.format("%,.2f", practiceTime);
+                player.sendMessage(Language.MessagesEnum.GAME_BRIDGING_FINISHED_MESSAGE.getString(playerUUID).replace("[seconds]", formattedTime));
+                VersionSupport.getInstance().sendTitle(player, Language.MessagesEnum.GAME_BRIDGING_FINISHED_TITLE.getString(playerUUID).replace("[seconds]", formattedTime), "");
+                if (bridgingInfo.getStatistic() > practiceTime || bridgingInfo.getStatistic() == 0.0D) {
+                    bridgingInfo.setStatistic(practiceTime);
                 }
             }
 
-            Bukkit.getPluginManager().callEvent(new PracticeFinishEvent(var1, GameEngine.PracticeType.BRIDGING, new BridgingData(var4)));
-        } else if (var4.isInfinite()) {
-            var8 = var4.getPlacedBlocks();
-            String var6 = String.format("%,.2f", var4.getPracticeTime());
-            if (var8 != 0 && (var4.getStatistic() < (double) var8 || var4.getStatistic() == 0.0D)) {
-                var4.setStatistic(var8);
+            Bukkit.getPluginManager().callEvent(new PracticeFinishEvent(player, GameEngine.PracticeType.BRIDGING, new BridgingData(bridgingInfo)));
+        } else if (bridgingInfo.isInfinite()) {
+            int placedBlocks = bridgingInfo.getPlacedBlocks();
+            String formattedTime = String.format("%,.2f", bridgingInfo.getPracticeTime());
+            if (placedBlocks != 0 && (bridgingInfo.getStatistic() < (double) placedBlocks || bridgingInfo.getStatistic() == 0.0D)) {
+                bridgingInfo.setStatistic(placedBlocks);
             }
 
-            var1.sendMessage(Language.MessagesEnum.GAME_BRIDGING_FINISHED_INFINITE_MESSAGE.getString(var3).replace("[seconds]", var6).replace("[blocks_placed]", String.valueOf(var8)));
+            player.sendMessage(Language.MessagesEnum.GAME_BRIDGING_FINISHED_INFINITE_MESSAGE.getString(playerUUID).replace("[seconds]", formattedTime).replace("[blocks_placed]", String.valueOf(placedBlocks)));
         } else {
-            var1.sendMessage(Language.MessagesEnum.GAME_FAILED.getString(var3));
+            player.sendMessage(Language.MessagesEnum.GAME_FAILED.getString(playerUUID));
         }
 
-        (var2 ? Sounds.PLAYER_LEVELUP : Sounds.ENDERMAN_TELEPORT).getSound().play(var1, 1.0F, 1.0F);
-        var8 = 0;
-        if (var4.getBlocksPlaced() != null) {
-            for (Iterator<Block> var9 = var4.getBlocksPlaced().iterator(); var9.hasNext(); ++var8) {
-                Block var10 = var9.next();
-                Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> var10.setType(Material.AIR), var8 + 2);
+        (finished ? Sounds.PLAYER_LEVELUP : Sounds.ENDERMAN_TELEPORT).getSound().play(player, 1.0F, 1.0F);
+        delay = 0;
+        if (bridgingInfo.getBlocksPlaced() != null) {
+            for (Iterator<Block> iterator = bridgingInfo.getBlocksPlaced().iterator(); iterator.hasNext(); ++delay) {
+                Block block = iterator.next();
+                Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> block.setType(Material.AIR), delay + 2);
             }
         }
 
-        var4.removeBlocksPlaced(false);
-        var4.removePracticeTime();
-        var4.removePlacedBlocks();
+        bridgingInfo.removeBlocksPlaced(false);
+        bridgingInfo.removePracticeTime();
+        bridgingInfo.removePlacedBlocks();
     }
 
-    public List<String> getScoreboardLines(UUID var1) {
-        return (!BridgingInfo.get(var1).isInfinite() ? Language.MessagesEnum.GAME_SCOREBOARD_BRIDGING_DEFAULT_LINES : Language.MessagesEnum.GAME_SCOREBOARD_BRIDGING_INFINITE_LINES).getStringList(var1);
+    public List<String> getScoreboardLines(UUID playerUUID) {
+        return (!BridgingInfo.get(playerUUID).isInfinite() ? Language.MessagesEnum.GAME_SCOREBOARD_BRIDGING_DEFAULT_LINES : Language.MessagesEnum.GAME_SCOREBOARD_BRIDGING_INFINITE_LINES).getStringList(playerUUID);
     }
 
-    public HashMap<String, Callable<String>> getPlaceholders(UUID var1) {
-        HashMap<String, Callable<String>> var2 = new HashMap<>();
-        GameEngine var3 = GameEngine.getInstance();
-        BridgingInfo var4 = BridgingInfo.get(var1);
-        var2.put("[month]", () -> String.valueOf(var3.getCalendar().get(Calendar.MONTH) + 1));
-        var2.put("[day]", () -> String.valueOf(var3.getCalendar().get(Calendar.DATE)));
-        var2.put("[year]", () -> String.valueOf(var3.getCalendar().get(Calendar.YEAR)));
-        var2.put("[game_mode]", () -> Language.MessagesEnum.GAME_SCOREBOARD_GAMEMODE_BRIDGING.getString(var1));
-        var2.put("[average_speed]", var4::getAverageSpeed);
-        var2.put("[personal_best]", var4::getPersonalBest);
-        if (BridgingInfo.get(var1).isInfinite()) {
-            var2.put("[blocks_placed]", () -> String.valueOf(var4.getPlacedBlocks()));
+    public HashMap<String, Callable<String>> getPlaceholders(UUID playerUUID) {
+        HashMap<String, Callable<String>> placeholders = new HashMap<>();
+        GameEngine gameEngine = GameEngine.getInstance();
+        BridgingInfo bridgingInfo = BridgingInfo.get(playerUUID);
+        placeholders.put("[month]", () -> String.valueOf(gameEngine.getCalendar().get(Calendar.MONTH) + 1));
+        placeholders.put("[day]", () -> String.valueOf(gameEngine.getCalendar().get(Calendar.DATE)));
+        placeholders.put("[year]", () -> String.valueOf(gameEngine.getCalendar().get(Calendar.YEAR)));
+        placeholders.put("[game_mode]", () -> Language.MessagesEnum.GAME_SCOREBOARD_GAMEMODE_BRIDGING.getString(playerUUID));
+        placeholders.put("[average_speed]", bridgingInfo::getAverageSpeed);
+        placeholders.put("[personal_best]", bridgingInfo::getPersonalBest);
+        if (BridgingInfo.get(playerUUID).isInfinite()) {
+            placeholders.put("[blocks_placed]", () -> String.valueOf(bridgingInfo.getPlacedBlocks()));
         }
-        return var2;
+        return placeholders;
     }
+
 }

@@ -18,7 +18,7 @@ import java.util.Collections;
 
 public class WorldEngine implements Listener {
     private static WorldEngine instance = null;
-    private World world;
+    private World practiceWorld;
 
     private WorldEngine() {
     }
@@ -35,97 +35,95 @@ public class WorldEngine implements Listener {
         BambooUtils.registerEvent(this);
         this.removeWorld();
         if (BambooUtils.isPluginEnabled("SlimeWorldManager")) {
-            this.world = SWMSupport.getInstance().generateWorld();
+            this.practiceWorld = SWMSupport.getInstance().generateWorld();
         } else {
-            WorldCreator var1 = new WorldCreator("bedwars_practice");
-            var1.type(WorldType.FLAT);
-            var1.generateStructures(false);
+            WorldCreator worldCreator = new WorldCreator("bedwars_practice");
+            worldCreator.type(WorldType.FLAT);
+            worldCreator.generateStructures(false);
             if (BWPUtils.isLegacy()) {
-                var1.generatorSettings("2;0;1");
+                worldCreator.generatorSettings("2;0;1");
             }
 
-            this.world = var1.createWorld();
+            this.practiceWorld = worldCreator.createWorld();
         }
 
-        this.world.setWeatherDuration(0);
-        this.world.setThunderDuration(0);
-        this.world.setStorm(false);
-        this.world.setThundering(false);
-        this.world.setDifficulty(Difficulty.PEACEFUL);
-        this.world.setTime(1000L);
-        this.world.setAmbientSpawnLimit(0);
-        this.world.setMonsterSpawnLimit(0);
-        this.world.setWaterAnimalSpawnLimit(0);
-        this.world.setAnimalSpawnLimit(0);
-        this.world.getWorldBorder().setSize(2.147483647E9D);
-        boolean var6 = PracticeSettings.GameSettingsEnum.SETTINGS_TIME_STATIC.getBoolean();
-        this.world.setGameRuleValue("doDaylightCycle", String.valueOf(!var6));
-        if (var6) {
-            String var4 = PracticeSettings.GameSettingsEnum.SETTINGS_TIME_TYPE.getString().toUpperCase();
-            byte var5 = -1;
-            switch (var4.hashCode()) {
+        this.practiceWorld.setWeatherDuration(0);
+        this.practiceWorld.setThunderDuration(0);
+        this.practiceWorld.setStorm(false);
+        this.practiceWorld.setThundering(false);
+        this.practiceWorld.setDifficulty(Difficulty.PEACEFUL);
+        this.practiceWorld.setTime(1000L);
+        this.practiceWorld.setAmbientSpawnLimit(0);
+        this.practiceWorld.setMonsterSpawnLimit(0);
+        this.practiceWorld.setWaterAnimalSpawnLimit(0);
+        this.practiceWorld.setAnimalSpawnLimit(0);
+        this.practiceWorld.getWorldBorder().setSize(2.147483647E9D);
+        boolean isTimeStatic = PracticeSettings.GameSettingsEnum.SETTINGS_TIME_STATIC.getBoolean();
+        this.practiceWorld.setGameRuleValue("doDaylightCycle", String.valueOf(!isTimeStatic));
+        if (isTimeStatic) {
+            String timeType = PracticeSettings.GameSettingsEnum.SETTINGS_TIME_TYPE.getString().toUpperCase();
+            byte timeTypeByte = -1;
+            switch (timeType.hashCode()) {
                 case 67452:
-                    if (var4.equals("DAY")) {
-                        var5 = 0;
+                    if (timeType.equals("DAY")) {
+                        timeTypeByte = 0;
                     }
                     break;
                 case 74279928:
-                    if (var4.equals("NIGHT")) {
-                        var5 = 1;
+                    if (timeType.equals("NIGHT")) {
+                        timeTypeByte = 1;
                     }
             }
 
-            long var2;
-            switch (var5) {
+            long time;
+            switch (timeTypeByte) {
                 case 0:
-                    var2 = 8000L;
+                    time = 8000L;
                     break;
                 case 1:
-                    var2 = 16000L;
+                    time = 16000L;
                     break;
                 default:
-                    var2 = PracticeSettings.GameSettingsEnum.SETTINGS_TIME_PRECISE.getInt();
+                    time = PracticeSettings.GameSettingsEnum.SETTINGS_TIME_PRECISE.getInt();
             }
 
-            this.world.setTime(var2);
+            this.practiceWorld.setTime(time);
         }
     }
 
     public void unload() {
-        Bukkit.unloadWorld(this.world, false);
+        Bukkit.unloadWorld(this.practiceWorld, false);
         this.removeWorld();
     }
 
     public World getPracticeWorld() {
-        return this.world;
+        return this.practiceWorld;
     }
 
     public com.sk89q.worldedit.world.World getPracticeWEWorld() {
-        return WESupport.getWEWorld(this.world);
+        return WESupport.getWEWorld(this.practiceWorld);
     }
 
     @EventHandler
-    private void onWeatherChange(WeatherChangeEvent var1) {
-        if (var1.toWeatherState()) {
-            var1.setCancelled(true);
+    private void onWeatherChange(WeatherChangeEvent event) {
+        if (event.toWeatherState()) {
+            event.setCancelled(true);
         }
-
     }
 
     private void removeWorld() {
         if (BambooUtils.isPluginEnabled("SlimeWorldManager")) {
             SWMSupport.getInstance().removeWorld();
         } else {
-            File var1 = new File("bedwars_practice");
+            File worldDirectory = new File("bedwars_practice");
 
             try {
-                if (var1.exists()) {
-                    FileUtils.deleteDirectory(var1);
+                if (worldDirectory.exists()) {
+                    FileUtils.deleteDirectory(worldDirectory);
                 }
-            } catch (IOException var3) {
-                throw new BambooErrorException(var3, this.getClass(), Collections.singletonList("Cannot delete 'bedwars_practice' world."));
+            } catch (IOException e) {
+                throw new BambooErrorException(e, this.getClass(), Collections.singletonList("Cannot delete 'bedwars_practice' world."));
             }
         }
-
     }
 }

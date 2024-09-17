@@ -14,21 +14,21 @@ public class SetLobbyCommand extends SubCommand {
         super("setLobby", Language.MessagesEnum.COMMAND_ADMIN_SET_LOBBY_DESCRIPTION.getString(), BedWarsPracticeAdminCommand.getPermissions());
     }
 
-    public void execute(CommandSender var1, String[] var2) {
-        if (!(var1 instanceof Player)) {
-            var1.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getString());
+    public void execute(CommandSender sender, String[] args) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(Language.MessagesEnum.PLUGIN_NO_CONSOLE.getString());
         } else {
-            Player var3 = (Player) var1;
-            Lobby.getInstance().set(var3.getLocation());
-            var3.sendMessage(" ");
-            var3.sendMessage(" ");
-            var3.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(var3.getUniqueId()));
-            var3.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SET_LOBBY_SUCCEEDED.getString(var3.getUniqueId()));
-            Sounds.PLAYER_LEVELUP.getSound().play(var3, 3.0F, 3.0F);
+            Player player = (Player) sender;
+            Lobby.getInstance().set(player.getLocation());
+            player.sendMessage(" ");
+            player.sendMessage(" ");
+            player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(player.getUniqueId()));
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_SET_LOBBY_SUCCEEDED.getString(player.getUniqueId()));
+            Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
         }
     }
 
-    public boolean canSee(CommandSender var1) {
-        return !(var1 instanceof Player) ? this.hasPermission(var1) : this.hasPermission(var1) && !SchematicWorldCreator.isInSchematicWorld(((Player) var1).getWorld());
+    public boolean canSee(CommandSender sender) {
+        return !(sender instanceof Player) ? this.hasPermission(sender) : this.hasPermission(sender) && !SchematicWorldCreator.isInSchematicWorld(((Player) sender).getWorld());
     }
 }
