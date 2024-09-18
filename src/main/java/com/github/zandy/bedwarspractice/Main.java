@@ -13,7 +13,6 @@ import com.github.zandy.bedwarspractice.features.Placeholders;
 import com.github.zandy.bedwarspractice.features.chat.ChatHandler;
 import com.github.zandy.bedwarspractice.features.guis.GameSettingsGUI;
 import com.github.zandy.bedwarspractice.features.guis.ModeSelectorGUI;
-import com.github.zandy.bedwarspractice.features.npc.PracticeNPC;
 import com.github.zandy.bedwarspractice.files.Settings;
 import com.github.zandy.bedwarspractice.files.SetupData;
 import com.github.zandy.bedwarspractice.files.language.Language;
@@ -29,6 +28,7 @@ import java.util.Arrays;
 
 public class Main extends JavaPlugin {
     private static BedWars bedWarsAPI = null;
+    public static Main instance;
 
     public static BedWars getBedWarsAPI() {
         return bedWarsAPI;
@@ -36,6 +36,7 @@ public class Main extends JavaPlugin {
 
     public void onEnable() {
         BambooLib.setPluginInstance(this);
+        instance = this;
         BambooUtils.consolePrint("&m--------------------------");
         BambooUtils.consolePrint("Initializing BedWars Practice " + this.getDescription().getVersion());
         if (!BambooUtils.isVersion(8, 12, 18, 19)) {
@@ -92,10 +93,6 @@ public class Main extends JavaPlugin {
                 PracticeIncomingOutgoingProxy.getInstance().init();
             }
 
-            if (BambooUtils.isPluginEnabled("Citizens")) {
-                PracticeNPC.getInstance().init();
-            }
-
             File spigotConfigFile = new File("spigot.yml");
             YamlConfiguration spigotConfig = YamlConfiguration.loadConfiguration(spigotConfigFile);
             spigotConfig.set("world-settings.default.verbose", Settings.SettingsEnum.ENABLE_VERBOSE.getBoolean());
@@ -117,9 +114,6 @@ public class Main extends JavaPlugin {
     public void onDisable() {
         BambooUtils.consolePrint("&m--------------------------");
         BambooUtils.consolePrint("&cDisabling BedWars Practice " + this.getDescription().getVersion());
-        if (PracticeNPC.getInstance().isInit()) {
-            PracticeNPC.getInstance().despawnNPCs();
-        }
 
         if (com.github.zandy.bamboolib.database.Database.getInstance().getDatabaseType().equals(com.github.zandy.bamboolib.database.Database.DatabaseType.MYSQL)) {
             BambooUtils.consolePrint("Disabling Database...");

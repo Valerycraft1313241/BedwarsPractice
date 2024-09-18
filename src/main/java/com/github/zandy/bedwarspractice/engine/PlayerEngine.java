@@ -6,8 +6,6 @@ import com.github.zandy.bamboolib.database.utils.ColumnInfo;
 import com.github.zandy.bamboolib.utils.BambooUtils;
 import com.github.zandy.bedwarspractice.Main;
 import com.github.zandy.bedwarspractice.features.bedwars1058.PlayerChangeLanguageListener;
-import com.github.zandy.bedwarspractice.features.npc.PlayerDataNPC;
-import com.github.zandy.bedwarspractice.features.npc.PracticeNPC;
 import com.github.zandy.bedwarspractice.features.stats.Stats;
 import com.github.zandy.bedwarspractice.files.Settings;
 import com.github.zandy.bedwarspractice.files.language.Language;
@@ -78,16 +76,6 @@ public class PlayerEngine implements Listener {
             } else {
                 Language.getInstance().getPlayerLocale().put(playerUUID, Database.getInstance().getString(playerUUID, "Language", "Profile"));
             }
-        }
-
-        if (!PlayerDataNPC.contains(playerUUID)) {
-            new PlayerDataNPC(playerUUID);
-        } else {
-            PlayerDataNPC.get(playerUUID).flush();
-        }
-
-        if (BambooUtils.isPluginEnabled("Citizens")) {
-            Bukkit.getScheduler().runTaskLater(BambooLib.getPluginInstance(), () -> PracticeNPC.getInstance().respawnNPCs(Bukkit.getPlayer(playerUUID)), 1L);
         }
 
     }

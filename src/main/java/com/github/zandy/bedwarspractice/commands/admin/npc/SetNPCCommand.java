@@ -3,27 +3,33 @@ package com.github.zandy.bedwarspractice.commands.admin.npc;
 import com.github.zandy.bamboolib.command.SubCommand;
 import com.github.zandy.bamboolib.utils.BambooUtils;
 import com.github.zandy.bamboolib.versionsupport.sound.Sounds;
+import com.github.zandy.bedwarspractice.Main;
 import com.github.zandy.bedwarspractice.commands.BedWarsPracticeAdminCommand;
-import com.github.zandy.bedwarspractice.features.npc.PracticeNPC;
 import com.github.zandy.bedwarspractice.files.Lobby;
-import com.github.zandy.bedwarspractice.files.NPCStorage;
+import com.github.zandy.bedwarspractice.files.NPCType;
 import com.github.zandy.bedwarspractice.files.language.Language;
-import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.NPCLeftClickEvent;
 import net.citizensnpcs.api.event.NPCRightClickEvent;
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.trait.CommandTrait;
+import net.citizensnpcs.trait.HologramTrait;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
 public class SetNPCCommand extends SubCommand implements Listener {
     private static SetNPCCommand instance = null;
     private final List<UUID> toClickList = new ArrayList<>();
-    private final HashMap<UUID, NPCStorage.NPCType> npcTypeMap = new HashMap<>();
+    private final HashMap<UUID, NPCType> npcTypeMap = new HashMap<>();
 
     private SetNPCCommand() {
         super("setNPC", Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_DESCRIPTION.getString(), BedWarsPracticeAdminCommand.getPermissions());
@@ -44,6 +50,10 @@ public class SetNPCCommand extends SubCommand implements Listener {
         } else {
             Player player = (Player) sender;
             UUID playerUUID = player.getUniqueId();
+            if (!BambooUtils.isPluginEnabled("Citizens")) {
+                player.sendMessage("§cYou need Citizens installed in order to run this.");
+                return;
+            }
             if (!Lobby.getInstance().isSet()) {
                 player.sendMessage(" ");
                 player.sendMessage(" ");
@@ -84,15 +94,15 @@ public class SetNPCCommand extends SubCommand implements Listener {
                         }
                 }
 
-                NPCStorage.NPCType npcType;
+                NPCType npcType;
                 switch (npcTypeByte) {
                     case 0:
                     case 1:
                     case 2:
-                        npcType = NPCStorage.NPCType.valueOf(args[0].toUpperCase());
+                        npcType = NPCType.valueOf(args[0].toUpperCase());
                         break;
                     case 3:
-                        npcType = NPCStorage.NPCType.FIREBALL_TNT_JUMPING;
+                        npcType = NPCType.FIREBALL_TNT_JUMPING;
                         break;
                     default:
                         this.sendWrongUsageMessage(player);
@@ -136,40 +146,63 @@ public class SetNPCCommand extends SubCommand implements Listener {
             priority = EventPriority.HIGHEST
     )
     private void onNPCRightClick(NPCRightClickEvent event) {
-        event.setCancelled(this.clickFunction(event.getClicker(), event.getClicker().getUniqueId(), event.getNPC().getId()));
+        event.setCancelled(this.clickFunction(event.getClicker(), event.getClicker().getUniqueId(), event.getNPC()));
     }
 
     @EventHandler(
             priority = EventPriority.HIGHEST
     )
     private void onNPCLeftClick(NPCLeftClickEvent event) {
-        event.setCancelled(this.clickFunction(event.getClicker(), event.getClicker().getUniqueId(), event.getNPC().getId()));
+        event.setCancelled(this.clickFunction(event.getClicker(), event.getClicker().getUniqueId(), event.getNPC()));
     }
 
-    private boolean clickFunction(Player player, UUID playerUUID, int npcID) {
+    private boolean clickFunction(Player player, UUID playerUUID, NPC npc) {
         if (!this.toClickList.contains(playerUUID)) {
             return false;
         } else {
-            NPCStorage.NPCType npcType = this.npcTypeMap.get(playerUUID);
-            if (NPCStorage.getInstance().contains(npcType, npcID)) {
+            if(npc.getEntity().hasMetadata("bwpa")) {
                 player.sendMessage(" ");
                 player.sendMessage(" ");
                 player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
                 player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_ALREADY_EXISTS.getString(playerUUID));
                 Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
                 return false;
-            } else {
-                NPCStorage.getInstance().add(npcType, npcID);
-                PracticeNPC.getInstance().spawnNPC(CitizensAPI.getNPCRegistry().getById(npcID), npcID, npcType);
-                this.toClickList.remove(playerUUID);
-                player.sendMessage(" ");
-                player.sendMessage(" ");
-                player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
-                player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_ADDED.getString(playerUUID));
-                player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_TYPE_ADDED.getString(playerUUID).replace("[practiceType]", npcType.getType().getString(playerUUID)));
-                Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
-                return true;
             }
+            this.toClickList.remove(playerUUID);
+            NPCType npcType = this.npcTypeMap.get(playerUUID);
+            String cmd = "";
+            switch (npcType) {
+                case MLG:
+                    cmd = "bwp mlg";
+                    break;
+                case DEFAULT:
+                    cmd = "bwp";
+                    break;
+                case BRIDGING:
+                    cmd = "bwp bridging";
+                    break;
+                case FIREBALL_TNT_JUMPING:
+                    cmd = "bwp fireballtntjumping";
+                    break;
+            }
+            npc.data().setPersistent(NPC.Metadata.NAMEPLATE_VISIBLE, false);
+            npc.scheduleUpdate(NPC.NPCUpdate.PACKET);
+            CommandTrait commands = npc.getOrAddTrait(CommandTrait.class);
+            commands.addCommand(new CommandTrait.NPCCommandBuilder(cmd, CommandTrait.Hand.BOTH).player(true));
+            npc.getEntity().setMetadata("bwpa", new FixedMetadataValue(Main.instance, true));
+            List<String> lines = npcType.getLines().getStringList(playerUUID);
+            Collections.reverse(lines);
+            for (String s : npcType.getLines().getStringList(playerUUID)) {
+                HologramTrait hologramTrait = npc.getOrAddTrait(HologramTrait.class);
+                hologramTrait.addLine(s);
+            }
+            player.sendMessage(" ");
+            player.sendMessage(" ");
+            player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_ADDED.getString(playerUUID));
+            player.sendMessage(Language.MessagesEnum.COMMAND_ADMIN_NPC_SET_TYPE_ADDED.getString(playerUUID).replace("[practiceType]", npcType.getType().getString(playerUUID)));
+            Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
+            return true;
         }
     }
 

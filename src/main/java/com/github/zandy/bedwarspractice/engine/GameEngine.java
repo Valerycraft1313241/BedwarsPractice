@@ -14,7 +14,6 @@ import com.github.zandy.bedwarspractice.engine.practice.fireballtntjumping.Fireb
 import com.github.zandy.bedwarspractice.engine.practice.mlg.MLGInfo;
 import com.github.zandy.bedwarspractice.engine.practice.mlg.MLGMode;
 import com.github.zandy.bedwarspractice.features.PracticeSpectator;
-import com.github.zandy.bedwarspractice.features.npc.PlayerDataNPC;
 import com.github.zandy.bedwarspractice.files.Lobby;
 import com.github.zandy.bedwarspractice.files.PracticeSettings;
 import com.github.zandy.bedwarspractice.files.Settings;
@@ -326,7 +325,6 @@ public class GameEngine implements Listener {
         }, 5L);
         this.getPracticeTypeMap().put(playerUUID, practiceType);
         this.getPracticeLocationMap().put(playerUUID, teleportLocation);
-        PlayerDataNPC.get(playerUUID).removeAll();
         return practiceLocation;
     }
 
