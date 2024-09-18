@@ -14,15 +14,12 @@ import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.trait.CommandTrait;
 import net.citizensnpcs.trait.HologramTrait;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
-import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
@@ -70,29 +67,7 @@ public class SetNPCCommand extends SubCommand implements Listener {
                 this.sendWrongUsageMessage(player);
                 Sounds.VILLAGER_NO.getSound().play(player, 3.0F, 1.0F);
             } else {
-                String npcTypeString = args[0].toLowerCase();
-                byte npcTypeByte = -1;
-                switch (npcTypeString.hashCode()) {
-                    case 108200:
-                        if (npcTypeString.equals("mlg")) {
-                            npcTypeByte = 2;
-                        }
-                        break;
-                    case 194511366:
-                        if (npcTypeString.equals("bridging")) {
-                            npcTypeByte = 1;
-                        }
-                        break;
-                    case 1544803905:
-                        if (npcTypeString.equals("default")) {
-                            npcTypeByte = 0;
-                        }
-                        break;
-                    case 1647511919:
-                        if (npcTypeString.equals("fireballtntjumping")) {
-                            npcTypeByte = 3;
-                        }
-                }
+                byte npcTypeByte = getNpcTypeByte(args);
 
                 NPCType npcType;
                 switch (npcTypeByte) {
@@ -118,6 +93,24 @@ public class SetNPCCommand extends SubCommand implements Listener {
                 Sounds.PLAYER_LEVELUP.getSound().play(player, 3.0F, 3.0F);
             }
         }
+    }
+
+    private static byte getNpcTypeByte(String[] args) {
+        String npcTypeString = args[0].toLowerCase();
+        byte npcTypeByte = -1;
+        if (npcTypeString.equals("mlg")) {
+            npcTypeByte = 2;
+        }
+        if (npcTypeString.equals("bridging")) {
+            npcTypeByte = 1;
+        }
+        if (npcTypeString.equals("default")) {
+            npcTypeByte = 0;
+        }
+        if (npcTypeString.equals("fireballtntjumping")) {
+            npcTypeByte = 3;
+        }
+        return npcTypeByte;
     }
 
     private void sendFormattedComponent(Player player, String message, String command) {
@@ -160,7 +153,7 @@ public class SetNPCCommand extends SubCommand implements Listener {
         if (!this.toClickList.contains(playerUUID)) {
             return false;
         } else {
-            if(npc.getEntity().hasMetadata("bwpa")) {
+            if (npc.getEntity().hasMetadata("bwpa")) {
                 player.sendMessage(" ");
                 player.sendMessage(" ");
                 player.sendMessage(Language.MessagesEnum.COMMAND_TAG.getString(playerUUID));
