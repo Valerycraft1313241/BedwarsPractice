@@ -1,14 +1,13 @@
 package com.github.zandy.bedwarspractice.engine;
 
-import com.github.zandy.bamboolib.BambooLib;
 import com.github.zandy.bamboolib.database.Database;
 import com.github.zandy.bamboolib.database.utils.ColumnInfo;
 import com.github.zandy.bamboolib.utils.BambooUtils;
 import com.github.zandy.bedwarspractice.Main;
-import com.github.zandy.bedwarspractice.features.bedwars1058.PlayerChangeLanguageListener;
 import com.github.zandy.bedwarspractice.features.stats.Stats;
 import com.github.zandy.bedwarspractice.files.Settings;
 import com.github.zandy.bedwarspractice.files.language.Language;
+import com.tomkeuper.bedwars.BedWars;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -33,8 +32,11 @@ public class PlayerEngine implements Listener {
 
     public void init() {
         BambooUtils.registerEvent(this);
-        if (Main.getBedWarsAPI() != null) {
-            new PlayerChangeLanguageListener();
+        if (Main.isBedwars1058()) {
+            new com.github.zandy.bedwarspractice.features.bedwars1058.PlayerChangeLanguageListener();
+        }
+        if(Main.isBedwars2023()) {
+            new com.github.zandy.bedwarspractice.features.bedwars2023.PlayerChangeLanguageListener();
         }
 
         Bukkit.getOnlinePlayers().forEach((player) -> this.join(player.getUniqueId(), player.getName()));
@@ -71,9 +73,14 @@ public class PlayerEngine implements Listener {
         }
 
         if (!Language.getInstance().getPlayerLocale().containsKey(playerUUID)) {
-            if (Main.getBedWarsAPI() != null) {
-                Language.getInstance().getPlayerLocale().put(playerUUID, Main.getBedWarsAPI().getPlayerLanguage(Bukkit.getPlayer(playerUUID)).getIso().toUpperCase());
-            } else {
+            if (Main.isBedwars1058()) {
+                Language.getInstance().getPlayerLocale().put(playerUUID, com.andrei1058.bedwars.BedWars.getAPI().getPlayerLanguage(Bukkit.getPlayer(playerUUID)).getIso().toUpperCase());
+            }
+            else if(Main.isBedwars2023()) {
+                Language.getInstance().getPlayerLocale().put(playerUUID, BedWars.getAPI().getPlayerLanguage(Bukkit.getPlayer(playerUUID)).getIso().toUpperCase());
+
+            }
+            else {
                 Language.getInstance().getPlayerLocale().put(playerUUID, Database.getInstance().getString(playerUUID, "Language", "Profile"));
             }
         }

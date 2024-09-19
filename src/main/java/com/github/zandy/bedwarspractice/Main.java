@@ -27,11 +27,16 @@ import java.io.File;
 import java.util.Arrays;
 
 public class Main extends JavaPlugin {
-    private static BedWars bedWarsAPI = null;
+    private static boolean bedwars1058 = false;
+    private static boolean bedwars2023 = false;
     public static Main instance;
 
-    public static BedWars getBedWarsAPI() {
-        return bedWarsAPI;
+    public static boolean isBedwars1058() {
+        return bedwars1058;
+    }
+
+    public static boolean isBedwars2023() {
+        return bedwars2023;
     }
 
     public void onEnable() {
@@ -52,23 +57,9 @@ public class Main extends JavaPlugin {
             BambooUtils.consolePrint("Database type: " + BambooUtils.capitalizeFirstLetter(com.github.zandy.bamboolib.database.Database.getInstance().getDatabaseType().name().toLowerCase()).replace("_", " "));
             PlayerEngine.getInstance().init();
             BambooUtils.consolePrint("Loading Languages...");
-            org.bukkit.plugin.Plugin bedWarsPlugin = Bukkit.getPluginManager().getPlugin("BedWars1058");
-            if (bedWarsPlugin != null) {
-                String pluginVersion = bedWarsPlugin.getDescription().getVersion().replace("-SNAPSHOT", "");
-                if (pluginVersion.contains("${gitVer}")) {
-                    pluginVersion = pluginVersion.replace("${gitVer}", "");
-                }
 
-                String[] versionParts = pluginVersion.split("\\.");
-                pluginVersion = versionParts[0] + "." + versionParts[1];
-                if (Double.parseDouble(pluginVersion) >= 22.01D) {
-                    BambooUtils.consolePrint("BedWars1058 hook found! Hooking languages...");
-                    bedWarsAPI = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
-                } else {
-                    BambooUtils.consolePrint("BedWars1058 hook found! &cYou're using an unsupported BedWars1058 version!");
-                    BambooUtils.consolePrint("Required BedWars1058 version: 22.01 or greater");
-                }
-            }
+            bedwars1058 = BambooUtils.isPluginEnabled("BedWars1058");
+            bedwars2023 = BambooUtils.isPluginEnabled("BedWars2023");
 
             Language.getInstance().init();
             BambooUtils.consolePrint("Loading Engines...");
@@ -79,7 +70,7 @@ public class Main extends JavaPlugin {
             BambooUtils.consolePrint("Loading Commands & Setup Data...");
             VersionSupport.getInstance().registerCommand(new BedWarsPracticeCommand());
             VersionSupport.getInstance().registerCommand(new BedWarsPracticeAdminCommand());
-            if (bedWarsAPI == null) {
+            if (!bedwars1058 && !bedwars2023) {
                 VersionSupport.getInstance().registerCommand(new BedWarsPracticeLanguageCommand());
             }
 

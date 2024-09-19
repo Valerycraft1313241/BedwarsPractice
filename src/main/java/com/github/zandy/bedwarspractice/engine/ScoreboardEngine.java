@@ -1,5 +1,6 @@
 package com.github.zandy.bedwarspractice.engine;
 
+import com.andrei1058.bedwars.BedWars;
 import com.github.zandy.bamboolib.BambooLib;
 import com.github.zandy.bamboolib.scoreboard.Scoreboard;
 import com.github.zandy.bamboolib.utils.BambooUtils;
@@ -46,8 +47,11 @@ public class ScoreboardEngine implements Listener {
     }
 
     public void sendSidebar(Player player, GameEngine.PracticeType practiceType) {
-        if (Main.getBedWarsAPI() != null) {
-            Main.getBedWarsAPI().getScoreboardUtil().removePlayerScoreboard(player);
+        if (Main.isBedwars1058()) {
+            BedWars.getAPI().getScoreboardUtil().removePlayerScoreboard(player);
+        }
+        if(Main.isBedwars2023()) {
+            com.tomkeuper.bedwars.BedWars.getAPI().getScoreboardUtil().removePlayerScoreboard(player);
         }
 
         UUID playerUUID = player.getUniqueId();
@@ -87,8 +91,11 @@ public class ScoreboardEngine implements Listener {
             Scoreboard scoreboard = this.sidebarMap.get(playerUUID);
             scoreboard.destroy();
             this.sidebarMap.remove(playerUUID);
-            if (Main.getBedWarsAPI() != null) {
-                Main.getBedWarsAPI().getScoreboardUtil().givePlayerScoreboard(event.getPlayer(), true);
+            if (Main.isBedwars1058()) {
+                BedWars.getAPI().getScoreboardUtil().givePlayerScoreboard(event.getPlayer(), true);
+            }
+            if(Main.isBedwars2023()) {
+                com.tomkeuper.bedwars.BedWars.getAPI().getScoreboardUtil().givePlayerScoreboard(event.getPlayer(), true);
             }
         }
     }

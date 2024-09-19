@@ -160,9 +160,10 @@
         </dependency>
         <dependency>
             <groupId>com.andrei1058.bedwars</groupId>
-            <artifactId>bedwars-api</artifactId>
-            <version>22.7</version>
-            <scope>provided</scope>
+            <artifactId>BedWars1058</artifactId>
+            <version>24.9</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/BedWars1058.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldedit</groupId>
@@ -175,6 +176,13 @@
             <artifactId>BambooLib</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.tomkeuper.bedwars</groupId>
+            <artifactId>BedWars2023</artifactId>
+            <version>1.20</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/Bedwars-2023.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>net.citizensnpcs</groupId>

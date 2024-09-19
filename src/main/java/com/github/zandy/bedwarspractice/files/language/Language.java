@@ -43,12 +43,18 @@ public class Language {
             }
 
         });
-        if (Main.getBedWarsAPI() != null) {
+        if (Main.isBedwars1058()) {
             com.andrei1058.bedwars.api.language.Language.getLanguages().forEach((language) -> {
                 if (!languageList.contains(language.getIso().toUpperCase())) {
                     languageList.add(language.getIso().toUpperCase());
                 }
-
+            });
+        }
+        if(Main.isBedwars2023()) {
+            com.tomkeuper.bedwars.api.language.Language.getLanguages().forEach((language) -> {
+                if (!languageList.contains(language.getIso().toUpperCase())) {
+                    languageList.add(language.getIso().toUpperCase());
+                }
             });
         }
 
